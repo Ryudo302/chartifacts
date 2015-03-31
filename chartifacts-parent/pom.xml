@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>br.com.colbert</groupId>
+		<artifactId>maven-parent</artifactId>
+		<version>1.1.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>chartifacts-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Chartifacts</name>
+	<description>Permite a geração de relatórios de uma parada musical.</description>
+
+	<developers>
+		<developer>
+			<id>Ryudo302</id>
+			<email>th.colbert@gmail.com</email>
+			<name>Thiago Lima Colbert Miranda</name>
+			<timezone>-3</timezone>
+		</developer>
+	</developers>
+
+	<properties>
+		<aplicacao.nome>Chartifacts</aplicacao.nome>
+
+		<!-- Grupo do projeto dentro do repositório SCM -->
+		<scm.project.group>Ryudo302</scm.project.group>
+		<!-- Nome do projeto dentro do repositório SCM -->
+		<scm.project.name>chartifacts.git</scm.project.name>
+
+		<weld.version>3.0.0.Alpha2</weld.version>
+		<junit.version>4.12</junit.version>
+	</properties>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>chartifacts-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.weld.se</groupId>
+				<artifactId>weld-se-core</artifactId>
+				<version>${weld.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.3.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jglue.cdi-unit</groupId>
+				<artifactId>cdi-unit</artifactId>
+				<version>3.1.1</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<modules>
+		<module>chartifacts-core</module>
+		<module>chartifacts-desktop</module>
+	</modules>
+
+	<scm>
+		<url>${scm.base.url}/${scm.project.group}/${scm.project.name}</url>
+		<connection>scm:git:${project.scm.url}</connection>
+		<developerConnection>scm:git:${project.scm.url}</developerConnection>
+	</scm>
+</project>
