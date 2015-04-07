@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.*;
  * @author Thiago Colbert
  * @since 11/03/2015
  */
-public class AbstractEntidade implements Entidade, Serializable {
+public abstract class AbstractEntidade implements Entidade, Serializable {
 
 	private static final long serialVersionUID = -6837156660941198873L;
 
