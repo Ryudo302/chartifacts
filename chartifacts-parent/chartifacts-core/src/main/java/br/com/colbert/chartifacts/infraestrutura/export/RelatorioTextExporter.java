@@ -2,6 +2,7 @@ package br.com.colbert.chartifacts.infraestrutura.export;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
@@ -46,14 +47,20 @@ public class RelatorioTextExporter implements RelatorioExporter<String>, Seriali
 		logger.debug("Conversor de valores: {}", toStringValue);
 
 		StringBuilder builder = new StringBuilder();
-		relatorio.getItens().forEach(
-				(key, value) -> builder.append(StringUtils.rightPad(toString(key, toStringKey), larguraPrimeiraColuna))
-						.append(toString(value, toStringValue)).append(StringUtils.LF));
-		return builder.toString();
-	}
+		relatorio.getItens().forEach(new BiConsumer<T, V>() {
 
-	private <T> String toString(T key, ToFormatedStringConverter<T> toStringConverter) {
-		return toStringConverter != null ? toStringConverter.convert(key) : key.toString();
+			@Override
+			public void accept(T key, V value) {
+				builder.append(StringUtils.rightPad(toString(key, toStringKey), larguraPrimeiraColuna)).append(toString(value, toStringValue))
+						.append(StringUtils.LF);
+			}
+
+			private <K> String toString(K key, ToFormatedStringConverter<K> toStringConverter) {
+				return toStringConverter != null ? toStringConverter.convert(key) : key.toString();
+			}
+		});
+
+		return builder.toString();
 	}
 
 	public RelatorioTextExporter setLarguraPrimeiraColuna(int larguraPrimeiraColuna) {

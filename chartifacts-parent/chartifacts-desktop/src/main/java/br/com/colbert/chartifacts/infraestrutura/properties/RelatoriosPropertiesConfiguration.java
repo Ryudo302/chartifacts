@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.infraestrutura.io;
+package br.com.colbert.chartifacts.infraestrutura.properties;
 
 import java.text.MessageFormat;
 import java.util.*;

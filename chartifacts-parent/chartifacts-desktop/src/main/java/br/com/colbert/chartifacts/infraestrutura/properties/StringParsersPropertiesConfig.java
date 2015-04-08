@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.infraestrutura.io;
+package br.com.colbert.chartifacts.infraestrutura.properties;
 
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.*;
+
+import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
 
 /**
  * Implementação de {@link StringParsersConfig} que obtém as informações de um arquivo <em>properties</em>.
