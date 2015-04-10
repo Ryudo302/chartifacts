@@ -11,6 +11,20 @@
 	<name>Chartifacts - Desktop</name>
 	<description>Módulo de interface gráfica para desktop.</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>chartifacts-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-forms</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+
+	</dependencies>
+
 	<build>
 		<finalName>Chartifacts</finalName>
 
@@ -65,20 +79,11 @@
 								<addClasspath>true</addClasspath>
 								<mainClass>org.jboss.weld.environment.se.StartMain</mainClass>
 							</manifest>
-							<!-- <manifestEntries>
-								<Build-Number>${buildNumber}</Build-Number>
-							</manifestEntries> -->
+							<!-- <manifestEntries> <Build-Number>${buildNumber}</Build-Number> </manifestEntries> -->
 						</archive>
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>chartifacts-core</artifactId>
-		</dependency>
-	</dependencies>
 </project>

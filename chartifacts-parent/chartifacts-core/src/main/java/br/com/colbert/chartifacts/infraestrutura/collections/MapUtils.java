@@ -2,6 +2,7 @@ package br.com.colbert.chartifacts.infraestrutura.collections;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,8 +85,17 @@ public final class MapUtils {
 	 * @return o mapa filtrado
 	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> removeZeroesValues(Map<K, V> map) {
-		return map.entrySet().stream().filter(entry -> notZeroValue(entry))
-				.collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+		return map.entrySet().stream().filter(entry -> notZeroValue(entry)).collect(Collectors.toMap(new Function<Entry<K, V>, K>() {
+			@Override
+			public K apply(Entry<K, V> entry) {
+				return entry.getKey();
+			}
+		}, new Function<Entry<K, V>, V>() {
+			@Override
+			public V apply(Entry<K, V> entry) {
+				return entry.getValue();
+			}
+		}));
 	}
 
 	private static <K, V extends Comparable<? super V>> boolean notZeroValue(Entry<K, V> entry) {

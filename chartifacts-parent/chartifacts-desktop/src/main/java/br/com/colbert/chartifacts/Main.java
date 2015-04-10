@@ -12,6 +12,7 @@ import org.jboss.weld.environment.se.events.ContainerInitialized;
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosFacade;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
+import br.com.colbert.chartifacts.ui.MainWindow;
 
 /**
  * Classe principal da aplicação.
@@ -24,6 +25,9 @@ public class Main {
 	public static void main(String[] args) {
 		StartMain.main(args);
 	}
+
+	@Inject
+	private MainWindow mainWindow;
 
 	@Inject
 	private HistoricoParadaFileParser parser;
@@ -39,6 +43,14 @@ public class Main {
 	 * @throws IOException
 	 */
 	protected void contextoInicializado(@Observes ContainerInitialized event) throws ParserException, IOException {
+		if (false) {
+			rodar();
+		}
+
+		mainWindow.show();
+	}
+
+	private void rodar() throws IOException, ParserException {
 		File arquivo = Paths.get("C:", "Users", "ThiagoColbert", "Documents", "Paradas Musicais", "Hit Parade TL", "Geral", "Históricos.txt")
 				.toFile();
 		HistoricoParada historicoParada = parser.parse(arquivo, 20);
