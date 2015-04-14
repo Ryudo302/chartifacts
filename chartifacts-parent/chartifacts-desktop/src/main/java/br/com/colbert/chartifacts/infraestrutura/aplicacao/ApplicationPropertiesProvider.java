@@ -7,8 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Provê acesso às propriedades da aplicação.
  *
@@ -23,47 +21,29 @@ public class ApplicationPropertiesProvider implements Serializable {
 	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("application");
 
 	/**
+	 * Obtém informações sobre a aplicação.
 	 *
-	 * @return
+	 * @return as informações da aplicação
 	 */
 	@Produces
-	@InformacoesBuild(numeroBuild = false, numeroVersao = true)
 	@Singleton
-	public String numeroVersao() {
+	public InformacoesAplicacao informacoesAplicacao() {
+		return new InformacoesAplicacao(getNome(), getNumeroVersao(), getNumeroBuild(), getNomeAutor());
+	}
+
+	private String getNome() {
+		return BUNDLE.getString("app.name");
+	}
+
+	private String getNumeroVersao() {
 		return BUNDLE.getString("app.version");
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	@Produces
-	@InformacoesBuild(numeroBuild = true, numeroVersao = false)
-	@Singleton
-	public String numeroBuild() {
+	private String getNumeroBuild() {
 		return BUNDLE.getString("app.build");
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	@Produces
-	@InformacoesBuild(numeroBuild = true, numeroVersao = true)
-	@Singleton
-	public String numeroVersaoAndBuild() {
-		return numeroVersao() + StringUtils.SPACE + numeroBuild();
-	}
-
-	/**
-	 * Obtém o nome do autor da aplicação.
-	 *
-	 * @return o nome do autor
-	 */
-	@Produces
-	@NomeAutorApp
-	@Singleton
-	public String nomeAutor() {
+	private String getNomeAutor() {
 		return BUNDLE.getString("app.author");
 	}
 }

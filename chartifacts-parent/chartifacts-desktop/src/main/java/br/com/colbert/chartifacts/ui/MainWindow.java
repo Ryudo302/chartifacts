@@ -6,6 +6,7 @@ import java.io.*;
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultFormatterFactory;
 
@@ -13,8 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.jgoodies.forms.layout.*;
 
-import br.com.colbert.chartifacts.infraestrutura.aplicacao.*;
-import javax.swing.border.TitledBorder;
+import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
 
 /**
  * Janela principal da aplicação.
@@ -31,15 +31,7 @@ public class MainWindow implements Serializable {
 	private final JFormattedTextField textFieldArquivo;
 
 	@Inject
-	@InformacoesBuild(numeroBuild = false)
-	private String versaoApp;
-	@Inject
-	@InformacoesBuild(numeroVersao = false)
-	private String numeroBuildApp;
-	@Inject
-	@NomeAutorApp
-	private String nomeAutorApp;
-
+	private InformacoesAplicacao informacoesAplicacao;
 	@Inject
 	private ArquivoFormatter arquivoFormatter;
 
@@ -67,8 +59,9 @@ public class MainWindow implements Serializable {
 
 		JMenuItem menuItemSobre = new JMenuItem("Sobre");
 		menuItemSobre.addActionListener(event -> {
-			JOptionPane.showMessageDialog(frame, "Chartifacts" + "\n\n" + "Versão: " + versaoApp + StringUtils.LF + "Build: " + numeroBuildApp
-					+ StringUtils.LF + "Desenvolvido por: " + nomeAutorApp, "Sobre Chartifacts", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "Chartifacts" + "\n\n" + "Versão: " + informacoesAplicacao.getVersao() + StringUtils.LF + "Build: "
+					+ informacoesAplicacao.getNumeroBuild() + StringUtils.LF + "Desenvolvido por: " + informacoesAplicacao.getAutor(),
+					"Sobre Chartifacts", JOptionPane.INFORMATION_MESSAGE);
 		});
 		menuAjuda.add(menuItemSobre);
 		frame.getContentPane().setLayout(
