@@ -1,7 +1,8 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.Font;
+import java.awt.*;
 import java.io.*;
+import java.nio.file.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -14,12 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.jgoodies.forms.layout.*;
 
-import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
+import br.com.colbert.chartifacts.dominio.chart.*;
+import br.com.colbert.chartifacts.dominio.relatorios.*;
 import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
-import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import br.com.colbert.chartifacts.infraestrutura.io.*;
 
 /**
  * Janela principal da aplicação.
@@ -33,21 +32,27 @@ public class MainWindow implements Serializable {
 	private static final long serialVersionUID = 1998102092578023349L;
 
 	private final JFrame frame;
-	private final JFormattedTextField textFieldArquivo;
+	private final JFormattedTextField arquivoField;
 
 	@Inject
 	private InformacoesAplicacao informacoesAplicacao;
 	@Inject
 	private ArquivoFormatter arquivoFormatter;
+	@Inject
+	private HistoricoParadaFileParser historicoParadaFileParser;
 
 	@Inject
 	private StringParsersConfig parsersConfig;
 	@Inject
 	private RelatoriosConfiguration relatoriosConfig;
+
+	@Inject
+	private RelatoriosFacade relatoriosFacade;
+
 	private final JTextField nomeArtistaField;
 	private final JTextField separadoresArtistasField;
 	private final JTextField separadorArtistaCancaoField;
-	private final JTextField separadorTituloCancaoField;
+	private final JTextField tituloCancaoField;
 	private final JTextField separadorTitulosAlternativosField;
 	private final JTextField separadorPosicoesChartRunField;
 
@@ -57,7 +62,7 @@ public class MainWindow implements Serializable {
 	public MainWindow() {
 		frame = new JFrame("Chartifacts");
 		frame.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 12));
-		frame.setBounds(100, 100, 510, 483);
+		frame.setBounds(100, 100, 510, 470);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -86,17 +91,18 @@ public class MainWindow implements Serializable {
 								ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
 								FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 								FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC,
-								RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC, }));
+								RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"),
+								FormSpecs.RELATED_GAP_ROWSPEC, }));
 
-		JLabel labelArquivo = new JLabel("Arquivo:");
-		labelArquivo.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		frame.getContentPane().add(labelArquivo, "2, 2, right, center");
+		JLabel arquivoLabel = new JLabel("Arquivo:");
+		arquivoLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		frame.getContentPane().add(arquivoLabel, "2, 2, right, center");
 
-		textFieldArquivo = new JFormattedTextField();
-		textFieldArquivo.setToolTipText("Arquivo de histórico a ser utilizado.");
+		arquivoField = new JFormattedTextField();
+		arquivoField.setToolTipText("Arquivo de histórico a ser utilizado.");
 
-		textFieldArquivo.setEditable(false);
-		frame.getContentPane().add(textFieldArquivo, "4, 2, fill, default");
+		arquivoField.setEditable(false);
+		frame.getContentPane().add(arquivoField, "4, 2, fill, default");
 
 		JButton botaoProcurarArquivo = new JButton("Procurar...");
 		botaoProcurarArquivo.setToolTipText("Selecionar o arquivo de histórico.");
@@ -107,7 +113,7 @@ public class MainWindow implements Serializable {
 			int opcao = fileChooser.showOpenDialog(frame);
 			if (opcao == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
-				textFieldArquivo.setValue(file);
+				arquivoField.setValue(file);
 			}
 		});
 		frame.getContentPane().add(botaoProcurarArquivo, "6, 2");
@@ -143,6 +149,8 @@ public class MainWindow implements Serializable {
 		padroesArquivoPanelContent.add(nomeArtistaLabel, "2, 2, right, default");
 
 		nomeArtistaField = new JTextField();
+		nomeArtistaField.setEditable(false);
+		nomeArtistaField.setToolTipText("Regex utilizada para identificar os nomes dos artistas");
 		padroesArquivoPanelContent.add(nomeArtistaField, "4, 2, fill, default");
 		nomeArtistaField.setColumns(10);
 
@@ -150,6 +158,8 @@ public class MainWindow implements Serializable {
 		padroesArquivoPanelContent.add(separadoresArtistasLabel, "2, 4, right, default");
 
 		separadoresArtistasField = new JTextField();
+		separadoresArtistasField.setEditable(false);
+		separadoresArtistasField.setToolTipText("Regex utilizada para identificar segmentos de texto que separem um artista do outro");
 		separadoresArtistasField.setColumns(10);
 		padroesArquivoPanelContent.add(separadoresArtistasField, "4, 4, fill, default");
 
@@ -157,20 +167,27 @@ public class MainWindow implements Serializable {
 		padroesArquivoPanelContent.add(separadorArtistaCancaoLabel, "2, 6, right, default");
 
 		separadorArtistaCancaoField = new JTextField();
+		separadorArtistaCancaoField.setEditable(false);
+		separadorArtistaCancaoField
+				.setToolTipText("Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção");
 		separadorArtistaCancaoField.setColumns(10);
 		padroesArquivoPanelContent.add(separadorArtistaCancaoField, "4, 6, fill, default");
 
 		JLabel tituloCancaoLabel = new JLabel("Título de Canção:");
 		padroesArquivoPanelContent.add(tituloCancaoLabel, "2, 8, right, default");
 
-		separadorTituloCancaoField = new JTextField();
-		separadorTituloCancaoField.setColumns(10);
-		padroesArquivoPanelContent.add(separadorTituloCancaoField, "4, 8, fill, default");
+		tituloCancaoField = new JTextField();
+		tituloCancaoField.setEditable(false);
+		tituloCancaoField.setToolTipText("Regex utilizada para identificar o título da canção");
+		tituloCancaoField.setColumns(10);
+		padroesArquivoPanelContent.add(tituloCancaoField, "4, 8, fill, default");
 
 		JLabel separadorTitulosAlternativosLabel = new JLabel("Separador de Títulos Alternativos:");
 		padroesArquivoPanelContent.add(separadorTitulosAlternativosLabel, "2, 10, right, default");
 
 		separadorTitulosAlternativosField = new JTextField();
+		separadorTitulosAlternativosField.setEditable(false);
+		separadorTitulosAlternativosField.setToolTipText("Regex utilizada para identificar títulos alternativos da canção");
 		separadorTitulosAlternativosField.setColumns(10);
 		padroesArquivoPanelContent.add(separadorTitulosAlternativosField, "4, 10, fill, default");
 
@@ -178,6 +195,8 @@ public class MainWindow implements Serializable {
 		padroesArquivoPanelContent.add(separadorPosicoesChartRunLabel, "2, 12, right, default");
 
 		separadorPosicoesChartRunField = new JTextField();
+		separadorPosicoesChartRunField.setEditable(false);
+		separadorPosicoesChartRunField.setToolTipText("Expressão utilizada para separar as posições dos chart-runs");
 		separadorPosicoesChartRunField.setColumns(10);
 		padroesArquivoPanelContent.add(separadorPosicoesChartRunField, "4, 12, fill, default");
 
@@ -207,11 +226,47 @@ public class MainWindow implements Serializable {
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		relatoriosPanel.add(relatoriosPanelContent);
+
+		JPanel botoesPanel = new JPanel();
+		frame.getContentPane().add(botoesPanel, "2, 8, 5, 1, fill, fill");
+
+		JButton executarButton = new JButton("Executar");
+		executarButton.addActionListener(event -> {
+			gerarRelatorios();
+		});
+		botoesPanel.add(executarButton);
+	}
+
+	private void gerarRelatorios() {
+		File arquivo = (File) arquivoField.getValue();
+		if (arquivo == null) {
+			JOptionPane
+					.showMessageDialog(MainWindow.this.frame, "Informe o arquivo a ser analizado", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
+		} else {
+			try {
+				HistoricoParada historicoParada = historicoParadaFileParser.parse(arquivo, 20);
+				// TODO Receber arquivo de saída da tela
+				Path arquivoRelatorios = Files
+						.write(Paths.get(".", "relatorio.txt"), relatoriosFacade.exportarTodosEmTxt(historicoParada).getBytes());
+				JOptionPane.showMessageDialog(MainWindow.this.frame, "Relatórios gerados com sucesso:\n\n" + arquivoRelatorios, "Sucesso",
+						JOptionPane.INFORMATION_MESSAGE);
+			} catch (ParserException exception) {
+				JOptionPane.showMessageDialog(MainWindow.this.frame, "Erro ao analizar arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
+			} catch (IOException exception) {
+				JOptionPane.showMessageDialog(MainWindow.this.frame, "Erro ao gravar arquivo de relatórios", "Erro", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 
 	@PostConstruct
 	protected void init() {
-		textFieldArquivo.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
+		arquivoField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
+		nomeArtistaField.setText(parsersConfig.nomeArtistaPattern().pattern());
+		separadoresArtistasField.setText(parsersConfig.separadoresArtistasPattern().pattern());
+		separadorArtistaCancaoField.setText(parsersConfig.separadorArtistaCancaoPattern().pattern());
+		tituloCancaoField.setText(parsersConfig.tituloCancaoPattern().pattern());
+		separadorTitulosAlternativosField.setText(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
+		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
 	}
 
 	/**
