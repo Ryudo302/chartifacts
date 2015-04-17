@@ -216,7 +216,7 @@ public class RelatoriosFacade implements Serializable {
 	private StringBuilder criarRelatorioTextBuilder(RelatorioGenerator<?, ?> relatorioGenerator, Object... args) {
 		String tituloRelatorio = config.getTituloRelatorio(relatorioGenerator, args);
 		logger.info("Gerando relatório: {}", tituloRelatorio);
-		return new StringBuilder(tituloRelatorio).append(StringUtils.LF).append(StringUtils.LF);
+		return new StringBuilder(tituloRelatorio).append(StringUtils.CR).append(StringUtils.LF).append(StringUtils.CR).append(StringUtils.LF);
 	}
 
 	private String inserirSeparadores(StringBuilder builder, List<Integer> indicesSeparadores) {
@@ -238,6 +238,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private StringBuilder separador(StringBuilder relatoriosTextBuilder) {
-		return relatoriosTextBuilder.append(StringUtils.LF).append(config.separador()).append(StringUtils.LF).append(StringUtils.LF);
+		return relatoriosTextBuilder.append(StringUtils.CR).append(StringUtils.LF).append(config.separador()).append(StringUtils.CR)
+				.append(StringUtils.LF).append(StringUtils.CR).append(StringUtils.LF);
 	}
 }

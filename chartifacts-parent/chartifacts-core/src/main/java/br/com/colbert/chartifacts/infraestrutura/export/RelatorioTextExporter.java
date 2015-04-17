@@ -52,7 +52,7 @@ public class RelatorioTextExporter implements RelatorioExporter<String>, Seriali
 			@Override
 			public void accept(T key, V value) {
 				builder.append(StringUtils.rightPad(toString(key, toStringKey), larguraPrimeiraColuna)).append(toString(value, toStringValue))
-						.append(StringUtils.LF);
+						.append(StringUtils.CR).append(StringUtils.LF);
 			}
 
 			private <K> String toString(K key, ToFormatedStringConverter<K> toStringConverter) {
