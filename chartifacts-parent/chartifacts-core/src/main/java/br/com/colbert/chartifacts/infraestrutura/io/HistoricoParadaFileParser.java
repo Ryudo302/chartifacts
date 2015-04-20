@@ -42,11 +42,13 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	 *             caso o arquivo informado não exista, não seja um arquivo real ou não possa ser lido
 	 * @throws ParserException
 	 *             caso ocorra algum erro ao ler o arquivo
+	 * @throws ChartRunInvalidoException
+	 *             caso algum <em>chart-run</em> identificado possua posições inválidas
 	 */
 	@Override
 	public HistoricoParada parse(File arquivo, int quantidadePosicoesParada) throws ParserException {
 		validar(Objects.requireNonNull(arquivo, "arquivo"));
-		logger.info("Arquivo: {}", arquivo);
+		logger.info("Analisando arquivo de histórico de uma parada com um total de {} posições: {}", quantidadePosicoesParada, arquivo);
 
 		Validate.isTrue(quantidadePosicoesParada > 0, "A quantidade de posições deve ser maior que zero");
 		CalculadoraPontos calculadoraPontos = new CalculadoraPontos(ElementoChartRun.valueOf(quantidadePosicoesParada));
@@ -66,7 +68,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 									IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now()));
 						} else if (isLinhaChartRun(linha)) {
 							logger.trace("Identificando chart-run");
-							itemBuilder.comChartRun(chartRunStringParser.parse(linha));
+							itemBuilder.comChartRun(chartRunStringParser.parse(linha, quantidadePosicoesParada));
 						}
 
 						if (itemBuilder.isReadyToBuild()) {

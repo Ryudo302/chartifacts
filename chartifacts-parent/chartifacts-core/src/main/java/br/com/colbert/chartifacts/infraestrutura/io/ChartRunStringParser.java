@@ -2,7 +2,6 @@ package br.com.colbert.chartifacts.infraestrutura.io;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,27 +32,38 @@ public class ChartRunStringParser implements Serializable {
 	 *
 	 * @param texto
 	 *            a ser analizado
+	 * @param limiteValorPosicao
+	 *            o valor máximo que uma posição pode ter
 	 * @return a instância de <em>chart-run</em> criada
 	 * @throws NullPointerException
 	 *             caso seja informado <code>null</code>
 	 * @throws IllegalArgumentException
-	 *             caso seja informada uma String vazia
+	 *             caso seja informada uma String vazia ou um limite menor ou igual a zero
+	 * @throws ChartRunInvalidoException
+	 *             caso o texto informado possua posições cujo valor ultrapasse o limite informado
 	 */
-	public ChartRun parse(String texto) {
-		Validate.notBlank(texto);
+	public ChartRun parse(String texto, int limiteValorPosicao) {
+		Validate.notBlank(texto, "texto");
+		Validate.isTrue(limiteValorPosicao > 0, "O limite de valor das posições deve ser superior a zero");
+
 		logger.trace("Analisando: {}", texto);
 		logger.trace("Utilizando configurações: {}", parserConfig);
 
 		List<ElementoChartRun> elementos = new ArrayList<>();
 
-		Stream<String> chartRunString = Stream.of(texto.split(parserConfig.separadorPosicoesChartRun()));
-		chartRunString.forEach(elementoString -> {
+		String[] chartRunString = texto.split(parserConfig.separadorPosicoesChartRun());
+		for (String elementoString : chartRunString) {
 			if (StringUtils.isNumeric(elementoString)) {
-				elementos.add(ElementoChartRun.valueOf(Integer.parseInt(elementoString)));
+				int posicao = Integer.parseInt(elementoString);
+				if (posicao > limiteValorPosicao) {
+					throw new ChartRunInvalidoException(texto, limiteValorPosicao);
+				} else {
+					elementos.add(ElementoChartRun.valueOf(posicao));
+				}
 			} else {
 				elementos.add(ElementoChartRun.AUSENCIA);
 			}
-		});
+		}
 
 		logger.trace("Elementos identificados: {}", elementos);
 		return new ChartRun(elementos);

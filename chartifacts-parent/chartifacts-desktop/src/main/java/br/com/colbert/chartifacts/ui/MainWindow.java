@@ -1,27 +1,28 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.*;
+import java.awt.Font;
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
 import javax.inject.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultFormatterFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.jgoodies.forms.layout.*;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.relatorios.*;
 import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
-import br.com.colbert.chartifacts.infraestrutura.io.*;
 
 /**
  * Janela principal da aplicação.
+ *
+ * TODO Criar Presenter
  *
  * @author Thiago Colbert
  * @since 10/04/2015
@@ -34,29 +35,24 @@ public class MainWindow implements Serializable {
 	private final JFrame frame;
 
 	@Inject
+	private Logger logger;
+
+	@Inject
+	private Instance<GeracaoRelatoriosWorker> geradorRelatorios;
+
+	@Inject
 	private InformacoesAplicacao informacoesAplicacao;
 	@Inject
 	private ArquivoFormatter arquivoFormatter;
-	@Inject
-	private HistoricoParadaFileParser historicoParadaFileParser;
 
 	@Inject
-	private StringParsersConfig parsersConfig;
+	private PadroesArquivoEntradaPanel padroesArquivoPanel;
 	@Inject
-	private RelatoriosConfiguration relatoriosConfig;
-
-	@Inject
-	private RelatoriosFacade relatoriosFacade;
+	private RelatoriosConfigPanel relatoriosConfigPanel;
 
 	private final JFormattedTextField arquivoEntradaField;
 	private final JFormattedTextField arquivoSaidaField;
-
-	private final JTextField nomeArtistaField;
-	private final JTextField separadoresArtistasField;
-	private final JTextField separadorArtistaCancaoField;
-	private final JTextField tituloCancaoField;
-	private final JTextField separadorTitulosAlternativosField;
-	private final JTextField separadorPosicoesChartRunField;
+	private final JSpinner quantidadePosicoesSpinner;
 
 	/**
 	 * Create the window.
@@ -97,14 +93,15 @@ public class MainWindow implements Serializable {
 		JPanel arquivosPanel = new JPanel();
 		arquivosPanel.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
 				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("20px"), FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LINE_GAP_ROWSPEC, }));
+				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.LINE_GAP_ROWSPEC, }));
 
 		frame.getContentPane().add(arquivosPanel, "2, 2, 7, 1, fill, default");
 
-		JLabel arquivoEntradaLabel = new JLabel("Arquivo:");
+		JLabel arquivoEntradaLabel = new JLabel("Arquivo de Entrada:");
 		arquivoEntradaLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		arquivosPanel.add(arquivoEntradaLabel, "2, 2, left, center");
+		arquivosPanel.add(arquivoEntradaLabel, "2, 2, right, center");
 
 		arquivoEntradaField = new JFormattedTextField();
 		arquivosPanel.add(arquivoEntradaField, "4, 2");
@@ -124,7 +121,7 @@ public class MainWindow implements Serializable {
 			}
 		});
 
-		JLabel arquivoSaidaLabel = new JLabel("Arquivo:");
+		JLabel arquivoSaidaLabel = new JLabel("Arquivo de Saída:");
 		arquivoSaidaLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		arquivosPanel.add(arquivoSaidaLabel, "2, 4, right, default");
 
@@ -135,6 +132,14 @@ public class MainWindow implements Serializable {
 		JButton escolherArquivoSaidaButton = new JButton("Procurar...");
 		escolherArquivoSaidaButton.setToolTipText("Selecionar o arquivo de saída");
 		arquivosPanel.add(escolherArquivoSaidaButton, "6, 4");
+
+		JLabel quantidadePosicoesLabel = new JLabel("Quantidade de Posições:");
+		arquivosPanel.add(quantidadePosicoesLabel, "2, 6, right, default");
+
+		quantidadePosicoesSpinner = new JSpinner();
+		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
+		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(2), null, new Integer(1)));
+		arquivosPanel.add(quantidadePosicoesSpinner, "4, 6");
 		escolherArquivoSaidaButton.addActionListener(event -> {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
@@ -146,115 +151,6 @@ public class MainWindow implements Serializable {
 			}
 		});
 
-		JPanel padroesArquivoPanel = new JPanel();
-		padroesArquivoPanel.setBorder(new TitledBorder(null, "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		frame.getContentPane().add(padroesArquivoPanel, "2, 4, 7, 1, fill, fill");
-
-		JPanel padroesArquivoPanelToggle = new JPanel();
-		JPanel padroesArquivoPanelContent = new JPanel();
-		padroesArquivoPanel.setLayout(new BoxLayout(padroesArquivoPanel, BoxLayout.Y_AXIS));
-
-		FlowLayout flowLayout = (FlowLayout) padroesArquivoPanelToggle.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		padroesArquivoPanel.add(padroesArquivoPanelToggle);
-
-		JToggleButton togglePadroesArquivoButton = new JToggleButton("Ocultar");
-		togglePadroesArquivoButton.addActionListener(event -> {
-			togglePadroesArquivoButton.setText(togglePadroesArquivoButton.isSelected() ? "Ocultar" : "Mostrar");
-			padroesArquivoPanelContent.setVisible(togglePadroesArquivoButton.isSelected());
-		});
-		togglePadroesArquivoButton.setSelected(true);
-		padroesArquivoPanelToggle.add(togglePadroesArquivoButton);
-
-		padroesArquivoPanelContent.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
-		padroesArquivoPanel.add(padroesArquivoPanelContent);
-
-		JLabel nomeArtistaLabel = new JLabel("Nome de Artista:");
-		padroesArquivoPanelContent.add(nomeArtistaLabel, "2, 2, right, default");
-
-		nomeArtistaField = new JTextField();
-		nomeArtistaField.setEditable(false);
-		nomeArtistaField.setToolTipText("Regex utilizada para identificar os nomes dos artistas");
-		padroesArquivoPanelContent.add(nomeArtistaField, "4, 2, fill, default");
-		nomeArtistaField.setColumns(10);
-
-		JLabel separadoresArtistasLabel = new JLabel("Separadores de Artistas:");
-		padroesArquivoPanelContent.add(separadoresArtistasLabel, "2, 4, right, default");
-
-		separadoresArtistasField = new JTextField();
-		separadoresArtistasField.setEditable(false);
-		separadoresArtistasField.setToolTipText("Regex utilizada para identificar segmentos de texto que separem um artista do outro");
-		separadoresArtistasField.setColumns(10);
-		padroesArquivoPanelContent.add(separadoresArtistasField, "4, 4, fill, default");
-
-		JLabel separadorArtistaCancaoLabel = new JLabel("Separador Artista/Canção:");
-		padroesArquivoPanelContent.add(separadorArtistaCancaoLabel, "2, 6, right, default");
-
-		separadorArtistaCancaoField = new JTextField();
-		separadorArtistaCancaoField.setEditable(false);
-		separadorArtistaCancaoField
-				.setToolTipText("Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção");
-		separadorArtistaCancaoField.setColumns(10);
-		padroesArquivoPanelContent.add(separadorArtistaCancaoField, "4, 6, fill, default");
-
-		JLabel tituloCancaoLabel = new JLabel("Título de Canção:");
-		padroesArquivoPanelContent.add(tituloCancaoLabel, "2, 8, right, default");
-
-		tituloCancaoField = new JTextField();
-		tituloCancaoField.setEditable(false);
-		tituloCancaoField.setToolTipText("Regex utilizada para identificar o título da canção");
-		tituloCancaoField.setColumns(10);
-		padroesArquivoPanelContent.add(tituloCancaoField, "4, 8, fill, default");
-
-		JLabel separadorTitulosAlternativosLabel = new JLabel("Separador de Títulos Alternativos:");
-		padroesArquivoPanelContent.add(separadorTitulosAlternativosLabel, "2, 10, right, default");
-
-		separadorTitulosAlternativosField = new JTextField();
-		separadorTitulosAlternativosField.setEditable(false);
-		separadorTitulosAlternativosField.setToolTipText("Regex utilizada para identificar títulos alternativos da canção");
-		separadorTitulosAlternativosField.setColumns(10);
-		padroesArquivoPanelContent.add(separadorTitulosAlternativosField, "4, 10, fill, default");
-
-		JLabel separadorPosicoesChartRunLabel = new JLabel("Separador de Posições de Chart-run:");
-		padroesArquivoPanelContent.add(separadorPosicoesChartRunLabel, "2, 12, right, default");
-
-		separadorPosicoesChartRunField = new JTextField();
-		separadorPosicoesChartRunField.setEditable(false);
-		separadorPosicoesChartRunField.setToolTipText("Expressão utilizada para separar as posições dos chart-runs");
-		separadorPosicoesChartRunField.setColumns(10);
-		padroesArquivoPanelContent.add(separadorPosicoesChartRunField, "4, 12, fill, default");
-
-		JPanel relatoriosPanel = new JPanel();
-		relatoriosPanel.setBorder(new TitledBorder(null, "Relat\u00F3rios", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		frame.getContentPane().add(relatoriosPanel, "2, 6, 7, 1, fill, fill");
-
-		JPanel relatoriosPanelToggle = new JPanel();
-		FlowLayout flowLayout_1 = (FlowLayout) relatoriosPanelToggle.getLayout();
-		flowLayout_1.setAlignment(FlowLayout.LEFT);
-		JPanel relatoriosPanelContent = new JPanel();
-		relatoriosPanel.setLayout(new BoxLayout(relatoriosPanel, BoxLayout.Y_AXIS));
-
-		relatoriosPanel.add(relatoriosPanelToggle);
-
-		JToggleButton toggleRelatoriosButton = new JToggleButton("Ocultar");
-		toggleRelatoriosButton.addActionListener(event -> {
-			toggleRelatoriosButton.setText(toggleRelatoriosButton.isSelected() ? "Ocultar" : "Mostrar");
-			relatoriosPanelContent.setVisible(toggleRelatoriosButton.isSelected());
-		});
-		toggleRelatoriosButton.setSelected(true);
-		relatoriosPanelToggle.add(toggleRelatoriosButton);
-
-		relatoriosPanelContent.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
-		relatoriosPanel.add(relatoriosPanelContent);
-
 		JPanel botoesPanel = new JPanel();
 		frame.getContentPane().add(botoesPanel, "2, 8, 7, 1, fill, fill");
 
@@ -263,6 +159,13 @@ public class MainWindow implements Serializable {
 			gerarRelatorios();
 		});
 		botoesPanel.add(executarButton);
+	}
+
+	@PostConstruct
+	protected void init() {
+		frame.getContentPane().add(padroesArquivoPanel, "2, 4, 7, 1, fill, fill");
+		frame.getContentPane().add(relatoriosConfigPanel, "2, 6, 7, 1, fill, fill");
+		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
 
 		frame.pack();
 	}
@@ -278,28 +181,20 @@ public class MainWindow implements Serializable {
 			JOptionPane.showMessageDialog(MainWindow.this.frame, "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
 		} else {
 			try {
-				HistoricoParada historicoParada = historicoParadaFileParser.parse(arquivoEntrada, 20);
-
-				Path arquivoRelatorios = Files.write(arquivoSaida.toPath(), relatoriosFacade.exportarTodosEmTxt(historicoParada).getBytes());
+				GeracaoRelatoriosWorker worker = geradorRelatorios.get();
+				worker.setArquivoEntrada(arquivoEntrada);
+				worker.setArquivoSaida(arquivoSaida);
+				worker.setQuantidadePosicoes((int) quantidadePosicoesSpinner.getValue());
+				worker.execute();
+				Path arquivoRelatorios = worker.get();
 				JOptionPane.showMessageDialog(MainWindow.this.frame, "Relatórios gerados com sucesso:\n\n" + arquivoRelatorios, "Sucesso",
 						JOptionPane.INFORMATION_MESSAGE);
-			} catch (ParserException exception) {
-				JOptionPane.showMessageDialog(MainWindow.this.frame, "Erro ao analizar arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
-			} catch (IOException exception) {
-				JOptionPane.showMessageDialog(MainWindow.this.frame, "Erro ao gravar arquivo de relatórios", "Erro", JOptionPane.ERROR_MESSAGE);
+			} catch (InterruptedException | ExecutionException exception) {
+				logger.error("Erro ao gravar arquivo de relatórios", exception);
+				JOptionPane.showMessageDialog(MainWindow.this.frame,
+						"Erro ao gravar arquivo de relatórios" + ":\n\n" + exception.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 			}
 		}
-	}
-
-	@PostConstruct
-	protected void init() {
-		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
-		nomeArtistaField.setText(parsersConfig.nomeArtistaPattern().pattern());
-		separadoresArtistasField.setText(parsersConfig.separadoresArtistasPattern().pattern());
-		separadorArtistaCancaoField.setText(parsersConfig.separadorArtistaCancaoPattern().pattern());
-		tituloCancaoField.setText(parsersConfig.tituloCancaoPattern().pattern());
-		separadorTitulosAlternativosField.setText(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
-		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
 	}
 
 	/**
@@ -315,5 +210,9 @@ public class MainWindow implements Serializable {
 
 	public void close() {
 		frame.setVisible(false);
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 }
