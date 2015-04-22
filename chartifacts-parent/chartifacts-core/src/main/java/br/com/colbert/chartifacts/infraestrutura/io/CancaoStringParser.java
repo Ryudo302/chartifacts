@@ -64,4 +64,8 @@ public class CancaoStringParser implements Serializable {
 
 		return parserConfig.titulosAlternativosCancaoSeparadorPattern().split(matcher.group(1));
 	}
+
+	public StringParsersConfig getParserConfig() {
+		return parserConfig;
+	}
 }

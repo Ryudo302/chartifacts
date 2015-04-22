@@ -1,23 +1,20 @@
 package br.com.colbert.chartifacts.ui;
 
 import java.awt.Font;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.file.Path;
-import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
 import javax.inject.*;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultFormatterFactory;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
+import org.mvp4j.annotation.*;
+import org.mvp4j.annotation.Action;
 
 import com.jgoodies.forms.layout.*;
 
-import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
+import br.com.colbert.chartifacts.aplicacao.MainPresenter;
 
 /**
  * Janela principal da aplicação.
@@ -28,6 +25,7 @@ import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
  * @since 10/04/2015
  */
 @Singleton
+@MVP(modelClass = Void.class, presenterClass = MainPresenter.class)
 public class MainWindow implements Serializable {
 
 	private static final long serialVersionUID = 1998102092578023349L;
@@ -35,24 +33,24 @@ public class MainWindow implements Serializable {
 	private final JFrame frame;
 
 	@Inject
-	private Logger logger;
-
-	@Inject
-	private Instance<GeracaoRelatoriosWorker> geradorRelatorios;
-
-	@Inject
-	private InformacoesAplicacao informacoesAplicacao;
-	@Inject
-	private ArquivoFormatter arquivoFormatter;
-
-	@Inject
 	private PadroesArquivoEntradaPanel padroesArquivoPanel;
 	@Inject
 	private RelatoriosConfigPanel relatoriosConfigPanel;
+	@Inject
+	private ArquivoFormatter arquivoFormatter;
 
 	private final JFormattedTextField arquivoEntradaField;
 	private final JFormattedTextField arquivoSaidaField;
 	private final JSpinner quantidadePosicoesSpinner;
+
+	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "sobre")
+	private final JMenuItem menuItemSobre;
+	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "gerarRelatorios")
+	private final JButton executarButton;
+	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "escolherArquivoEntrada")
+	private final JButton escolherArquivoEntradaButton;
+	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "escolherArquivoSaida")
+	private final JButton escolherArquivoSaidaButton;
 
 	/**
 	 * Create the window.
@@ -60,7 +58,7 @@ public class MainWindow implements Serializable {
 	public MainWindow() {
 		frame = new JFrame("Chartifacts");
 		frame.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 12));
-		frame.setBounds(100, 100, 510, 483);
+		frame.setBounds(100, 100, 510, 229);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -76,12 +74,7 @@ public class MainWindow implements Serializable {
 		JMenu menuAjuda = new JMenu("Ajuda");
 		menuBar.add(menuAjuda);
 
-		JMenuItem menuItemSobre = new JMenuItem("Sobre");
-		menuItemSobre.addActionListener(event -> {
-			JOptionPane.showMessageDialog(frame, "Chartifacts" + "\n\n" + "Versão: " + informacoesAplicacao.getVersao() + StringUtils.LF + "Build: "
-					+ informacoesAplicacao.getNumeroBuild() + StringUtils.LF + "Desenvolvido por: " + informacoesAplicacao.getAutor(),
-					"Sobre Chartifacts", JOptionPane.INFORMATION_MESSAGE);
-		});
+		menuItemSobre = new JMenuItem("Sobre");
 		menuAjuda.add(menuItemSobre);
 		frame.getContentPane().setLayout(
 				new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
@@ -100,64 +93,44 @@ public class MainWindow implements Serializable {
 		frame.getContentPane().add(arquivosPanel, "2, 2, 7, 1, fill, default");
 
 		JLabel arquivoEntradaLabel = new JLabel("Arquivo de Entrada:");
-		arquivoEntradaLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		arquivoEntradaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		arquivosPanel.add(arquivoEntradaLabel, "2, 2, right, center");
 
 		arquivoEntradaField = new JFormattedTextField();
+		arquivoEntradaField.setColumns(50);
 		arquivosPanel.add(arquivoEntradaField, "4, 2");
 		arquivoEntradaField.setEditable(false);
 
-		JButton escolherArquivoEntradaButton = new JButton("Procurar...");
+		escolherArquivoEntradaButton = new JButton("Procurar...");
 		arquivosPanel.add(escolherArquivoEntradaButton, "6, 2");
 		escolherArquivoEntradaButton.setToolTipText("Selecionar o arquivo de histórico");
-		escolherArquivoEntradaButton.addActionListener(event -> {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
-			fileChooser.setMultiSelectionEnabled(false);
-			int opcao = fileChooser.showOpenDialog(frame);
-			if (opcao == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				arquivoEntradaField.setValue(file);
-			}
-		});
 
 		JLabel arquivoSaidaLabel = new JLabel("Arquivo de Saída:");
-		arquivoSaidaLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		arquivoSaidaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		arquivosPanel.add(arquivoSaidaLabel, "2, 4, right, default");
 
 		arquivoSaidaField = new JFormattedTextField();
+		arquivoSaidaField.setColumns(50);
 		arquivoSaidaField.setEditable(false);
 		arquivosPanel.add(arquivoSaidaField, "4, 4, fill, default");
 
-		JButton escolherArquivoSaidaButton = new JButton("Procurar...");
+		escolherArquivoSaidaButton = new JButton("Procurar...");
 		escolherArquivoSaidaButton.setToolTipText("Selecionar o arquivo de saída");
 		arquivosPanel.add(escolherArquivoSaidaButton, "6, 4");
 
 		JLabel quantidadePosicoesLabel = new JLabel("Quantidade de Posições:");
+		quantidadePosicoesLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		arquivosPanel.add(quantidadePosicoesLabel, "2, 6, right, default");
 
 		quantidadePosicoesSpinner = new JSpinner();
 		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
 		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(2), null, new Integer(1)));
 		arquivosPanel.add(quantidadePosicoesSpinner, "4, 6");
-		escolherArquivoSaidaButton.addActionListener(event -> {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
-			fileChooser.setMultiSelectionEnabled(false);
-			int opcao = fileChooser.showSaveDialog(frame);
-			if (opcao == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				arquivoSaidaField.setValue(file);
-			}
-		});
 
 		JPanel botoesPanel = new JPanel();
 		frame.getContentPane().add(botoesPanel, "2, 8, 7, 1, fill, fill");
 
-		JButton executarButton = new JButton("Executar");
-		executarButton.addActionListener(event -> {
-			gerarRelatorios();
-		});
+		executarButton = new JButton("Executar");
 		botoesPanel.add(executarButton);
 	}
 
@@ -168,33 +141,6 @@ public class MainWindow implements Serializable {
 		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
 
 		frame.pack();
-	}
-
-	private void gerarRelatorios() {
-		File arquivoEntrada = (File) arquivoEntradaField.getValue();
-		File arquivoSaida = (File) arquivoSaidaField.getValue();
-
-		if (arquivoEntrada == null) {
-			JOptionPane.showMessageDialog(MainWindow.this.frame, "Informe o arquivo a ser analizado!", "Informar arquivo",
-					JOptionPane.WARNING_MESSAGE);
-		} else if (arquivoSaida == null) {
-			JOptionPane.showMessageDialog(MainWindow.this.frame, "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
-		} else {
-			try {
-				GeracaoRelatoriosWorker worker = geradorRelatorios.get();
-				worker.setArquivoEntrada(arquivoEntrada);
-				worker.setArquivoSaida(arquivoSaida);
-				worker.setQuantidadePosicoes((int) quantidadePosicoesSpinner.getValue());
-				worker.execute();
-				Path arquivoRelatorios = worker.get();
-				JOptionPane.showMessageDialog(MainWindow.this.frame, "Relatórios gerados com sucesso:\n\n" + arquivoRelatorios, "Sucesso",
-						JOptionPane.INFORMATION_MESSAGE);
-			} catch (InterruptedException | ExecutionException exception) {
-				logger.error("Erro ao gravar arquivo de relatórios", exception);
-				JOptionPane.showMessageDialog(MainWindow.this.frame,
-						"Erro ao gravar arquivo de relatórios" + ":\n\n" + exception.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-			}
-		}
 	}
 
 	/**
@@ -214,5 +160,25 @@ public class MainWindow implements Serializable {
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	public File getArquivoEntrada() {
+		return (File) arquivoEntradaField.getValue();
+	}
+
+	public void setArquivoEntrada(File arquivo) {
+		arquivoEntradaField.setValue(arquivo);
+	}
+
+	public File getArquivoSaida() {
+		return (File) arquivoSaidaField.getValue();
+	}
+
+	public void setArquivoSaida(File arquivo) {
+		arquivoSaidaField.setValue(arquivo);
+	}
+
+	public int getQuantidadePosicoes() {
+		return (int) quantidadePosicoesSpinner.getValue();
 	}
 }

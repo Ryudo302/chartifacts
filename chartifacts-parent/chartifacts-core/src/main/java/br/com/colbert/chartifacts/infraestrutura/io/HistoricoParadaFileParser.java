@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -76,7 +77,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 							itemBuilder.clear();
 						}
 					});
-		} catch (IOException exception) {
+		} catch (IOException | UncheckedIOException exception) {
 			throw new ParserException("Erro ao ler arquivo: " + arquivo, exception);
 		}
 
@@ -85,8 +86,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	}
 
 	private boolean isLinhaArtistaCancaoPeriodo(String linha) {
-		// TODO
-		return linha.contains("\"");
+		return cancaoStringParser.getParserConfig().separadorArtistaCancaoPattern().matcher(linha).find();
 	}
 
 	private boolean isLinhaChartRun(String linha) {

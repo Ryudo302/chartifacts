@@ -2,6 +2,7 @@ package br.com.colbert.chartifacts.ui;
 
 import java.io.File;
 import java.nio.file.*;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.swing.SwingWorker;
@@ -58,6 +59,16 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 		}
 		if (errosBuilder.length() > 0) {
 			throw new IllegalStateException(errosBuilder.toString());
+		}
+	}
+
+	@Override
+	protected void done() {
+		try {
+			get();
+		} catch (InterruptedException | ExecutionException exception) {
+			logger.error("Erro ao gerar relatórios.", exception);
+			fireError(exception);
 		}
 	}
 
