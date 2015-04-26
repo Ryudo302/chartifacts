@@ -1,5 +1,7 @@
 package br.com.colbert.chartifacts.dominio.chart;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
 import br.com.colbert.base.dominio.AbstractEntidade;
 import br.com.colbert.chartifacts.dominio.chartrun.PermanenciaPosicao;
 
@@ -9,7 +11,7 @@ import br.com.colbert.chartifacts.dominio.chartrun.PermanenciaPosicao;
  * @author Thiago Colbert
  * @since 11/03/2015
  */
-public class Estatisticas extends AbstractEntidade {
+public class Estatisticas extends AbstractEntidade implements Comparable<Estatisticas> {
 
 	private static final long serialVersionUID = 8944862495237851542L;
 
@@ -43,5 +45,11 @@ public class Estatisticas extends AbstractEntidade {
 
 	public PermanenciaPosicao getMelhorPosicao() {
 		return melhorPosicao;
+	}
+
+	@Override
+	public int compareTo(Estatisticas other) {
+		return new CompareToBuilder().append(pontuacao, other.pontuacao).append(melhorPosicao, other.melhorPosicao)
+				.append(permanenciaTotal, other.permanenciaTotal).toComparison();
 	}
 }

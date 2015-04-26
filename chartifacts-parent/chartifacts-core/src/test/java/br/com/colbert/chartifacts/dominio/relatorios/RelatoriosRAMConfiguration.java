@@ -18,8 +18,8 @@ import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerato
 public class RelatoriosRAMConfiguration implements RelatoriosConfiguration {
 
 	@Override
-	public int limiteTamanho() {
-		return 0;
+	public Optional<Integer> limiteTamanho() {
+		return Optional.empty();
 	}
 
 	@Override

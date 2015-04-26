@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.dominio.relatorios;
 
-import java.util.Collection;
+import java.util.*;
 
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerator;
@@ -18,7 +18,7 @@ public interface RelatoriosConfiguration {
 	 *
 	 * @return o limite de tamanho
 	 */
-	int limiteTamanho();
+	Optional<Integer> limiteTamanho();
 
 	/**
 	 * Define a largura da primeira coluna dos relatórios exportados.

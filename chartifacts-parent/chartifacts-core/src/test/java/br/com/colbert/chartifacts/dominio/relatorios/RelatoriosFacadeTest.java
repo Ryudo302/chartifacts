@@ -10,7 +10,7 @@ import org.jglue.cdiunit.ActivatedAlternatives;
 import org.junit.Test;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerator;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 
 /**
  * Testes da {@link RelatoriosFacade}.
@@ -32,12 +32,21 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 	public void testExportarTodosEmTxt() throws ParserException {
 		HistoricoParada historicoParada = parseHistoricoParada();
 
-		String relatoriosText = relatoriosFacade.exportarTodosEmTxt(historicoParada);
+		String relatoriosText = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada);
 
 		relatorioGenerators.forEach(generator -> {
 			String nomeRelatorio = generator.getClass().getSimpleName();
 			assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText,
 					containsString(nomeRelatorio));
 		});
+	}
+
+	@Test
+	public void testExportarAllTimeChart() throws ParserException {
+		HistoricoParada historicoParada = parseHistoricoParada();
+
+		String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada);
+
+		assertThat(allTimeChart, containsString(AllTimeChart.class.getSimpleName()));
 	}
 }

@@ -26,8 +26,8 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 	private Logger logger;
 
 	@Override
-	public int limiteTamanho() {
-		return Integer.valueOf(getString("relatorios.limiteTamanho"));
+	public Optional<Integer> limiteTamanho() {
+		return Optional.ofNullable(Integer.valueOf(getString("relatorios.limiteTamanho")));
 	}
 
 	@Override

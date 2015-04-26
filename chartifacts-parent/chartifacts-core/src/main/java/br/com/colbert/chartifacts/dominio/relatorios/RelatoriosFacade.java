@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.export.ToFormatedStringConverter;
@@ -58,6 +58,9 @@ public class RelatoriosFacade implements Serializable {
 	private CancoesComMaisTempoEmTop cancoesComMaisTempoEmTop;
 
 	@Inject
+	private AllTimeChart allTimeChart;
+
+	@Inject
 	private CancaoFormatter cancaoFormatter;
 
 	@Inject
@@ -66,10 +69,25 @@ public class RelatoriosFacade implements Serializable {
 	@PostConstruct
 	protected void config() {
 		relatorioTextExporter.setLarguraPrimeiraColuna(config.larguraPrimeiraColuna());
-		relatorioGenerators.forEach(relatorioGenerator -> relatorioGenerator.setLimiteTamanho(config.limiteTamanho()));
+		Optional<Integer> limiteTamanho = config.limiteTamanho();
+		limiteTamanho.ifPresent(limite -> relatorioGenerators.forEach(relatorioGenerator -> relatorioGenerator.setLimiteTamanho(limite)));
 	}
 
-	public String exportarTodosEmTxt(HistoricoParada historicoParada) {
+	public String exportarAllTimeChartEmTxt(HistoricoParada historicoParada) {
+		StringBuilder allTimeChartBuilder = new StringBuilder();
+
+		allTimeChartBuilder.append(criarRelatorioTextBuilder(allTimeChart));
+		Optional<Relatorio<ItemHistoricoParada, Integer>> relatorioAllTimeChart = allTimeChart.gerar(historicoParada);
+		relatorioAllTimeChart.ifPresent(relatorio -> allTimeChartBuilder.append(relatorioTextExporter.export(relatorio, (itemHistorico) -> {
+			Estatisticas estatisticas = itemHistorico.getEstatisticas();
+			return new StringBuilder().append(cancaoFormatter.format(itemHistorico.getCancao())).append("\t\t\t").append(estatisticas.getPontuacao())
+					.append("\t").append(estatisticas.getMelhorPosicao()).append("\t").append(estatisticas.getPermanenciaTotal()).toString();
+		}, null)));
+
+		return allTimeChartBuilder.toString();
+	}
+
+	public String exportarTodosRelatoriosEmTxt(HistoricoParada historicoParada) {
 		StringBuilder relatoriosTextBuilder = new StringBuilder();
 		relatoriosTextBuilder.append(exportarArtistasComMaisEstreias(historicoParada));
 		separador(relatoriosTextBuilder);

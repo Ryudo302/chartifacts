@@ -43,7 +43,7 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 		logger.debug("Analizando arquivo e processando histórico da parada");
 		HistoricoParada historicoParada = historicoParadaFileParser.parse(arquivoEntrada, quantidadePosicoes);
 		logger.debug("Gerando relatórios e gravando em arquivo");
-		return Files.write(arquivoSaida.toPath(), relatoriosFacade.exportarTodosEmTxt(historicoParada).getBytes());
+		return Files.write(arquivoSaida.toPath(), relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada).getBytes());
 	}
 
 	private void validarEstado() {
