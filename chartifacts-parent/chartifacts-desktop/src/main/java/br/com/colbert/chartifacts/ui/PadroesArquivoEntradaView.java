@@ -1,6 +1,7 @@
 package br.com.colbert.chartifacts.ui;
 
 import java.awt.FlowLayout;
+import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -18,9 +19,11 @@ import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
  * @since 20/04/2015
  */
 @Singleton
-public class PadroesArquivoEntradaPanel extends JPanel {
+public class PadroesArquivoEntradaView implements Serializable {
 
 	private static final long serialVersionUID = -154918168549652861L;
+
+	private final JPanel conteudoPanel;
 
 	private final JTextField nomeArtistaField;
 	private final JTextField separadoresArtistasField;
@@ -33,18 +36,19 @@ public class PadroesArquivoEntradaPanel extends JPanel {
 	private StringParsersConfig parsersConfig;
 
 	/**
-	 * Create the panel.
+	 * Create the conteudoPanel.
 	 */
-	public PadroesArquivoEntradaPanel() {
-		setBorder(new TitledBorder(null, "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	public PadroesArquivoEntradaView() {
+		conteudoPanel = new JPanel();
+		conteudoPanel.setBorder(new TitledBorder(null, "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		JPanel togglePanel = new JPanel();
 		JPanel contentPanel = new JPanel();
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		conteudoPanel.setLayout(new BoxLayout(conteudoPanel, BoxLayout.Y_AXIS));
 
 		FlowLayout flowLayout = (FlowLayout) togglePanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		this.add(togglePanel);
+		conteudoPanel.add(togglePanel);
 
 		JToggleButton togglePadroesArquivoButton = new JToggleButton("Ocultar");
 		togglePadroesArquivoButton.addActionListener(event -> {
@@ -59,7 +63,7 @@ public class PadroesArquivoEntradaPanel extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
-		this.add(contentPanel);
+		conteudoPanel.add(contentPanel);
 
 		JLabel nomeArtistaLabel = new JLabel("Nome de Artista:");
 		contentPanel.add(nomeArtistaLabel, "2, 2, right, default");
@@ -125,5 +129,13 @@ public class PadroesArquivoEntradaPanel extends JPanel {
 		tituloCancaoField.setText(parsersConfig.tituloCancaoPattern().pattern());
 		separadorTitulosAlternativosField.setText(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
 		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
+	}
+
+	public static void main(String[] args) {
+		new PadroesArquivoEntradaView();
+	}
+
+	public JPanel getPanel() {
+		return conteudoPanel;
 	}
 }

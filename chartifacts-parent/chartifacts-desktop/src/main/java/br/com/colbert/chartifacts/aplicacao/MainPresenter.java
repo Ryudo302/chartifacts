@@ -1,20 +1,17 @@
 package br.com.colbert.chartifacts.aplicacao;
 
-import java.io.*;
+import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mvp4j.AppController;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.infraestrutura.aplicacao.InformacoesAplicacao;
-import br.com.colbert.chartifacts.infraestrutura.swing.WorkerDoneListener;
-import br.com.colbert.chartifacts.ui.*;
+import br.com.colbert.chartifacts.ui.MainWindow;
 
 /**
  * <em>Presenter</em> da tela principal da aplicação.
@@ -30,8 +27,6 @@ public class MainPresenter implements Serializable {
 	private MainWindow mainWindow;
 
 	@Inject
-	private Instance<GeracaoRelatoriosWorker> geradorRelatorios;
-	@Inject
 	private InformacoesAplicacao informacoesAplicacao;
 
 	@Inject
@@ -46,64 +41,6 @@ public class MainPresenter implements Serializable {
 
 	public void start() {
 		mainWindow.show();
-	}
-
-	public void escolherArquivoEntrada() {
-		JFileChooser fileChooser = criarFileChooser();
-		int opcao = fileChooser.showOpenDialog(mainWindow.getFrame());
-		if (opcao == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			mainWindow.setArquivoEntrada(file);
-		}
-	}
-
-	public void escolherArquivoSaida() {
-		JFileChooser fileChooser = criarFileChooser();
-		int opcao = fileChooser.showSaveDialog(mainWindow.getFrame());
-		if (opcao == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			mainWindow.setArquivoSaida(file);
-		}
-	}
-
-	private JFileChooser criarFileChooser() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
-		fileChooser.setMultiSelectionEnabled(false);
-		return fileChooser;
-	}
-
-	public void gerarRelatorios() {
-		File arquivoEntrada = mainWindow.getArquivoEntrada();
-		File arquivoSaida = mainWindow.getArquivoSaida();
-
-		if (arquivoEntrada == null) {
-			JOptionPane.showMessageDialog(mainWindow.getFrame(), "Informe o arquivo a ser analizado!", "Informar arquivo",
-					JOptionPane.WARNING_MESSAGE);
-		} else if (arquivoSaida == null) {
-			JOptionPane.showMessageDialog(mainWindow.getFrame(), "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
-		} else {
-			GeracaoRelatoriosWorker worker = geradorRelatorios.get();
-			worker.setArquivoEntrada(arquivoEntrada);
-			worker.setArquivoSaida(arquivoSaida);
-			worker.setQuantidadePosicoes(mainWindow.getQuantidadePosicoes());
-
-			worker.addWorkerDoneListener(new WorkerDoneListener() {
-				@Override
-				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainWindow.getFrame(), "Relatórios gerados com sucesso" + ":\n\n"
-							+ arquivoSaida, "Sucesso", JOptionPane.INFORMATION_MESSAGE));
-				}
-
-				@Override
-				public void doneWithError(SwingWorker<?, ?> worker, Throwable error) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainWindow.getFrame(), "Erro ao gravar arquivo de relatórios"
-							+ ":\n\n" + error.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE));
-				}
-			});
-
-			worker.execute();
-		}
 	}
 
 	public void sobre() {

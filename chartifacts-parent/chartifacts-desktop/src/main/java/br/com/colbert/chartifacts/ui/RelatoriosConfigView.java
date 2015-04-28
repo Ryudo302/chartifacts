@@ -1,6 +1,7 @@
 package br.com.colbert.chartifacts.ui;
 
 import java.awt.FlowLayout;
+import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -18,28 +19,31 @@ import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
  * @since 20/04/2015
  */
 @Singleton
-public class RelatoriosConfigPanel extends JPanel {
+public class RelatoriosConfigView implements Serializable {
 
 	private static final long serialVersionUID = -7418030376508842522L;
 
 	@Inject
 	private RelatoriosConfiguration relatoriosConfiguration;
 
+	private final JPanel conteudoPanel;
+
 	private final JSpinner limiteSpinner;
 
 	/**
 	 * Create the panel.
 	 */
-	public RelatoriosConfigPanel() {
-		setBorder(new TitledBorder(null, "Relat\u00F3rios", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	public RelatoriosConfigView() {
+		conteudoPanel = new JPanel();
+		conteudoPanel.setBorder(new TitledBorder(null, "Relat\u00F3rios", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		JPanel togglePanel = new JPanel();
 		FlowLayout layout = (FlowLayout) togglePanel.getLayout();
 		layout.setAlignment(FlowLayout.LEFT);
 		JPanel contentPanel = new JPanel();
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		conteudoPanel.setLayout(new BoxLayout(conteudoPanel, BoxLayout.Y_AXIS));
 
-		this.add(togglePanel);
+		conteudoPanel.add(togglePanel);
 
 		JToggleButton toggleRelatoriosButton = new JToggleButton("Ocultar");
 		toggleRelatoriosButton.addActionListener(event -> {
@@ -54,7 +58,7 @@ public class RelatoriosConfigPanel extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
-		this.add(contentPanel);
+		conteudoPanel.add(contentPanel);
 
 		JLabel limiteLabel = new JLabel("Limite por Relatório:");
 		contentPanel.add(limiteLabel, "2, 2, right, default");
@@ -68,6 +72,14 @@ public class RelatoriosConfigPanel extends JPanel {
 
 	@PostConstruct
 	protected void init() {
-		limiteSpinner.setValue(relatoriosConfiguration.limiteTamanho());
+		relatoriosConfiguration.limiteTamanho().ifPresent(limite -> limiteSpinner.setValue(limite));
+	}
+
+	public static void main(String[] args) {
+		new RelatoriosConfigView();
+	}
+
+	public JPanel getPanel() {
+		return conteudoPanel;
 	}
 }
