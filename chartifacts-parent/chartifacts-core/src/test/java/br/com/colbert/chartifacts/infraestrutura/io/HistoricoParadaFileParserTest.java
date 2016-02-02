@@ -51,7 +51,7 @@ public class HistoricoParadaFileParserTest extends AbstractTestCase {
 		logger.info("Histórico: {}", historicoParada);
 
 		assertThat(historicoParada, is(notNullValue(HistoricoParada.class)));
-		assertThat(historicoParada.size(), is(equalTo(6)));
+		assertThat(historicoParada.size(), is(equalTo(5)));
 	}
 
 	@Test

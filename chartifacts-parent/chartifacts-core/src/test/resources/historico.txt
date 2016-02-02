@@ -12,6 +12,3 @@ TESTE - "!@#$%sf56" (04/03/2007 ~ 15/07/2007)
 
 TESTE + TESTE2 feat. TESTE3 - "TESTE 4" / "TESTE 5" (28/08/2011 ~ 18/09/2011)
 1 1 2
-
-TESTE part. TESTE2 - "Teste3" (28/08/2011 ~ 18/09/2011)
-1 2 3

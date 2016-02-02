@@ -35,9 +35,10 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 		String relatoriosText = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada);
 
 		relatorioGenerators.forEach(generator -> {
-			String nomeRelatorio = generator.getClass().getSimpleName();
-			assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText,
-					containsString(nomeRelatorio));
+			if (!(generator instanceof AllTimeChart)) {
+				String nomeRelatorio = generator.getClass().getSimpleName();
+				assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText, containsString(nomeRelatorio));
+			}
 		});
 	}
 
