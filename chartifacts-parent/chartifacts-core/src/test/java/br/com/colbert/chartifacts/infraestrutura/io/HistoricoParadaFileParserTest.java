@@ -1,6 +1,8 @@
 package br.com.colbert.chartifacts.infraestrutura.io;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -11,6 +13,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
@@ -25,6 +28,9 @@ import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 public class HistoricoParadaFileParserTest extends AbstractTestCase {
 
 	private static final int QUANTIDADE_POSICOES_PARADA = 20;
+
+	@Inject
+	private Logger logger;
 
 	@Inject
 	private HistoricoParadaFileParser parser;
@@ -42,10 +48,10 @@ public class HistoricoParadaFileParserTest extends AbstractTestCase {
 	@Test
 	public void testParse() throws ParserException {
 		HistoricoParada historicoParada = parser.parse(loadRecurso("historico.txt"), QUANTIDADE_POSICOES_PARADA);
-		System.out.println(historicoParada);
+		logger.info("Histórico: {}", historicoParada);
 
 		assertThat(historicoParada, is(notNullValue(HistoricoParada.class)));
-		assertThat(historicoParada.size(), is(equalTo(5)));
+		assertThat(historicoParada.size(), is(equalTo(6)));
 	}
 
 	@Test
@@ -56,8 +62,10 @@ public class HistoricoParadaFileParserTest extends AbstractTestCase {
 
 		List<List<Artista>> artistas = historicoParada.getItens().stream().map(ItemHistoricoParada::getCancao).map(Cancao::getArtistas)
 				.collect(Collectors.toList());
-		List<Artista> listaUnicaArtistas = new ArrayList<>();
+		Set<Artista> listaUnicaArtistas = new HashSet<>();
 		artistas.forEach(artistasCancoes -> listaUnicaArtistas.addAll(artistasCancoes));
+
+		logger.info("Artistas: {}", listaUnicaArtistas);
 
 		for (int i = 1; i <= 8; i++) {
 			assertThat("Não foi encontrado o Artista" + i, listaUnicaArtistas.contains(new Artista("Artista" + i)), is(true));

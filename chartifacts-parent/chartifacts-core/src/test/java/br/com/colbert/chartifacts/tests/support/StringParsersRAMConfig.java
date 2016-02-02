@@ -16,7 +16,7 @@ public class StringParsersRAMConfig implements StringParsersConfig {
 
 	private static final Pattern NOME_ARTISTA_PATTERN = Pattern.compile("(.+) - \"");
 	private static final Pattern SEPARADORES_ARTISTAS_PATTERN = Pattern
-			.compile("feat\\.|&|,|\\[feat\\.|presents|\\(|Duet With|intro\\.|vs\\.| or |part\\.");
+			.compile("feat\\.|featuring|&|,|\\[feat\\.|presents|\\(|Duet With|intro\\.|vs\\.| or |part\\.");
 	private static final Pattern SEPARADOR_ARTISTAS_E_CANCAO_PATTERN = Pattern.compile(" - ");
 
 	private static final Pattern TITULO_CANCAO_PATTERN = Pattern.compile("\"(.+)\"");

@@ -16,7 +16,7 @@ public interface ToFormatedStringConverter<T> {
 	 * Converte um objeto em uma {@link String} para exibição em um relatório exportado.
 	 *
 	 * @param objeto
-	 *            a ser convertido
+	 *            objeto a ser convertido
 	 * @return a String gerada
 	 */
 	String convert(T objeto);

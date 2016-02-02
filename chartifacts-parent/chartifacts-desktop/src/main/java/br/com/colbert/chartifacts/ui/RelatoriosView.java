@@ -103,8 +103,8 @@ public class RelatoriosView implements Serializable {
 	@PostConstruct
 	protected void init() {
 		// TODO Corrigir posicionamento
-		conteudoPanel.add(padroesArquivoView.getPanel(), "2, 4, 7, 1, fill, fill");
-		conteudoPanel.add(relatoriosConfigView.getPanel(), "2, 6, 7, 1, fill, fill");
+		conteudoPanel.add(padroesArquivoView.getPanel(), "2, 4, 6, 1, fill, fill");
+		conteudoPanel.add(relatoriosConfigView.getPanel(), "2, 6, 6, 1, fill, fill");
 		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
 	}
 

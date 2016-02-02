@@ -4,7 +4,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
