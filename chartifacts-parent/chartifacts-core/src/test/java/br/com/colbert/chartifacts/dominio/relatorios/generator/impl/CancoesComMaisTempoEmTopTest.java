@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,7 +14,6 @@ import br.com.colbert.chartifacts.dominio.chart.ParserException;
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.dominio.relatorios.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.CancoesComMaisTempoEmTop;
 
 /**
  * Testes unitários da {@link CancoesComMaisTempoEmTop}.

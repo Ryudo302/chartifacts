@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
 
@@ -10,6 +10,7 @@ import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 
 /**
  * Gera relatórios informando as canções com as maiores permanência em uma determinada posição.
@@ -17,6 +18,7 @@ import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
  * @author Thiago Colbert
  * @since 13/03/2015
  */
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = TipoOcorrencia.TEMPO, tipoLocal = TipoLocal.POSICAO)
 public class CancoesComMaiorPermanencia extends AbstractRelatorioGenerator<Cancao, PermanenciaPosicao> {
 
 	private static final long serialVersionUID = -1293203212227492588L;

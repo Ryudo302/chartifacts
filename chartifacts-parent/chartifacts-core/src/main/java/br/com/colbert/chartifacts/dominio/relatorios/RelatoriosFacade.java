@@ -1,5 +1,9 @@
 package br.com.colbert.chartifacts.dominio.relatorios;
 
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoLocal.*;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.*;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoVariacao.*;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Supplier;
@@ -18,11 +22,14 @@ import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.export.ToFormatedStringConverter;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.impl.*;
 import br.com.colbert.chartifacts.infraestrutura.export.RelatorioTextExporter;
 import br.com.colbert.chartifacts.infraestrutura.formatter.CancaoFormatter;
 
 /**
  * Provê uma interface única e facilitada de interação com todas as funcionalidades de relatórios.
+ *
+ * TODO Terminar
  *
  * @author Thiago Colbert
  * @since 19/03/2015
@@ -40,25 +47,10 @@ public class RelatoriosFacade implements Serializable {
 	private RelatoriosConfiguration config;
 
 	@Inject
-	@Any
-	private Instance<AbstractRelatorioGenerator<?, ?>> relatorioGenerators;
+	private RelatorioGeneratorFactory relatorioGeneratorFactory;
 
 	@Inject
-	private ArtistasComMaisEstreias artistasComMaisEstreias;
-	@Inject
-	private ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop;
-	@Inject
-	private ArtistasComMaisTop artistasComMaisTop;
-
-	@Inject
-	private CancoesComMaiorPermanencia cancoesComMaiorPermanencia;
-	@Inject
-	private CancoesComMaiorVariacao cancoesComMaiorVariacao;
-	@Inject
-	private CancoesComMaisTempoEmTop cancoesComMaisTempoEmTop;
-
-	@Inject
-	private AllTimeChart allTimeChart;
+	private AllTimeChartCancao allTimeChart;
 
 	@Inject
 	private CancaoFormatter cancaoFormatter;
@@ -82,7 +74,7 @@ public class RelatoriosFacade implements Serializable {
 			Estatisticas estatisticas = itemHistorico.getEstatisticas();
 			return new StringBuilder().append(cancaoFormatter.format(itemHistorico.getCancao())).append("\t\t\t").append(estatisticas.getPontuacao())
 					.append("\t").append(estatisticas.getMelhorPosicao()).append("\t").append(estatisticas.getPermanenciaTotal()).toString();
-		}, null)));
+		} , null)));
 
 		return allTimeChartBuilder.toString();
 	}
@@ -110,6 +102,9 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private StringBuilder exportarArtistasComMaisEstreias(HistoricoParada historicoParada) {
+		ArtistasComMaisEstreias artistasComMaisEstreias = (ArtistasComMaisEstreias) relatorioGeneratorFactory
+				.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(ESTREIA)).get();
+
 		StringBuilder builder = criarRelatorioTextBuilder(artistasComMaisEstreias);
 		Optional<Relatorio<Artista, Integer>> relatorioArtistasComMaisEstreias = artistasComMaisEstreias.gerar(historicoParada);
 		relatorioArtistasComMaisEstreias.ifPresent(relatorio -> builder.append(relatorioTextExporter.export(relatorio, null, null)));
@@ -117,6 +112,9 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarArtistasComMaisTempoEmTop(HistoricoParada historicoParada) {
+		ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop = (ArtistasComMaisTempoEmTop) relatorioGeneratorFactory
+				.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(TEMPO).em(TOP)).get();
+
 		StringBuilder builder = new StringBuilder();
 
 		Collection<ElementoChartRun> tops = config.posicoesRelatorio(artistasComMaisTempoEmTop);
@@ -126,8 +124,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(artistasComMaisTempoEmTop, top));
 			artistasComMaisTempoEmTop.setPosicao(top);
-			artistasComMaisTempoEmTop.gerar(historicoParada).ifPresent(
-					relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
+			artistasComMaisTempoEmTop.gerar(historicoParada)
+					.ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -137,6 +135,8 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarArtistasComMaisTop(HistoricoParada historicoParada) {
+		ArtistasComMaisTop artistasComMaisTop = (ArtistasComMaisTop) relatorioGeneratorFactory.get(RelatorioGeneratorConfig.artista().com(MAIOR).em(TOP)).get();
+
 		StringBuilder builder = new StringBuilder();
 
 		Collection<ElementoChartRun> tops = config.posicoesRelatorio(artistasComMaisTop);
@@ -146,8 +146,7 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(artistasComMaisTop, top));
 			artistasComMaisTop.setPosicao(top);
-			artistasComMaisTop.gerar(historicoParada).ifPresent(
-					relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
+			artistasComMaisTop.gerar(historicoParada).ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -166,9 +165,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(cancoesComMaiorPermanencia, top));
 			cancoesComMaiorPermanencia.setPosicao(top);
-			cancoesComMaiorPermanencia.gerar(historicoParada).ifPresent(
-					relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao),
-							permanencia -> permanencia.getQuantidade() + "x")));
+			cancoesComMaiorPermanencia.gerar(historicoParada).ifPresent(relatorioAtual -> builder.append(
+					relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), permanencia -> permanencia.getQuantidade() + "x")));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -182,8 +180,8 @@ public class RelatoriosFacade implements Serializable {
 		cancoesComMaiorVariacao.setTipoVariacao(tipoVariacao);
 
 		builder.append(criarRelatorioTextBuilder(cancoesComMaiorVariacao, tipoVariacao));
-		cancoesComMaiorVariacao.gerar(historicoParada).ifPresent(
-				relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao),
+		cancoesComMaiorVariacao.gerar(historicoParada)
+				.ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao),
 						variacao -> '[' + variacao.getElementoA().toString() + '-' + variacao.getElementoB() + ']' + StringUtils.SPACE + '['
 								+ signedNumber(variacao) + ']')));
 
@@ -195,9 +193,8 @@ public class RelatoriosFacade implements Serializable {
 		cancoesComMaiorVariacao.setTipoVariacao(tipoVariacao);
 
 		builder.append(criarRelatorioTextBuilder(cancoesComMaiorVariacao, tipoVariacao));
-		cancoesComMaiorVariacao.gerar(historicoParada).ifPresent(
-				relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao),
-						posicaoUnicaStringConverter())));
+		cancoesComMaiorVariacao.gerar(historicoParada).ifPresent(relatorioAtual -> builder
+				.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), posicaoUnicaStringConverter())));
 
 		return builder.toString();
 	}
@@ -216,8 +213,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(cancoesComMaisTempoEmTop, top));
 			cancoesComMaisTempoEmTop.setPosicao(top);
-			cancoesComMaisTempoEmTop.gerar(historicoParada).ifPresent(
-					relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), null)));
+			cancoesComMaisTempoEmTop.gerar(historicoParada)
+					.ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), null)));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -256,7 +253,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private StringBuilder separador(StringBuilder relatoriosTextBuilder) {
-		return relatoriosTextBuilder.append(StringUtils.CR).append(StringUtils.LF).append(config.separador()).append(StringUtils.CR)
-				.append(StringUtils.LF).append(StringUtils.CR).append(StringUtils.LF);
+		return relatoriosTextBuilder.append(StringUtils.CR).append(StringUtils.LF).append(config.separador()).append(StringUtils.CR).append(StringUtils.LF)
+				.append(StringUtils.CR).append(StringUtils.LF);
 	}
 }

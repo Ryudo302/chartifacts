@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8,10 +8,11 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.chartrun.*;
-import br.com.colbert.chartifacts.dominio.musica.*;
+import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
+import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 
 /**
  * Identifica os artistas com maior tempo acumulado dentro de um top.
@@ -19,12 +20,13 @@ import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
  * @author Thiago Colbert
  * @since 15/03/2015
  */
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.ARTISTA, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = TipoOcorrencia.TEMPO, tipoLocal = TipoLocal.TOP)
 public class ArtistasComMaisTempoEmTop extends AbstractRelatorioGenerator<Artista, Integer> {
 
 	private static final long serialVersionUID = 2091891652660676343L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	private ElementoChartRun posicao;
 
@@ -36,13 +38,11 @@ public class ArtistasComMaisTempoEmTop extends AbstractRelatorioGenerator<Artist
 
 		logger.debug("Top {}", posicao);
 		Map<Artista, Integer> itens = new HashMap<>();
-		historico
-				.getItens()
-				.stream()
-				.forEach(
-						itemHistorico -> atualizarPermanencia(itemHistorico.getCancao().getArtistas(), itemHistorico.getChartRun().getElementos()
-								.stream().filter(elemento -> elemento.isPresenca() && elemento.compareTo(posicao) <= 0)
-								.collect(Collectors.counting()).intValue(), itens));
+		historico.getItens().stream()
+				.forEach(itemHistorico -> atualizarPermanencia(
+						itemHistorico.getCancao().getArtistas(), itemHistorico.getChartRun().getElementos().stream()
+								.filter(elemento -> elemento.isPresenca() && elemento.compareTo(posicao) <= 0).collect(Collectors.counting()).intValue(),
+				itens));
 		return criarRelatorio(itens);
 	}
 

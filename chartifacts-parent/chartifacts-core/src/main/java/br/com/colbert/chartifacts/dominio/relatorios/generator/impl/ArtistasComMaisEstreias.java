@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 
 /**
  *
  * @author Thiago Colbert
  * @since 12/03/2015
  */
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.ARTISTA, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = TipoOcorrencia.ESTREIA)
 public class ArtistasComMaisEstreias extends AbstractRelatorioGenerator<Artista, Integer> {
 
 	private static final long serialVersionUID = -6428702912696633539L;

@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
 
@@ -10,6 +10,7 @@ import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 import br.com.colbert.chartifacts.infraestrutura.ordenacao.TipoOrdenacao;
 
 /**
@@ -18,6 +19,7 @@ import br.com.colbert.chartifacts.infraestrutura.ordenacao.TipoOrdenacao;
  * @author Thiago Colbert
  * @since 13/03/2015
  */
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = { TipoOcorrencia.SUBIDA, TipoOcorrencia.QUEDA })
 public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, VariacaoPosicao> {
 
 	private static final long serialVersionUID = -1293203212227492588L;
@@ -67,8 +69,7 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 	}
 
 	private Comparator<VariacaoPosicao> getComparator() {
-		return tipoOrdenacao == TipoOrdenacao.DESCENCENTE ? (valor1, valor2) -> valor1.compareTo(valor2) : (valor1, valor2) -> valor2
-				.compareTo(valor1);
+		return tipoOrdenacao == TipoOrdenacao.DESCENCENTE ? (valor1, valor2) -> valor1.compareTo(valor2) : (valor1, valor2) -> valor2.compareTo(valor1);
 	}
 
 	public void setTipoVariacao(TipoVariacaoPosicao tipoVariacao) {

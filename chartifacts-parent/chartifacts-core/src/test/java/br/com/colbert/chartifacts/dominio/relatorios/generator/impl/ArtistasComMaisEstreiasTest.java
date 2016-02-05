@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -13,7 +13,6 @@ import org.junit.Test;
 import br.com.colbert.chartifacts.dominio.chart.ParserException;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.ArtistasComMaisEstreias;
 
 /**
  * Testes unitários da classe {@link ArtistasComMaisEstreias}.

@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
 
@@ -11,6 +11,7 @@ import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
 
 /**
  * Identifica os artistas com maior número de canções que atingiram um determinado top.
@@ -18,6 +19,7 @@ import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
  * @author Thiago Colbert
  * @since 12/03/2015
  */
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.ARTISTA, tipoVariacao = TipoVariacao.MAIOR, tipoLocal = TipoLocal.TOP)
 public class ArtistasComMaisTop extends AbstractRelatorioGenerator<Artista, Integer> {
 
 	private static final long serialVersionUID = 2091891652660676343L;

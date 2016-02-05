@@ -1,6 +1,8 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.*;
@@ -13,7 +15,6 @@ import br.com.colbert.chartifacts.dominio.chart.ParserException;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.dominio.relatorios.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.CancoesComMaiorPermanencia;
 
 /**
  * Testes unitários da {@link CancoesComMaiorPermanencia}.

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.impl.AllTimeChartCancao;
 
 /**
  * Testes da {@link RelatoriosFacade}.
@@ -35,7 +36,7 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 		String relatoriosText = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada);
 
 		relatorioGenerators.forEach(generator -> {
-			if (!(generator instanceof AllTimeChart)) {
+			if (!(generator instanceof AllTimeChartCancao)) {
 				String nomeRelatorio = generator.getClass().getSimpleName();
 				assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText, containsString(nomeRelatorio));
 			}
@@ -48,6 +49,6 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 
 		String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada);
 
-		assertThat(allTimeChart, containsString(AllTimeChart.class.getSimpleName()));
+		assertThat(allTimeChart, containsString(AllTimeChartCancao.class.getSimpleName()));
 	}
 }

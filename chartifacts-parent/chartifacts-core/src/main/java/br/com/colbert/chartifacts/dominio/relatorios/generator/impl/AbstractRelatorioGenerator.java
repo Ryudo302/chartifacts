@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.io.Serializable;
 import java.util.*;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import br.com.colbert.base.dominio.Entidade;
 import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerator;
 import br.com.colbert.chartifacts.infraestrutura.collections.MapUtils;
 
 /**
@@ -31,7 +32,7 @@ public abstract class AbstractRelatorioGenerator<T extends Entidade, V extends C
 	private static final long serialVersionUID = -2777378202837103067L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	private Integer limiteTamanho;
 	private boolean retirarZeros;

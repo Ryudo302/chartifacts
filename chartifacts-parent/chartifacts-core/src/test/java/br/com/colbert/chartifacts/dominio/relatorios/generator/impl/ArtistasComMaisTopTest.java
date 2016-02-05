@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.relatorios.generator;
+package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.*;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -14,23 +15,25 @@ import br.com.colbert.chartifacts.dominio.chart.ParserException;
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.ArtistasComMaisTempoEmTop;
 
 /**
- * Testes unitários da {@link ArtistasComMaisTempoEmTop}.
+ * Testes unitários da {@link ArtistasComMaisTop}.
  *
  * @author Thiago Colbert
- * @since 15/03/2015
+ * @since 13/03/2015
  */
-public class ArtistasComMaisTempoEmTopTest extends AbstractRelatorioTest {
+public class ArtistasComMaisTopTest extends AbstractRelatorioTest {
 
 	@Inject
-	private ArtistasComMaisTempoEmTop generator;
+	private ArtistasComMaisTop generator;
+
+	@PostConstruct
+	public void setUp() {
+		generator.setPosicao(ElementoChartRun.valueOf(2));
+	}
 
 	@Test
-	public void testGerarRelatorioHistoricoParada() throws ParserException {
-		generator.setPosicao(ElementoChartRun.valueOf(3));
-
+	public void testGerar() throws ParserException {
 		Optional<Relatorio<Artista, Integer>> relatorioOptional = generator.gerar(parseHistoricoParada());
 		assertThat(relatorioOptional.isPresent(), is(true));
 
@@ -38,6 +41,11 @@ public class ArtistasComMaisTempoEmTopTest extends AbstractRelatorioTest {
 		assertThat(relatorio.size(), is(equalTo(6)));
 
 		Map<Artista, Integer> itens = relatorio.getItens();
-		assertThat(itens.get(new Artista("TESTE")), is(equalTo(11)));
+		assertThat(itens.get(new Artista("TESTE")), is(equalTo(3)));
+		assertThat(itens.get(new Artista("TESTE + TESTE2")), is(equalTo(1)));
+		assertThat(itens.get(new Artista("TESTE 2")), is(equalTo(1)));
+		assertThat(itens.get(new Artista("TESTE 3")), is(equalTo(1)));
+		assertThat(itens.get(new Artista("TESTE2")), is(equalTo(1)));
+		assertThat(itens.get(new Artista("TESTE3")), is(equalTo(1)));
 	}
 }
