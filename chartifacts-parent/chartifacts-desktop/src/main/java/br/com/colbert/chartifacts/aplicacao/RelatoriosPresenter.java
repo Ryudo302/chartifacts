@@ -24,15 +24,15 @@ public class RelatoriosPresenter implements Serializable {
 	private static final long serialVersionUID = 8034832520010295862L;
 
 	@Inject
-	private RelatoriosView view;
+	private transient RelatoriosView view;
 
 	@Inject
-	private Instance<GeracaoRelatoriosWorker> geradorRelatorios;
+	private transient Instance<GeracaoRelatoriosWorker> geradorRelatorios;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 	@Inject
-	private AppController appController;
+	private transient AppController appController;
 
 	@PostConstruct
 	protected void doBindings() {
@@ -40,6 +40,10 @@ public class RelatoriosPresenter implements Serializable {
 	}
 
 	public void start() {
+	}
+
+	public JPanel getViewPanel() {
+		return view.getPanel();
 	}
 
 	public void escolherArquivoEntrada() {
@@ -84,14 +88,14 @@ public class RelatoriosPresenter implements Serializable {
 			worker.addWorkerDoneListener(new WorkerDoneListener() {
 				@Override
 				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(), "Relatórios gerados com sucesso" + ":\n\n"
-							+ arquivoSaida, "Sucesso", JOptionPane.INFORMATION_MESSAGE));
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(), "Relatórios gerados com sucesso" + ":\n\n" + arquivoSaida,
+							"Sucesso", JOptionPane.INFORMATION_MESSAGE));
 				}
 
 				@Override
 				public void doneWithError(SwingWorker<?, ?> worker, Throwable error) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(), "Erro ao gravar arquivo de relatórios" + ":\n\n"
-							+ error.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE));
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(),
+							"Erro ao gravar arquivo de relatórios" + ":\n\n" + error.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE));
 				}
 			});
 

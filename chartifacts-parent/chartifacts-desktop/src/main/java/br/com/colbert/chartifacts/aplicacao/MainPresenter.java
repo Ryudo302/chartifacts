@@ -24,15 +24,17 @@ public class MainPresenter implements Serializable {
 	private static final long serialVersionUID = -2190040873391147767L;
 
 	@Inject
-	private MainWindow mainWindow;
+	private transient Logger logger;
+	@Inject
+	private transient AppController appController;
+	@Inject
+	private transient InformacoesAplicacao informacoesAplicacao;
 
 	@Inject
-	private InformacoesAplicacao informacoesAplicacao;
-
+	private transient MainWindow mainWindow;
+	
 	@Inject
-	private Logger logger;
-	@Inject
-	private AppController appController;
+	private transient RelatoriosPresenter relatoriosPresenter;
 
 	@PostConstruct
 	protected void doBindings() {
@@ -41,6 +43,11 @@ public class MainPresenter implements Serializable {
 
 	public void start() {
 		mainWindow.show();
+	}
+
+	public void relatorios() {
+		relatoriosPresenter.start();
+		mainWindow.setContent(relatoriosPresenter.getViewPanel());
 	}
 
 	public void sobre() {

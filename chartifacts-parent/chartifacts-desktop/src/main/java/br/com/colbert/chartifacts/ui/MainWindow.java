@@ -1,17 +1,17 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
-import javax.inject.*;
+import javax.inject.Singleton;
 import javax.swing.*;
 
-import org.mvp4j.annotation.*;
+import org.apache.commons.lang3.StringUtils;
 import org.mvp4j.annotation.Action;
-
-import com.jgoodies.forms.layout.*;
+import org.mvp4j.annotation.MVP;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
 
@@ -29,11 +29,10 @@ public class MainWindow implements Serializable {
 
 	private final JFrame frame;
 
-	@Inject
-	private RelatoriosView relatoriosView;
-
 	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "sobre")
-	private final JMenuItem menuItemSobre;
+	private transient final JMenuItem menuItemSobre;
+	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "relatorios")
+	private transient final JMenuItem menuItemRelatorios;
 
 	/**
 	 * Create the window.
@@ -51,6 +50,12 @@ public class MainWindow implements Serializable {
 		JMenu menuArquivo = new JMenu("Arquivo");
 		menuBar.add(menuArquivo);
 
+		menuItemRelatorios = new JMenuItem("Relatórios");
+		menuArquivo.add(menuItemRelatorios);
+		menuArquivo.add(menuItemRelatorios);
+
+		menuArquivo.addSeparator();
+
 		JMenuItem menuItemSair = new JMenuItem("Sair");
 		menuItemSair.addActionListener(event -> MainWindow.this.close());
 		menuArquivo.add(menuItemSair);
@@ -60,12 +65,15 @@ public class MainWindow implements Serializable {
 
 		menuItemSobre = new JMenuItem("Sobre");
 		menuAjuda.add(menuItemSobre);
-		frame.getContentPane().setLayout(
-				new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
-						FormSpecs.DEFAULT_COLSPEC, }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+		
+		frame.getContentPane().setLayout(new CardLayout(1, 1));
+		
+		/*frame.getContentPane().setLayout(new FormLayout(
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
+						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"),
 						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC, }));
+						FormSpecs.RELATED_GAP_ROWSPEC, }));*/
 	}
 
 	@PostConstruct
@@ -78,6 +86,13 @@ public class MainWindow implements Serializable {
 	 */
 	public static void main(String[] args) {
 		new MainWindow().show();
+	}
+
+	public void setContent(Container container) {
+		String containerName = StringUtils.defaultIfBlank(container.getName(), container.getClass().getName() + '%' + container.hashCode());
+		CardLayout layout = (CardLayout) frame.getContentPane().getLayout();
+		layout.addLayoutComponent(container, containerName);
+		layout.show(frame.getContentPane(), containerName);
 	}
 
 	public void show() {
