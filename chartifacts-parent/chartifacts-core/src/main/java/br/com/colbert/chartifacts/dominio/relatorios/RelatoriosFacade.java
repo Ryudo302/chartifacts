@@ -31,8 +31,6 @@ import br.com.colbert.chartifacts.infraestrutura.formatter.CancaoFormatter;
 /**
  * Provê uma interface única e facilitada de interação com todas as funcionalidades de relatórios.
  *
- * TODO Terminar
- *
  * @author Thiago Colbert
  * @since 19/03/2015
  * @see <a href="http://en.wikipedia.org/wiki/Facade_pattern">Facade Pattern</a>

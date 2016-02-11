@@ -9,14 +9,15 @@ import javax.inject.*;
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 
-import org.mvp4j.annotation.*;
 import org.mvp4j.annotation.Action;
+import org.mvp4j.annotation.MVP;
 
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
 
 /**
+ * Tela que permite a geração de relatórios da parada musical.
  *
  * @author Thiago Colbert
  * @since 27/04/2015
@@ -52,11 +53,12 @@ public class RelatoriosView implements Serializable {
 	 */
 	public RelatoriosView() {
 		conteudoPanel = new JPanel();
-		conteudoPanel.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, }));
+		conteudoPanel.setLayout(new FormLayout(
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
+						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
+				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, }));
 
 		arquivoEntradaField = new JFormattedTextField();
 		arquivoEntradaField.setColumns(50);

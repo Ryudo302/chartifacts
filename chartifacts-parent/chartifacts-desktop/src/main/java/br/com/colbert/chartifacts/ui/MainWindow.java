@@ -3,7 +3,6 @@ package br.com.colbert.chartifacts.ui;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
-import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
