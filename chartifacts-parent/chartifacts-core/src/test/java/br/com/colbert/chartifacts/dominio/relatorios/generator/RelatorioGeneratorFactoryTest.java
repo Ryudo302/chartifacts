@@ -37,14 +37,14 @@ public class RelatorioGeneratorFactoryTest extends AbstractTestCase {
 
 	@Test
 	public void deveriaRetornarVazioCasoConfigSejaInvalida() {
-		Optional<RelatorioGenerator<?, ?>> generator = factory.get(RelatorioGeneratorConfig.artista().com(MAIOR));
+		Optional<?> generator = factory.get(RelatorioGeneratorConfig.artista().com(MAIOR));
 
 		assertThat(generator.isPresent(), is(false));
 	}
 
 	@Test
 	public void testGetArtistasComMaisEstreias() {
-		Optional<RelatorioGenerator<?, ?>> generator = factory.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(ESTREIA));
+		Optional<?> generator = factory.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(ESTREIA));
 
 		assertThat(generator.isPresent(), is(true));
 		assertThat(generator.get(), instanceOf(ArtistasComMaisEstreias.class));
@@ -52,7 +52,7 @@ public class RelatorioGeneratorFactoryTest extends AbstractTestCase {
 
 	@Test
 	public void testGetCancoesComMaisTempoEmTop() {
-		Optional<RelatorioGenerator<?, ?>> generator = factory.get(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TOP));
+		Optional<?> generator = factory.get(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TOP));
 
 		assertThat(generator.isPresent(), is(true));
 		assertThat(generator.get(), instanceOf(CancoesComMaisTempoEmTop.class));
