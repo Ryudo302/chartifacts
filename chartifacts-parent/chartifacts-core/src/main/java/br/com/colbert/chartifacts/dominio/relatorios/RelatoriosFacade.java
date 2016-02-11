@@ -1,8 +1,9 @@
 package br.com.colbert.chartifacts.dominio.relatorios;
 
-import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoLocal.*;
-import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.*;
-import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoVariacao.*;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoLocal.TOP;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.ESTREIA;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.TEMPO;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoVariacao.MAIOR;
 
 import java.io.Serializable;
 import java.util.*;
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import br.com.colbert.base.dominio.Entidade;
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
@@ -41,33 +43,31 @@ public class RelatoriosFacade implements Serializable {
 	private static final long serialVersionUID = -7162749343483414207L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	@Inject
-	private RelatoriosConfiguration config;
+	private transient RelatoriosConfiguration relatoriosConfig;
 
 	@Inject
-	private RelatorioGeneratorFactory relatorioGeneratorFactory;
+	private transient RelatorioGeneratorFactory relatorioGeneratorFactory;
 
 	@Inject
-	private AllTimeChartCancao allTimeChart;
+	private transient CancaoFormatter cancaoFormatter;
 
 	@Inject
-	private CancaoFormatter cancaoFormatter;
-
-	@Inject
-	private RelatorioTextExporter relatorioTextExporter;
+	private transient RelatorioTextExporter relatorioTextExporter;
 
 	@PostConstruct
-	protected void config() {
-		relatorioTextExporter.setLarguraPrimeiraColuna(config.larguraPrimeiraColuna());
-		Optional<Integer> limiteTamanho = config.limiteTamanho();
+	protected void config(@Any Instance<AbstractRelatorioGenerator<?, ?>> relatorioGenerators) {
+		relatorioTextExporter.setLarguraPrimeiraColuna(relatoriosConfig.larguraPrimeiraColuna());
+		Optional<Integer> limiteTamanho = relatoriosConfig.limiteTamanho();
 		limiteTamanho.ifPresent(limite -> relatorioGenerators.forEach(relatorioGenerator -> relatorioGenerator.setLimiteTamanho(limite)));
 	}
 
 	public String exportarAllTimeChartEmTxt(HistoricoParada historicoParada) {
-		StringBuilder allTimeChartBuilder = new StringBuilder();
+		AllTimeChartCancao allTimeChart = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR));
 
+		StringBuilder allTimeChartBuilder = new StringBuilder();
 		allTimeChartBuilder.append(criarRelatorioTextBuilder(allTimeChart));
 		Optional<Relatorio<ItemHistoricoParada, Integer>> relatorioAllTimeChart = allTimeChart.gerar(historicoParada);
 		relatorioAllTimeChart.ifPresent(relatorio -> allTimeChartBuilder.append(relatorioTextExporter.export(relatorio, (itemHistorico) -> {
@@ -102,8 +102,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private StringBuilder exportarArtistasComMaisEstreias(HistoricoParada historicoParada) {
-		ArtistasComMaisEstreias artistasComMaisEstreias = (ArtistasComMaisEstreias) relatorioGeneratorFactory
-				.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(ESTREIA)).get();
+		ArtistasComMaisEstreias artistasComMaisEstreias = getRelatorioGenerator(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(ESTREIA));
 
 		StringBuilder builder = criarRelatorioTextBuilder(artistasComMaisEstreias);
 		Optional<Relatorio<Artista, Integer>> relatorioArtistasComMaisEstreias = artistasComMaisEstreias.gerar(historicoParada);
@@ -112,12 +111,11 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarArtistasComMaisTempoEmTop(HistoricoParada historicoParada) {
-		ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop = (ArtistasComMaisTempoEmTop) relatorioGeneratorFactory
-				.get(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(TEMPO).em(TOP)).get();
+		ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop = getRelatorioGenerator(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(TEMPO).em(TOP));
 
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = config.posicoesRelatorio(artistasComMaisTempoEmTop);
+		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTempoEmTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -135,11 +133,11 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarArtistasComMaisTop(HistoricoParada historicoParada) {
-		ArtistasComMaisTop artistasComMaisTop = (ArtistasComMaisTop) relatorioGeneratorFactory.get(RelatorioGeneratorConfig.artista().com(MAIOR).em(TOP)).get();
+		ArtistasComMaisTop artistasComMaisTop = getRelatorioGenerator(RelatorioGeneratorConfig.artista().com(MAIOR).em(TOP));
 
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = config.posicoesRelatorio(artistasComMaisTop);
+		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -158,7 +156,9 @@ public class RelatoriosFacade implements Serializable {
 	private String exportarCancoesComMaiorPermanencia(HistoricoParada historicoParada) {
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = config.posicoesRelatorio(cancoesComMaiorPermanencia);
+		CancoesComMaiorPermanencia cancoesComMaiorPermanencia = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO));
+
+		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaiorPermanencia);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -176,6 +176,9 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarCancoesComMaiorVariacao(HistoricoParada historicoParada, TipoVariacaoPosicao tipoVariacao) {
+		CancoesComMaiorVariacao cancoesComMaiorVariacao = getRelatorioGenerator(
+				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TipoOcorrencia.valueOf(tipoVariacao)));
+
 		StringBuilder builder = new StringBuilder();
 		cancoesComMaiorVariacao.setTipoVariacao(tipoVariacao);
 
@@ -189,6 +192,9 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarCancoesComMaiorEntrada(HistoricoParada historicoParada, TipoVariacaoPosicao tipoVariacao) {
+		CancoesComMaiorVariacao cancoesComMaiorVariacao = getRelatorioGenerator(
+				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TipoOcorrencia.valueOf(tipoVariacao)));
+
 		StringBuilder builder = new StringBuilder();
 		cancoesComMaiorVariacao.setTipoVariacao(tipoVariacao);
 
@@ -204,9 +210,11 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarCancoesComMaisTempoEmTop(HistoricoParada historicoParada) {
+		CancoesComMaisTempoEmTop cancoesComMaisTempoEmTop = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TOP));
+
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = config.posicoesRelatorio(cancoesComMaisTempoEmTop);
+		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaisTempoEmTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -223,13 +231,18 @@ public class RelatoriosFacade implements Serializable {
 		return inserirSeparadores(builder, separadores);
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> R getRelatorioGenerator(RelatorioGeneratorConfig config) {
+		return (R) relatorioGeneratorFactory.get(config).get();
+	}
+
 	private String signedNumber(VariacaoPosicao variacao) {
 		int valor = variacao.getValorVariacao();
 		return String.valueOf(valor > 0 ? "+" + valor : valor);
 	}
 
 	private StringBuilder criarRelatorioTextBuilder(RelatorioGenerator<?, ?> relatorioGenerator, Object... args) {
-		String tituloRelatorio = config.getTituloRelatorio(relatorioGenerator, args);
+		String tituloRelatorio = relatoriosConfig.getTituloRelatorio(relatorioGenerator, args);
 		logger.info("Gerando relatório: {}", tituloRelatorio);
 		return new StringBuilder(tituloRelatorio).append(StringUtils.CR).append(StringUtils.LF).append(StringUtils.CR).append(StringUtils.LF);
 	}
@@ -253,7 +266,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private StringBuilder separador(StringBuilder relatoriosTextBuilder) {
-		return relatoriosTextBuilder.append(StringUtils.CR).append(StringUtils.LF).append(config.separador()).append(StringUtils.CR).append(StringUtils.LF)
-				.append(StringUtils.CR).append(StringUtils.LF);
+		return relatoriosTextBuilder.append(StringUtils.CR).append(StringUtils.LF).append(relatoriosConfig.separador()).append(StringUtils.CR)
+				.append(StringUtils.LF).append(StringUtils.CR).append(StringUtils.LF);
 	}
 }
