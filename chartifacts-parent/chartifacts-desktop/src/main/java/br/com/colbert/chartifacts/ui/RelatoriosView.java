@@ -15,6 +15,7 @@ import org.mvp4j.annotation.MVP;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
+import br.com.colbert.chartifacts.infraestrutura.view.*;
 
 /**
  * Tela que permite a geração de relatórios da parada musical.
@@ -27,6 +28,25 @@ import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
 public class RelatoriosView implements Serializable {
 
 	private static final long serialVersionUID = -4531644924905149366L;
+
+	private static final class FramePackListener implements ViewFlexivelListener {
+
+		private final JPanel component;
+
+		public FramePackListener(JPanel component) {
+			this.component = component;
+		}
+
+		@Override
+		public void viewReduzida(ViewFlexivelEvent event) {
+			SwingUtilities.windowForComponent(component).pack();
+		}
+
+		@Override
+		public void viewExpandida(ViewFlexivelEvent event) {
+			SwingUtilities.windowForComponent(component).pack();
+		}
+	}
 
 	private final JPanel conteudoPanel;
 
@@ -53,7 +73,10 @@ public class RelatoriosView implements Serializable {
 	 */
 	public RelatoriosView() {
 		conteudoPanel = new JPanel();
-		conteudoPanel.setLayout(new FormLayout(
+		conteudoPanel.setLayout(new BoxLayout(conteudoPanel, BoxLayout.Y_AXIS));
+
+		JPanel topoPanel = new JPanel();
+		topoPanel.setLayout(new FormLayout(
 				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
 						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
@@ -62,51 +85,56 @@ public class RelatoriosView implements Serializable {
 
 		arquivoEntradaField = new JFormattedTextField();
 		arquivoEntradaField.setColumns(50);
-		conteudoPanel.add(arquivoEntradaField, "4, 2");
+		topoPanel.add(arquivoEntradaField, "4, 2, fill, center");
 		arquivoEntradaField.setEditable(false);
 
 		escolherArquivoEntradaButton = new JButton("Procurar...");
-		conteudoPanel.add(escolherArquivoEntradaButton, "6, 2");
+		topoPanel.add(escolherArquivoEntradaButton, "6, 2, center, center");
 		escolherArquivoEntradaButton.setToolTipText("Selecionar o arquivo de histórico");
 
 		JLabel arquivoSaidaLabel = new JLabel("Arquivo de Saída:");
 		arquivoSaidaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		conteudoPanel.add(arquivoSaidaLabel, "2, 4, right, default");
+		topoPanel.add(arquivoSaidaLabel, "2, 4, right, center");
 
 		arquivoSaidaField = new JFormattedTextField();
 		arquivoSaidaField.setColumns(50);
 		arquivoSaidaField.setEditable(false);
-		conteudoPanel.add(arquivoSaidaField, "4, 4, fill, default");
+		topoPanel.add(arquivoSaidaField, "4, 4, fill, center");
 
 		escolherArquivoSaidaButton = new JButton("Procurar...");
 		escolherArquivoSaidaButton.setToolTipText("Selecionar o arquivo de saída");
-		conteudoPanel.add(escolherArquivoSaidaButton, "6, 4");
+		topoPanel.add(escolherArquivoSaidaButton, "6, 4, center, center");
 
 		JLabel quantidadePosicoesLabel = new JLabel("Quantidade de Posições:");
 		quantidadePosicoesLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		conteudoPanel.add(quantidadePosicoesLabel, "2, 6, right, default");
+		topoPanel.add(quantidadePosicoesLabel, "2, 6, right, center");
 
 		quantidadePosicoesSpinner = new JSpinner();
 		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
 		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(2), null, new Integer(1)));
-		conteudoPanel.add(quantidadePosicoesSpinner, "4, 6");
+		topoPanel.add(quantidadePosicoesSpinner, "4, 6, fill, center");
 
 		JPanel botoesPanel = new JPanel();
-		conteudoPanel.add(botoesPanel, "2, 8, 5, 1");
+		topoPanel.add(botoesPanel, "2, 8, 5, 1, fill, center");
 
 		executarButton = new JButton("Executar");
 		botoesPanel.add(executarButton);
 
 		JLabel arquivoEntradaLabel = new JLabel("Arquivo de Entrada:");
 		arquivoEntradaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		conteudoPanel.add(arquivoEntradaLabel, "2, 2, right, center");
+		topoPanel.add(arquivoEntradaLabel, "2, 2, right, center");
+
+		conteudoPanel.add(topoPanel);
 	}
 
 	@PostConstruct
 	protected void init() {
-		// TODO Corrigir posicionamento
-		conteudoPanel.add(padroesArquivoView.getPanel(), "2, 4, 6, 1, fill, fill");
-		conteudoPanel.add(relatoriosConfigView.getPanel(), "2, 6, 6, 1, fill, fill");
+		conteudoPanel.add(padroesArquivoView.getPanel());
+		conteudoPanel.add(relatoriosConfigView.getPanel());
+
+		padroesArquivoView.addViewFlexivelListener(new FramePackListener(padroesArquivoView.getPanel()));
+		relatoriosConfigView.addViewFlexivelListener(new FramePackListener(relatoriosConfigView.getPanel()));
+
 		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
 	}
 

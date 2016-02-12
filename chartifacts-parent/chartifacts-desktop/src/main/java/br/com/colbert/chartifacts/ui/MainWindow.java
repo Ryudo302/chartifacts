@@ -39,7 +39,9 @@ public class MainWindow implements Serializable {
 	public MainWindow() {
 		frame = new JFrame("Chartifacts");
 
-		frame.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 12));
+		Container contentPane = frame.getContentPane();
+		contentPane.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		
 		frame.setBounds(100, 100, 510, 229);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -50,7 +52,6 @@ public class MainWindow implements Serializable {
 		menuBar.add(menuArquivo);
 
 		menuItemRelatorios = new JMenuItem("Relatórios");
-		menuArquivo.add(menuItemRelatorios);
 		menuArquivo.add(menuItemRelatorios);
 
 		menuArquivo.addSeparator();
@@ -65,7 +66,8 @@ public class MainWindow implements Serializable {
 		menuItemSobre = new JMenuItem("Sobre");
 		menuAjuda.add(menuItemSobre);
 		
-		frame.getContentPane().setLayout(new CardLayout(1, 1));
+		contentPane.setLayout(new CardLayout(1, 1));
+		contentPane.setPreferredSize(new Dimension(400, 300));
 		
 		/*frame.getContentPane().setLayout(new FormLayout(
 				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
@@ -89,9 +91,17 @@ public class MainWindow implements Serializable {
 
 	public void setContent(Container container) {
 		String containerName = StringUtils.defaultIfBlank(container.getName(), container.getClass().getName() + '%' + container.hashCode());
-		CardLayout layout = (CardLayout) frame.getContentPane().getLayout();
+		Container contentPane = frame.getContentPane();
+		CardLayout layout = (CardLayout) contentPane.getLayout();
 		layout.addLayoutComponent(container, containerName);
-		layout.show(frame.getContentPane(), containerName);
+		layout.show(contentPane, containerName);
+		contentPane.revalidate();
+		frame.pack();
+		
+		// TODO Só funciona do modo abaixo
+		/*frame.setContentPane(container);
+		frame.revalidate();
+		frame.pack();*/
 	}
 
 	public void show() {

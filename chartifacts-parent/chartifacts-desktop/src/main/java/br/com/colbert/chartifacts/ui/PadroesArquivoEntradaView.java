@@ -1,7 +1,7 @@
 package br.com.colbert.chartifacts.ui;
 
 import java.awt.FlowLayout;
-import java.io.Serializable;
+import java.awt.event.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -11,6 +11,7 @@ import javax.swing.border.TitledBorder;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
+import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
 
 /**
  * Painel contendo informações de um {@link StringParsersConfig}.
@@ -19,7 +20,7 @@ import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
  * @since 20/04/2015
  */
 @Singleton
-public class PadroesArquivoEntradaView implements Serializable {
+public class PadroesArquivoEntradaView extends AbstractViewFlexivel {
 
 	private static final long serialVersionUID = -154918168549652861L;
 
@@ -33,7 +34,7 @@ public class PadroesArquivoEntradaView implements Serializable {
 	private final JTextField separadorPosicoesChartRunField;
 
 	@Inject
-	private StringParsersConfig parsersConfig;
+	private transient StringParsersConfig parsersConfig;
 
 	/**
 	 * Create the conteudoPanel.
@@ -58,15 +59,16 @@ public class PadroesArquivoEntradaView implements Serializable {
 		togglePadroesArquivoButton.setSelected(true);
 		togglePanel.add(togglePadroesArquivoButton);
 
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+		contentPanel.setLayout(new FormLayout(
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		conteudoPanel.add(contentPanel);
 
 		JLabel nomeArtistaLabel = new JLabel("Nome de Artista:");
-		contentPanel.add(nomeArtistaLabel, "2, 2, right, default");
+		contentPanel.add(nomeArtistaLabel, "2, 2, right, center");
 
 		nomeArtistaField = new JTextField();
 		nomeArtistaField.setEditable(false);
@@ -88,8 +90,7 @@ public class PadroesArquivoEntradaView implements Serializable {
 
 		separadorArtistaCancaoField = new JTextField();
 		separadorArtistaCancaoField.setEditable(false);
-		separadorArtistaCancaoField
-				.setToolTipText("Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção");
+		separadorArtistaCancaoField.setToolTipText("Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção");
 		separadorArtistaCancaoField.setColumns(10);
 		contentPanel.add(separadorArtistaCancaoField, "4, 6, fill, default");
 
@@ -118,7 +119,20 @@ public class PadroesArquivoEntradaView implements Serializable {
 		separadorPosicoesChartRunField.setEditable(false);
 		separadorPosicoesChartRunField.setToolTipText("Expressão utilizada para separar as posições dos chart-runs");
 		separadorPosicoesChartRunField.setColumns(10);
-		contentPanel.add(separadorPosicoesChartRunField, "4, 12, fill, default");
+		contentPanel.add(separadorPosicoesChartRunField, "4, 12, fill, center");
+
+		contentPanel.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentHidden(ComponentEvent event) {
+				fireViewFlexivelEvent(false);
+			}
+
+			@Override
+			public void componentShown(ComponentEvent event) {
+				fireViewFlexivelEvent(true);
+			}
+		});
 	}
 
 	@PostConstruct

@@ -1,7 +1,7 @@
 package br.com.colbert.chartifacts.ui;
 
 import java.awt.FlowLayout;
-import java.io.Serializable;
+import java.awt.event.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -11,6 +11,7 @@ import javax.swing.border.TitledBorder;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
+import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
 
 /**
  * Painel que exibe informações de um {@link RelatoriosConfiguration}.
@@ -19,7 +20,7 @@ import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
  * @since 20/04/2015
  */
 @Singleton
-public class RelatoriosConfigView implements Serializable {
+public class RelatoriosConfigView extends AbstractViewFlexivel {
 
 	private static final long serialVersionUID = -7418030376508842522L;
 
@@ -27,7 +28,6 @@ public class RelatoriosConfigView implements Serializable {
 	private RelatoriosConfiguration relatoriosConfiguration;
 
 	private final JPanel conteudoPanel;
-
 	private final JSpinner limiteSpinner;
 
 	/**
@@ -53,30 +53,40 @@ public class RelatoriosConfigView implements Serializable {
 		toggleRelatoriosButton.setSelected(true);
 		togglePanel.add(toggleRelatoriosButton);
 
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), }, new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+		contentPanel.setLayout(new FormLayout(
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		conteudoPanel.add(contentPanel);
 
 		JLabel limiteLabel = new JLabel("Limite por Relatório:");
-		contentPanel.add(limiteLabel, "2, 2, right, default");
+		contentPanel.add(limiteLabel, "2, 2, right, center");
 
 		limiteSpinner = new JSpinner();
 		limiteSpinner.setEnabled(false);
 		limiteSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
 		limiteSpinner.setToolTipText("Quantidade máxima de itens a serem listados em cada relatório");
-		contentPanel.add(limiteSpinner, "4, 2");
+		contentPanel.add(limiteSpinner, "4, 2, fill, center");
+
+		contentPanel.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentHidden(ComponentEvent event) {
+				fireViewFlexivelEvent(false);
+			}
+
+			@Override
+			public void componentShown(ComponentEvent event) {
+				fireViewFlexivelEvent(true);
+			}
+		});
 	}
 
 	@PostConstruct
 	protected void init() {
 		relatoriosConfiguration.limiteTamanho().ifPresent(limite -> limiteSpinner.setValue(limite));
-	}
-
-	public static void main(String[] args) {
-		new RelatoriosConfigView();
 	}
 
 	public JPanel getPanel() {
