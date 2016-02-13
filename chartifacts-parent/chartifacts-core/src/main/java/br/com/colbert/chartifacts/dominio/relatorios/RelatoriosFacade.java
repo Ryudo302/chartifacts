@@ -10,9 +10,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.*;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,26 +42,23 @@ public class RelatoriosFacade implements Serializable {
 	private transient Logger logger;
 
 	@Inject
-	private transient RelatoriosConfiguration relatoriosConfig;
-
-	@Inject
 	private transient RelatorioGeneratorFactory relatorioGeneratorFactory;
-
 	@Inject
 	private transient CancaoFormatter cancaoFormatter;
-
 	@Inject
 	private transient RelatorioTextExporter relatorioTextExporter;
 
-	@PostConstruct
-	@Inject
-	protected void config(@Any Instance<AbstractRelatorioGenerator<?, ?>> relatorioGenerators) {
-		relatorioTextExporter.setLarguraPrimeiraColuna(relatoriosConfig.larguraPrimeiraColuna());
-		Optional<Integer> limiteTamanho = relatoriosConfig.limiteTamanho();
-		limiteTamanho.ifPresent(limite -> relatorioGenerators.forEach(relatorioGenerator -> relatorioGenerator.setLimiteTamanho(limite)));
-	}
+	private RelatoriosConfiguration relatoriosConfig;
 
-	public String exportarAllTimeChartEmTxt(HistoricoParada historicoParada) {
+	/**
+	 * 
+	 * @param historicoParada
+	 * @return
+	 * @throws NullPointerException
+	 *             caso qualquer parâmetro seja <code>null</code>
+	 */
+	public String exportarAllTimeChartEmTxt(HistoricoParada historicoParada, RelatoriosConfiguration relatoriosConfig) {
+		setRelatoriosConfiguration(relatoriosConfig);
 		AllTimeChartCancao allTimeChart = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR));
 
 		StringBuilder allTimeChartBuilder = new StringBuilder();
@@ -78,7 +73,16 @@ public class RelatoriosFacade implements Serializable {
 		return allTimeChartBuilder.toString();
 	}
 
-	public String exportarTodosRelatoriosEmTxt(HistoricoParada historicoParada) {
+	/**
+	 * 
+	 * @param historicoParada
+	 * @return
+	 * @throws NullPointerException
+	 *             caso qualquer parâmetro seja <code>null</code>
+	 */
+	public String exportarTodosRelatoriosEmTxt(HistoricoParada historicoParada, RelatoriosConfiguration relatoriosConfig) {
+		setRelatoriosConfiguration(relatoriosConfig);
+
 		StringBuilder relatoriosTextBuilder = new StringBuilder();
 		relatoriosTextBuilder.append(exportarArtistasComMaisEstreias(historicoParada));
 		separador(relatoriosTextBuilder);
@@ -98,6 +102,13 @@ public class RelatoriosFacade implements Serializable {
 		});
 		relatoriosTextBuilder.append(exportarCancoesComMaisTempoEmTop(historicoParada));
 		return relatoriosTextBuilder.toString();
+	}
+
+	private void setRelatoriosConfiguration(RelatoriosConfiguration relatoriosConfig) {
+		this.relatoriosConfig = Objects.requireNonNull(relatoriosConfig, "relatoriosConfig");
+		relatorioTextExporter.setLarguraPrimeiraColuna(relatoriosConfig.larguraPrimeiraColuna());
+		Optional<Integer> limiteTamanho = relatoriosConfig.limiteTamanho();
+		limiteTamanho.ifPresent(limite -> relatorioGeneratorFactory.setLimiteTamanhoRelatorios(limite));
 	}
 
 	private StringBuilder exportarArtistasComMaisEstreias(HistoricoParada historicoParada) {

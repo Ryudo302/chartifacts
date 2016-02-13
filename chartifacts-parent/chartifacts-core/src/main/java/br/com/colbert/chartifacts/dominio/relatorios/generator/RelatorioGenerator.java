@@ -17,7 +17,6 @@ import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
  * @param <V>
  *            o tipo de valor listado nos relatórios gerados
  */
-@FunctionalInterface
 public interface RelatorioGenerator<T extends Entidade, V extends Comparable<V>> {
 
 	/**
@@ -28,4 +27,12 @@ public interface RelatorioGenerator<T extends Entidade, V extends Comparable<V>>
 	 * @return o relatório gerado (vazio caso não seja identificado nenhum dado)
 	 */
 	Optional<Relatorio<T, V>> gerar(HistoricoParada historico);
+
+	/**
+	 * Define o limite de tamanho dos relatórios gerados.
+	 * 
+	 * @param limiteTamanho
+	 *            o limite de tamanho dos relatórios
+	 */
+	void setLimiteTamanho(Integer limiteTamanho);
 }

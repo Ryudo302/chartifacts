@@ -35,16 +35,25 @@ public class RelatorioGeneratorFactory implements Serializable {
 	 *             caso seja informado <code>null</code>
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> Optional<R> get(
-			final RelatorioGeneratorConfig config) {
+	public <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> Optional<R> get(final RelatorioGeneratorConfig config) {
 		Objects.requireNonNull(config, "config");
 
 		Spliterator<RelatorioGenerator<?, ?>> spliterator = relatorioGenerators.spliterator();
-		Stream<RelatorioGenerator<?, ?>> compartibleGenerators = StreamSupport
-				.stream(() -> spliterator, spliterator.characteristics(), false).filter(currentGenerator -> {
+		Stream<RelatorioGenerator<?, ?>> compartibleGenerators = StreamSupport.stream(() -> spliterator, spliterator.characteristics(), false)
+				.filter(currentGenerator -> {
 					return config.matches(currentGenerator.getClass().getAnnotation(RelatorioGeneratorFlow.class));
 				});
 
 		return (Optional<R>) compartibleGenerators.findFirst();
+	}
+
+	/**
+	 * Define o limite de tamanho de todos os geradores de relatórios.
+	 * 
+	 * @param limite
+	 *            o limite de tamanho
+	 */
+	public void setLimiteTamanhoRelatorios(Integer limite) {
+		relatorioGenerators.forEach(generator -> generator.setLimiteTamanho(limite));
 	}
 }

@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.Args;
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosFacade;
+import br.com.colbert.chartifacts.dominio.relatorios.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 
 /**
@@ -30,6 +30,8 @@ public class ConsoleRunner implements Serializable {
 	private transient HistoricoParadaFileParser historicoParadaFileParser;
 	@Inject
 	private transient RelatoriosFacade relatoriosFacade;
+	@Inject
+	private transient RelatoriosConfiguration relatoriosConfiguration;
 
 	/**
 	 * Executa a aplicação com os parâmetros informados.
@@ -53,13 +55,13 @@ public class ConsoleRunner implements Serializable {
 
 		if (arguments.isExportarRelatorios()) {
 			Path arquivoSaidaRelatorios = Paths.get(arguments.getCaminhoArquivoSaidaRelatorios());
-			String relatorios = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada);
+			String relatorios = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada, relatoriosConfiguration);
 			Files.write(arquivoSaidaRelatorios, relatorios.getBytes());
 		}
 
 		if (arguments.isExportarAllTimeChart()) {
 			Path arquivoSaidaAllTimeChart = Paths.get(arguments.getCaminhoArquivoSaidaAllTimeChart());
-			String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada);
+			String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada, relatoriosConfiguration);
 			Files.write(arquivoSaidaAllTimeChart, allTimeChart.getBytes());
 		}
 

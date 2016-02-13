@@ -23,6 +23,10 @@ import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerato
  */
 public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguration {
 
+	private static final String RELATORIOS_LIMITE_TAMANHO_KEY = "relatorios.limiteTamanho";
+	private static final String RELATORIOS_LARGURA_PRIMEIRA_COLUNA_KEY = "relatorios.larguraPrimeiraColuna";
+	private static final String RELATORIOS_SEPARADOR_KEY = "relatorios.separador";
+
 	private static final String NOME_ARQUIVO = "relatorios.properties";
 
 	@Inject
@@ -39,17 +43,29 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 
 	@Override
 	public Optional<Integer> limiteTamanho() {
-		return Optional.ofNullable(Integer.valueOf(getString("relatorios.limiteTamanho")));
+		return Optional.ofNullable(Integer.valueOf(getString(RELATORIOS_LIMITE_TAMANHO_KEY)));
+	}
+
+	public void setLimiteTamanho(int tamanho) {
+		setInteger(RELATORIOS_LIMITE_TAMANHO_KEY, tamanho);
 	}
 
 	@Override
 	public int larguraPrimeiraColuna() {
-		return Integer.valueOf(getString("relatorios.larguraPrimeiraColuna"));
+		return Integer.valueOf(getString(RELATORIOS_LARGURA_PRIMEIRA_COLUNA_KEY));
+	}
+
+	public void setLarguraPrimeiraColuna(int largura) {
+		setInteger(RELATORIOS_LARGURA_PRIMEIRA_COLUNA_KEY, largura);
 	}
 
 	@Override
 	public String separador() {
-		return getString("relatorios.separador");
+		return getString(RELATORIOS_SEPARADOR_KEY);
+	}
+
+	public void setSeparador(String separador) {
+		properties.setProperty(RELATORIOS_SEPARADOR_KEY, separador);
 	}
 
 	@Override
@@ -73,5 +89,9 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 	private String getString(String key) {
 		logger.trace("Obtendo propriedade: {}", key);
 		return StringUtils.defaultIfBlank(properties.getProperty(key), '!' + key + '!');
+	}
+
+	private void setInteger(String key, int value) {
+		properties.setProperty(key, String.valueOf(value));
 	}
 }

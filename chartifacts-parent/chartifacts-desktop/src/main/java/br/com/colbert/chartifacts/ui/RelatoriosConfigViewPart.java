@@ -12,6 +12,7 @@ import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
+import br.com.colbert.chartifacts.infraestrutura.properties.RelatoriosPropertiesConfiguration;
 
 /**
  * Painel que exibe informações de um {@link RelatoriosConfiguration}.
@@ -25,7 +26,7 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 	private static final long serialVersionUID = -7418030376508842522L;
 
 	@Inject
-	private transient RelatoriosConfiguration relatoriosConfiguration;
+	private transient RelatoriosPropertiesConfiguration relatoriosConfiguration;
 
 	private final JPanel conteudoPanel;
 
@@ -69,7 +70,6 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 
 		limiteSpinner = new JSpinner();
 		limiteSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
-		limiteSpinner.setEnabled(false);
 		limiteSpinner.setToolTipText("Quantidade máxima de itens a serem listados em cada relatório");
 		limiteSpinner.setPreferredSize(new Dimension(50, 20));
 		contentPanel.add(limiteSpinner, "4, 2, left, center");
@@ -81,7 +81,6 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 		larguraPrimeiraColunaSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		larguraPrimeiraColunaSpinner.setToolTipText("Largura (em caracteres) da primeira coluna de cada relatório");
 		larguraPrimeiraColunaSpinner.setPreferredSize(new Dimension(50, 20));
-		larguraPrimeiraColunaSpinner.setEnabled(false);
 		contentPanel.add(larguraPrimeiraColunaSpinner, "4, 4, left, center");
 
 		JLabel separadorLabel = new JLabel("Separador:");
@@ -89,7 +88,6 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 
 		separadorTextField = new JTextField();
 		separadorTextField.setToolTipText("Texto utilizado para separar cada relatório dentro do arquivo gerado");
-		separadorTextField.setEditable(false);
 		contentPanel.add(separadorTextField, "4, 6, fill, center");
 		separadorTextField.setColumns(10);
 
@@ -108,14 +106,25 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 	}
 
 	@PostConstruct
-	protected void init() {
+	protected void modelToView() {
 		relatoriosConfiguration.limiteTamanho().ifPresent(limite -> limiteSpinner.setValue(limite));
 		larguraPrimeiraColunaSpinner.setValue(relatoriosConfiguration.larguraPrimeiraColuna());
 		separadorTextField.setText(relatoriosConfiguration.separador());
+	}
+	
+	private void viewToModel() {
+		relatoriosConfiguration.setLimiteTamanho((int) limiteSpinner.getValue());
+		relatoriosConfiguration.setLarguraPrimeiraColuna((int) larguraPrimeiraColunaSpinner.getValue());
+		relatoriosConfiguration.setSeparador(separadorTextField.getText());
 	}
 
 	@Override
 	public Container getAwtContainer() {
 		return conteudoPanel;
+	}
+
+	public RelatoriosConfiguration getRelatoriosConfiguration() {
+		viewToModel();
+		return relatoriosConfiguration;
 	}
 }

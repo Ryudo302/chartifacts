@@ -10,7 +10,7 @@ import org.jglue.cdiunit.ActivatedAlternatives;
 import org.junit.Test;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
+import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerator;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.impl.AllTimeChartCancao;
 
 /**
@@ -24,7 +24,9 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 
 	@Inject
 	private RelatoriosFacade relatoriosFacade;
-
+	
+	@Inject
+	private RelatoriosConfiguration relatoriosConfiguration;
 	@Inject
 	@Any
 	private Instance<RelatorioGenerator<?, ?>> relatorioGenerators;
@@ -33,12 +35,13 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 	public void testExportarTodosEmTxt() throws ParserException {
 		HistoricoParada historicoParada = parseHistoricoParada();
 
-		String relatoriosText = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada);
+		String relatoriosText = relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada, relatoriosConfiguration);
 
 		relatorioGenerators.forEach(generator -> {
 			if (!(generator instanceof AllTimeChartCancao)) {
 				String nomeRelatorio = generator.getClass().getSimpleName();
-				assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText, containsString(nomeRelatorio));
+				assertThat("Não gerou relatório: " + nomeRelatorio.substring(0, nomeRelatorio.indexOf('$')), relatoriosText,
+						containsString(nomeRelatorio));
 			}
 		});
 	}
@@ -47,7 +50,7 @@ public class RelatoriosFacadeTest extends AbstractRelatorioTest {
 	public void testExportarAllTimeChart() throws ParserException {
 		HistoricoParada historicoParada = parseHistoricoParada();
 
-		String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada);
+		String allTimeChart = relatoriosFacade.exportarAllTimeChartEmTxt(historicoParada, relatoriosConfiguration);
 
 		assertThat(allTimeChart, containsString(AllTimeChartCancao.class.getSimpleName()));
 	}

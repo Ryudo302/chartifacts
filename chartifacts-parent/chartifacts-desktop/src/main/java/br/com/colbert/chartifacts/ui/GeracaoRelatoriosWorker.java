@@ -11,13 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
-import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosFacade;
+import br.com.colbert.chartifacts.dominio.relatorios.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 import br.com.colbert.chartifacts.infraestrutura.swing.AbstractWorker;
 
 /**
- * {@link SwingWorker} responsável por gerar os relatórios da parada a partir de um arquivo de histórico e gravá-los em um arquivo
- * de saída.
+ * {@link SwingWorker} responsável por gerar os relatórios da parada a partir de um arquivo de histórico e gravá-los em um arquivo de saída.
  *
  * @author Thiago Colbert
  * @since 20/04/2015
@@ -34,6 +33,7 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 	private File arquivoEntrada;
 	private File arquivoSaida;
 	private int quantidadePosicoes;
+	private RelatoriosConfiguration relatoriosConfig;
 
 	@Override
 	protected Path doInBackground() throws Exception {
@@ -42,7 +42,7 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 		logger.debug("Analizando arquivo e processando histórico da parada");
 		HistoricoParada historicoParada = historicoParadaFileParser.parse(arquivoEntrada, quantidadePosicoes);
 		logger.debug("Gerando relatórios e gravando em arquivo");
-		return Files.write(arquivoSaida.toPath(), relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada).getBytes());
+		return Files.write(arquivoSaida.toPath(), relatoriosFacade.exportarTodosRelatoriosEmTxt(historicoParada, relatoriosConfig).getBytes());
 	}
 
 	private void validarEstado() {
@@ -55,6 +55,9 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 		}
 		if (quantidadePosicoes <= 0) {
 			errosBuilder.append("Quantidade de posições não definida").append(StringUtils.LF);
+		}
+		if (relatoriosConfig == null) {
+			errosBuilder.append("Configurações dos relatórios não definidas").append(StringUtils.LF);
 		}
 		if (errosBuilder.length() > 0) {
 			throw new IllegalStateException(errosBuilder.toString());
@@ -81,5 +84,9 @@ public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 
 	public void setQuantidadePosicoes(int quantidadePosicoes) {
 		this.quantidadePosicoes = quantidadePosicoes;
+	}
+
+	public void setRelatoriosConfig(RelatoriosConfiguration relatoriosConfig) {
+		this.relatoriosConfig = relatoriosConfig;
 	}
 }

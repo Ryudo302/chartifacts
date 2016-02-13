@@ -77,6 +77,7 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 			worker.setArquivoEntrada(arquivoEntrada);
 			worker.setArquivoSaida(arquivoSaida);
 			worker.setQuantidadePosicoes(view.getQuantidadePosicoes());
+			worker.setRelatoriosConfig(view.getRelatoriosConfiguration());
 
 			worker.addWorkerDoneListener(new WorkerDoneListener() {
 

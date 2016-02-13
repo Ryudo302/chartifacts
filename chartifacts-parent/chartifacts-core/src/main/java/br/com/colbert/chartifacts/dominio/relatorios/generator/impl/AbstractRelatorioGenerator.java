@@ -41,7 +41,7 @@ public abstract class AbstractRelatorioGenerator<T extends Entidade, V extends C
 	public Optional<Relatorio<T, V>> gerar(HistoricoParada historico) {
 		Optional<Relatorio<T, V>> relatorioOptional = gerarRelatorio(historico);
 		relatorioOptional.ifPresent(relatorio -> {
-			logger.debug("Limitando o tamanho do relatório em {} (null indica nenhum limite)", limiteTamanho);
+			logger.debug("Limitando o tamanho do relatório em {} (null e valores negativos indicam sem limite)", limiteTamanho);
 			relatorio.limitarTamanho(limiteTamanho);
 		});
 		return relatorioOptional;
@@ -57,14 +57,16 @@ public abstract class AbstractRelatorioGenerator<T extends Entidade, V extends C
 	 * @return o relatório contendo os itens informados ou vazio caso não sejam informados itens
 	 */
 	protected Optional<Relatorio<T, V>> criarRelatorio(Map<T, V> itens) {
-		return MapUtils.isEmpty(itens) ? Optional.empty() : Optional.of(new Relatorio<>(retirarZeros ? MapUtils.removeZeroesValues(itens) : itens, (
-				valor1, valor2) -> valor2.compareTo(valor1)));
+		return MapUtils.isEmpty(itens) ? Optional.empty()
+				: Optional
+						.of(new Relatorio<>(retirarZeros ? MapUtils.removeZeroesValues(itens) : itens, (valor1, valor2) -> valor2.compareTo(valor1)));
 	}
 
 	public Integer getLimiteTamanho() {
 		return limiteTamanho;
 	}
 
+	@Override
 	public void setLimiteTamanho(Integer limiteTamanho) {
 		this.limiteTamanho = limiteTamanho;
 	}
@@ -74,8 +76,7 @@ public abstract class AbstractRelatorioGenerator<T extends Entidade, V extends C
 	}
 
 	/**
-	 * Define se elementos com valor zero devem ser omitidos do relatório. Como "zero" entenda-se os valores <code>0</code> e
-	 * <code>null</code>.
+	 * Define se elementos com valor zero devem ser omitidos do relatório. Como "zero" entenda-se os valores <code>0</code> e <code>null</code>.
 	 *
 	 * @param retirarZeros
 	 */
