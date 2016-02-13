@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.*;
 
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ import br.com.colbert.chartifacts.dominio.relatorios.*;
  */
 public class ArtistasComMaisTempoEmTopTest extends AbstractRelatorioTest {
 
-	@Inject
+	@Inject @Any
 	private ArtistasComMaisTempoEmTop generator;
 
 	@Test

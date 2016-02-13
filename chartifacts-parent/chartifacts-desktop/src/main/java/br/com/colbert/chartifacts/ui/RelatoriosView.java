@@ -111,6 +111,7 @@ public class RelatoriosView implements View, Serializable {
 		topoPanel.add(quantidadePosicoesLabel, "2, 6, right, center");
 
 		quantidadePosicoesSpinner = new JSpinner();
+		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
 		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
 		quantidadePosicoesSpinner.setPreferredSize(new Dimension(50, 20));
 		topoPanel.add(quantidadePosicoesSpinner, "4, 6, left, center");

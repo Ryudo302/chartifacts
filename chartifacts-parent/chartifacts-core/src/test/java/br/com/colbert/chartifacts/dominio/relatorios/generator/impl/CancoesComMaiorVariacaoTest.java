@@ -26,8 +26,7 @@ import br.com.colbert.chartifacts.dominio.relatorios.*;
 
 public class CancoesComMaiorVariacaoTest extends AbstractRelatorioTest {
 
-	@Inject
-	@Any
+	@Inject @Any
 	private CancoesComMaiorVariacao generator;
 
 	@Test

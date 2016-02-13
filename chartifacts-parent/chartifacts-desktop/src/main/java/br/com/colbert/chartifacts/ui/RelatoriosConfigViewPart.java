@@ -25,10 +25,13 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 	private static final long serialVersionUID = -7418030376508842522L;
 
 	@Inject
-	private RelatoriosConfiguration relatoriosConfiguration;
+	private transient RelatoriosConfiguration relatoriosConfiguration;
 
 	private final JPanel conteudoPanel;
+
 	private final JSpinner limiteSpinner;
+	private final JTextField separadorTextField;
+	private final JSpinner larguraPrimeiraColunaSpinner;
 
 	/**
 	 * Create the panel.
@@ -61,14 +64,34 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		conteudoPanel.add(contentPanel);
 
-		JLabel limiteLabel = new JLabel("Limite por Relatório:");
+		JLabel limiteLabel = new JLabel("Limite por relatório:");
 		contentPanel.add(limiteLabel, "2, 2, right, center");
 
 		limiteSpinner = new JSpinner();
+		limiteSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		limiteSpinner.setEnabled(false);
 		limiteSpinner.setToolTipText("Quantidade máxima de itens a serem listados em cada relatório");
 		limiteSpinner.setPreferredSize(new Dimension(50, 20));
 		contentPanel.add(limiteSpinner, "4, 2, left, center");
+
+		JLabel larguraPrimeiraColunaLabel = new JLabel("Largura da primeira coluna:");
+		contentPanel.add(larguraPrimeiraColunaLabel, "2, 4, right, center");
+
+		larguraPrimeiraColunaSpinner = new JSpinner();
+		larguraPrimeiraColunaSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		larguraPrimeiraColunaSpinner.setToolTipText("Largura (em caracteres) da primeira coluna de cada relatório");
+		larguraPrimeiraColunaSpinner.setPreferredSize(new Dimension(50, 20));
+		larguraPrimeiraColunaSpinner.setEnabled(false);
+		contentPanel.add(larguraPrimeiraColunaSpinner, "4, 4, left, center");
+
+		JLabel separadorLabel = new JLabel("Separador:");
+		contentPanel.add(separadorLabel, "2, 6, right, center");
+
+		separadorTextField = new JTextField();
+		separadorTextField.setToolTipText("Texto utilizado para separar cada relatório dentro do arquivo gerado");
+		separadorTextField.setEditable(false);
+		contentPanel.add(separadorTextField, "4, 6, fill, center");
+		separadorTextField.setColumns(10);
 
 		contentPanel.addComponentListener(new ComponentAdapter() {
 
@@ -87,6 +110,8 @@ public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 	@PostConstruct
 	protected void init() {
 		relatoriosConfiguration.limiteTamanho().ifPresent(limite -> limiteSpinner.setValue(limite));
+		larguraPrimeiraColunaSpinner.setValue(relatoriosConfiguration.larguraPrimeiraColuna());
+		separadorTextField.setText(relatoriosConfiguration.separador());
 	}
 
 	@Override

@@ -56,6 +56,7 @@ public class RelatoriosFacade implements Serializable {
 	private transient RelatorioTextExporter relatorioTextExporter;
 
 	@PostConstruct
+	@Inject
 	protected void config(@Any Instance<AbstractRelatorioGenerator<?, ?>> relatorioGenerators) {
 		relatorioTextExporter.setLarguraPrimeiraColuna(relatoriosConfig.larguraPrimeiraColuna());
 		Optional<Integer> limiteTamanho = relatoriosConfig.limiteTamanho();
@@ -109,7 +110,8 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarArtistasComMaisTempoEmTop(HistoricoParada historicoParada) {
-		ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop = getRelatorioGenerator(RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(TEMPO).em(TOP));
+		ArtistasComMaisTempoEmTop artistasComMaisTempoEmTop = getRelatorioGenerator(
+				RelatorioGeneratorConfig.artista().com(MAIOR).ocorrencia(TEMPO).em(TOP));
 
 		StringBuilder builder = new StringBuilder();
 
@@ -142,7 +144,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(artistasComMaisTop, top));
 			artistasComMaisTop.setPosicao(top);
-			artistasComMaisTop.gerar(historicoParada).ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
+			artistasComMaisTop.gerar(historicoParada)
+					.ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, null, null)));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -164,8 +167,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(cancoesComMaiorPermanencia, top));
 			cancoesComMaiorPermanencia.setPosicao(top);
-			cancoesComMaiorPermanencia.gerar(historicoParada).ifPresent(relatorioAtual -> builder.append(
-					relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), permanencia -> permanencia.getQuantidade() + "x")));
+			cancoesComMaiorPermanencia.gerar(historicoParada).ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual,
+					cancao -> cancaoFormatter.format(cancao), permanencia -> permanencia.getQuantidade() + "x")));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -209,7 +212,8 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private String exportarCancoesComMaisTempoEmTop(HistoricoParada historicoParada) {
-		CancoesComMaisTempoEmTop cancoesComMaisTempoEmTop = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TOP));
+		CancoesComMaisTempoEmTop cancoesComMaisTempoEmTop = getRelatorioGenerator(
+				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TOP));
 
 		StringBuilder builder = new StringBuilder();
 
@@ -220,8 +224,8 @@ public class RelatoriosFacade implements Serializable {
 		tops.forEach(top -> {
 			builder.append(criarRelatorioTextBuilder(cancoesComMaisTempoEmTop, top));
 			cancoesComMaisTempoEmTop.setPosicao(top);
-			cancoesComMaisTempoEmTop.gerar(historicoParada)
-					.ifPresent(relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), null)));
+			cancoesComMaisTempoEmTop.gerar(historicoParada).ifPresent(
+					relatorioAtual -> builder.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), null)));
 			if (separadores.size() < quantidadeSeparadores) {
 				separadores.add(builder.length());
 			}
@@ -231,7 +235,8 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> R getRelatorioGenerator(RelatorioGeneratorConfig config) {
+	private <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> R getRelatorioGenerator(
+			RelatorioGeneratorConfig config) {
 		return (R) relatorioGeneratorFactory.get(config).get();
 	}
 

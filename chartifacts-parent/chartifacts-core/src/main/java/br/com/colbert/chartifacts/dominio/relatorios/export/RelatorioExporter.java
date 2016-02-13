@@ -25,7 +25,7 @@ public interface RelatorioExporter<O> {
 	 * Gera um novo <em>stream</em> de leitura contendo o relatório formatado.
 	 *
 	 * @param relatorio
-	 *            a ser utilizado
+	 *            relatório a ser utilizado
 	 * @param toStringKey
 	 *            objeto que converte as chaves para String (opcional)
 	 * @param toStringValue
@@ -33,7 +33,22 @@ public interface RelatorioExporter<O> {
 	 * @return o <em>stream</em> de leitura gerado
 	 * @throws NullPointerException
 	 *             caso o relatório seja <code>null</code>
+	 * @see #export(Relatorio)
 	 */
 	<T extends Entidade, V extends Comparable<V>> O export(Relatorio<T, V> relatorio, ToFormatedStringConverter<T> toStringKey,
 			ToFormatedStringConverter<V> toStringValue);
+
+	/**
+	 * Gera um novo <em>stream</em> de leitura contendo o relatório formatado.
+	 * 
+	 * @param relatorio
+	 *            a ser utilizado
+	 * @return o <em>stream</em> de leitura gerado
+	 * @throws NullPointerException
+	 *             caso o relatório seja <code>null</code>
+	 * @see #export(Relatorio, ToFormatedStringConverter, ToFormatedStringConverter)
+	 */
+	default <T extends Entidade, V extends Comparable<V>> O export(Relatorio<T, V> relatorio) {
+		return export(relatorio, null, null);
+	};
 }

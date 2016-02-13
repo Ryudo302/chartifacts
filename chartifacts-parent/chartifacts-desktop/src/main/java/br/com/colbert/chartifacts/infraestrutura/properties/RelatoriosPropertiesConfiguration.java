@@ -1,11 +1,14 @@
 package br.com.colbert.chartifacts.infraestrutura.properties;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
@@ -20,10 +23,19 @@ import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerato
  */
 public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguration {
 
-	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("relatorios");
+	private static final String NOME_ARQUIVO = "relatorios.properties";
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
+
+	private Properties properties;
+
+	@PostConstruct
+	protected void init() throws IOException {
+		properties = new Properties();
+		properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(NOME_ARQUIVO));
+		logger.debug("Propriedades carregadas");
+	}
 
 	@Override
 	public Optional<Integer> limiteTamanho() {
@@ -59,11 +71,7 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 	}
 
 	private String getString(String key) {
-		try {
-			logger.trace("Obtendo propriedade: {}", key);
-			return BUNDLE.getString(key);
-		} catch (MissingResourceException exception) {
-			throw new IllegalArgumentException("Chave desconhecida: " + key, exception);
-		}
+		logger.trace("Obtendo propriedade: {}", key);
+		return StringUtils.defaultIfBlank(properties.getProperty(key), '!' + key + '!');
 	}
 }

@@ -2,7 +2,6 @@ package br.com.colbert.chartifacts.infraestrutura.export;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
@@ -24,7 +23,7 @@ public class RelatorioTextExporter implements RelatorioExporter<String>, Seriali
 	private static final long serialVersionUID = -7505314036169243246L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	private int larguraPrimeiraColuna;
 
@@ -47,20 +46,18 @@ public class RelatorioTextExporter implements RelatorioExporter<String>, Seriali
 		logger.debug("Conversor de valores: {}", toStringValue);
 
 		StringBuilder builder = new StringBuilder();
-		relatorio.getItens().forEach(new BiConsumer<T, V>() {
-
-			@Override
-			public void accept(T key, V value) {
-				builder.append(StringUtils.rightPad(toString(key, toStringKey), larguraPrimeiraColuna)).append(toString(value, toStringValue))
-						.append(StringUtils.CR).append(StringUtils.LF);
-			}
-
-			private <K> String toString(K key, ToFormatedStringConverter<K> toStringConverter) {
-				return toStringConverter != null ? toStringConverter.convert(key) : key.toString();
-			}
-		});
-
+		relatorio.getItens()
+				.forEach((key, value) -> builder.append(StringUtils.rightPad(RelatorioTextExporter.this.toString(key, toStringKey), larguraPrimeiraColuna))
+						.append(RelatorioTextExporter.this.toString(value, toStringValue)).append(StringUtils.CR).append(StringUtils.LF));
 		return builder.toString();
+	}
+
+	private <K> String toString(K key, ToFormatedStringConverter<K> toStringConverter) {
+		return toStringConverter != null ? toStringConverter.convert(key) : key.toString();
+	}
+	
+	public int getLarguraPrimeiraColuna() {
+		return larguraPrimeiraColuna;
 	}
 
 	public RelatorioTextExporter setLarguraPrimeiraColuna(int larguraPrimeiraColuna) {
