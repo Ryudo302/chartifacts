@@ -7,8 +7,11 @@ import java.io.Serializable;
  * 
  * @author ThiagoColbert
  * @since 13 de fev de 2016
+ * 
+ * @param <V>
+ *            o tipo de <em>View</em> associada
  */
-public interface Presenter extends Serializable {
+public interface Presenter<V extends View> extends Serializable {
 
 	/**
 	 * Indica que o <em>presenter</em> deve ser iniciado.
@@ -20,5 +23,5 @@ public interface Presenter extends Serializable {
 	 * 
 	 * @return a <em>view</em>
 	 */
-	View getView();
+	V getView();
 }

@@ -52,11 +52,11 @@ public class RelatoriosView implements View, Serializable {
 	private final JPanel conteudoPanel;
 
 	@Inject
-	private PadroesArquivoEntradaViewPart padroesArquivoView;
+	private transient PadroesArquivoEntradaViewPart padroesArquivoView;
 	@Inject
-	private RelatoriosConfigViewPart relatoriosConfigView;
+	private transient RelatoriosConfigViewPart relatoriosConfigView;
 	@Inject
-	private ArquivoFormatter arquivoFormatter;
+	private transient ArquivoFormatter arquivoFormatter;
 
 	private final JFormattedTextField arquivoEntradaField;
 	private final JFormattedTextField arquivoSaidaField;
@@ -78,8 +78,8 @@ public class RelatoriosView implements View, Serializable {
 
 		JPanel topoPanel = new JPanel();
 		topoPanel.setLayout(new FormLayout(
-				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
-						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, }));

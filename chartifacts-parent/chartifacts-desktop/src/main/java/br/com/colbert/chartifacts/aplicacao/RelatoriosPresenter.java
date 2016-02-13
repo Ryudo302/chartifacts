@@ -1,18 +1,15 @@
 package br.com.colbert.chartifacts.aplicacao;
 
 import java.io.File;
+import java.text.MessageFormat;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.mvp4j.AppController;
-import org.slf4j.Logger;
-
-import br.com.colbert.chartifacts.infraestrutura.mvp.*;
-import br.com.colbert.chartifacts.infraestrutura.swing.WorkerDoneListener;
+import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractPresenter;
+import br.com.colbert.chartifacts.infraestrutura.swing.*;
 import br.com.colbert.chartifacts.ui.*;
 
 /**
@@ -21,33 +18,18 @@ import br.com.colbert.chartifacts.ui.*;
  * @author Thiago Colbert
  * @since 28/04/2015
  */
-public class RelatoriosPresenter implements Presenter {
+public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 	private static final long serialVersionUID = 8034832520010295862L;
 
 	@Inject
-	private transient RelatoriosView view;
-
-	@Inject
 	private transient Instance<GeracaoRelatoriosWorker> geradorRelatorios;
 
+	private File ultimoArquivoSelecionado;
+
 	@Inject
-	private transient Logger logger;
-	@Inject
-	private transient AppController appController;
-
-	@PostConstruct
-	protected void doBindings() {
-		appController.bindPresenter(view, this);
-	}
-
-	@Override
-	public void start() {
-	}
-
-	@Override
-	public View getView() {
-		return view;
+	public RelatoriosPresenter(RelatoriosView view) {
+		super(view);
 	}
 
 	public void escolherArquivoEntrada() {
@@ -56,6 +38,7 @@ public class RelatoriosPresenter implements Presenter {
 		if (opcao == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
 			view.setArquivoEntrada(file);
+			ultimoArquivoSelecionado = file;
 		}
 	}
 
@@ -65,6 +48,7 @@ public class RelatoriosPresenter implements Presenter {
 		if (opcao == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
 			view.setArquivoSaida(file);
+			ultimoArquivoSelecionado = file;
 		}
 	}
 
@@ -72,6 +56,11 @@ public class RelatoriosPresenter implements Presenter {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
 		fileChooser.setMultiSelectionEnabled(false);
+
+		if (ultimoArquivoSelecionado != null) {
+			fileChooser.setCurrentDirectory(ultimoArquivoSelecionado);
+		}
+
 		return fileChooser;
 	}
 
@@ -80,9 +69,9 @@ public class RelatoriosPresenter implements Presenter {
 		File arquivoSaida = view.getArquivoSaida();
 
 		if (arquivoEntrada == null) {
-			JOptionPane.showMessageDialog(view.getAwtContainer(), "Informe o arquivo a ser analizado!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
+			mostrarMensagemAlerta("Informe o arquivo a ser analizado!", "Informar arquivo");
 		} else if (arquivoSaida == null) {
-			JOptionPane.showMessageDialog(view.getAwtContainer(), "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
+			mostrarMensagemAlerta("Informe o arquivo de saída!", "Informar arquivo");
 		} else {
 			GeracaoRelatoriosWorker worker = geradorRelatorios.get();
 			worker.setArquivoEntrada(arquivoEntrada);
@@ -90,16 +79,18 @@ public class RelatoriosPresenter implements Presenter {
 			worker.setQuantidadePosicoes(view.getQuantidadePosicoes());
 
 			worker.addWorkerDoneListener(new WorkerDoneListener() {
+
 				@Override
 				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getAwtContainer(),
-							"Relatórios gerados com sucesso" + ":\n\n" + arquivoSaida, "Sucesso", JOptionPane.INFORMATION_MESSAGE));
+					mostrarMensagemInformativa(new HTMLMessage(
+							MessageFormat.format("<p>Relatórios gerados com sucesso:<br /><br /><a href=\"{0}\" target=\"_blank\">{1}</a></p>",
+									arquivoSaida, arquivoSaida)),
+							"Sucesso");
 				}
 
 				@Override
 				public void doneWithError(SwingWorker<?, ?> worker, Throwable error) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getAwtContainer(),
-							"Erro ao gravar arquivo de relatórios" + ":\n\n" + error.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE));
+					mostrarMensagemErro("Erro ao gravar arquivo de relatórios" + ":\n\n" + error.getLocalizedMessage(), "Erro");
 				}
 			});
 
