@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
-import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
+import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
 
 /**
  * Painel contendo informações de um {@link StringParsersConfig}.
@@ -20,7 +20,7 @@ import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
  * @since 20/04/2015
  */
 @Singleton
-public class PadroesArquivoEntradaView extends AbstractViewFlexivel {
+public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 
 	private static final long serialVersionUID = -154918168549652861L;
 
@@ -39,7 +39,7 @@ public class PadroesArquivoEntradaView extends AbstractViewFlexivel {
 	/**
 	 * Create the conteudoPanel.
 	 */
-	public PadroesArquivoEntradaView() {
+	public PadroesArquivoEntradaViewPart() {
 		conteudoPanel = new JPanel();
 		conteudoPanel.setBorder(new TitledBorder(null, "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
@@ -145,11 +145,8 @@ public class PadroesArquivoEntradaView extends AbstractViewFlexivel {
 		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
 	}
 
-	public static void main(String[] args) {
-		new PadroesArquivoEntradaView();
-	}
-
-	public JPanel getPanel() {
+	@Override
+	public Container getAwtContainer() {
 		return conteudoPanel;
 	}
 }

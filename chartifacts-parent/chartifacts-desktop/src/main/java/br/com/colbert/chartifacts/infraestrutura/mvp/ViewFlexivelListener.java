@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.infraestrutura.view;
+package br.com.colbert.chartifacts.infraestrutura.mvp;
 
 import java.util.EventListener;
 

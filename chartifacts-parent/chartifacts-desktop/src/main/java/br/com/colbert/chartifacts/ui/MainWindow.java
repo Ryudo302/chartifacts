@@ -2,17 +2,16 @@ package br.com.colbert.chartifacts.ui;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.swing.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mvp4j.annotation.Action;
 import org.mvp4j.annotation.MVP;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
+import br.com.colbert.chartifacts.infraestrutura.mvp.View;
 
 /**
  * Janela principal da aplicação.
@@ -22,7 +21,7 @@ import br.com.colbert.chartifacts.aplicacao.MainPresenter;
  */
 @Singleton
 @MVP(modelClass = Void.class, presenterClass = MainPresenter.class)
-public class MainWindow implements Serializable {
+public class MainWindow implements View {
 
 	private static final long serialVersionUID = 1998102092578023349L;
 
@@ -41,7 +40,7 @@ public class MainWindow implements Serializable {
 
 		Container contentPane = frame.getContentPane();
 		contentPane.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		
+
 		frame.setBounds(100, 100, 510, 229);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -65,16 +64,9 @@ public class MainWindow implements Serializable {
 
 		menuItemSobre = new JMenuItem("Sobre");
 		menuAjuda.add(menuItemSobre);
-		
+
 		contentPane.setLayout(new CardLayout(1, 1));
 		contentPane.setPreferredSize(new Dimension(400, 300));
-		
-		/*frame.getContentPane().setLayout(new FormLayout(
-				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
-						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"),
-						FormSpecs.RELATED_GAP_ROWSPEC, }));*/
 	}
 
 	@PostConstruct
@@ -82,37 +74,33 @@ public class MainWindow implements Serializable {
 		frame.pack();
 	}
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		new MainWindow().show();
+	@Override
+	public Container getAwtContainer() {
+		return frame;
 	}
 
-	public void setContent(Container container) {
-		String containerName = StringUtils.defaultIfBlank(container.getName(), container.getClass().getName() + '%' + container.hashCode());
+	/**
+	 * 
+	 * @param view
+	 */
+	public void setContentView(View view) {
+		// TODO Não funciona
+		/*String viewName = view.getName();
 		Container contentPane = frame.getContentPane();
 		CardLayout layout = (CardLayout) contentPane.getLayout();
-		layout.addLayoutComponent(container, containerName);
-		layout.show(contentPane, containerName);
+		layout.addLayoutComponent(view.getAwtContainer(), viewName);
+		layout.show(contentPane, viewName);
 		contentPane.revalidate();
-		frame.pack();
-		
-		// TODO Só funciona do modo abaixo
-		/*frame.setContentPane(container);
 		frame.revalidate();
 		frame.pack();*/
+
+		frame.setContentPane(view.getAwtContainer());
+		frame.revalidate();
+		frame.pack();
 	}
 
-	public void show() {
-		frame.setVisible(true);
-	}
-
+	@Override
 	public void close() {
-		frame.setVisible(false);
-	}
-
-	public JFrame getFrame() {
-		return frame;
+		this.frame.dispose();
 	}
 }

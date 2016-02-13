@@ -19,7 +19,8 @@ import br.com.colbert.chartifacts.infraestrutura.ordenacao.TipoOrdenacao;
  * @author Thiago Colbert
  * @since 13/03/2015
  */
-@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = { TipoOcorrencia.SUBIDA, TipoOcorrencia.QUEDA })
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = { TipoOcorrencia.SUBIDA, TipoOcorrencia.QUEDA,
+		TipoOcorrencia.ESTREIA, TipoOcorrencia.RETORNO, TipoOcorrencia.SAIDA })
 public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, VariacaoPosicao> {
 
 	private static final long serialVersionUID = -1293203212227492588L;

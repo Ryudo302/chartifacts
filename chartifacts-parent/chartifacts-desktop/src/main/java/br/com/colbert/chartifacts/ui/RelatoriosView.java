@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
 
@@ -15,7 +15,8 @@ import org.mvp4j.annotation.MVP;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
-import br.com.colbert.chartifacts.infraestrutura.view.*;
+import br.com.colbert.chartifacts.infraestrutura.mvp.*;
+import br.com.colbert.chartifacts.infraestrutura.swing.ArquivoFormatter;
 
 /**
  * Tela que permite a geração de relatórios da parada musical.
@@ -25,15 +26,15 @@ import br.com.colbert.chartifacts.infraestrutura.view.*;
  */
 @Singleton
 @MVP(modelClass = Void.class, presenterClass = RelatoriosPresenter.class)
-public class RelatoriosView implements Serializable {
+public class RelatoriosView implements View, Serializable {
 
 	private static final long serialVersionUID = -4531644924905149366L;
 
 	private static final class FramePackListener implements ViewFlexivelListener {
 
-		private final JPanel component;
+		private final Component component;
 
-		public FramePackListener(JPanel component) {
+		public FramePackListener(Component component) {
 			this.component = component;
 		}
 
@@ -51,9 +52,9 @@ public class RelatoriosView implements Serializable {
 	private final JPanel conteudoPanel;
 
 	@Inject
-	private PadroesArquivoEntradaView padroesArquivoView;
+	private PadroesArquivoEntradaViewPart padroesArquivoView;
 	@Inject
-	private RelatoriosConfigView relatoriosConfigView;
+	private RelatoriosConfigViewPart relatoriosConfigView;
 	@Inject
 	private ArquivoFormatter arquivoFormatter;
 
@@ -111,8 +112,8 @@ public class RelatoriosView implements Serializable {
 
 		quantidadePosicoesSpinner = new JSpinner();
 		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
-		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(2), null, new Integer(1)));
-		topoPanel.add(quantidadePosicoesSpinner, "4, 6, fill, center");
+		quantidadePosicoesSpinner.setPreferredSize(new Dimension(50, 20));
+		topoPanel.add(quantidadePosicoesSpinner, "4, 6, left, center");
 
 		JPanel botoesPanel = new JPanel();
 		topoPanel.add(botoesPanel, "2, 8, 5, 1, fill, center");
@@ -129,20 +130,20 @@ public class RelatoriosView implements Serializable {
 
 	@PostConstruct
 	protected void init() {
-		conteudoPanel.add(padroesArquivoView.getPanel());
-		conteudoPanel.add(relatoriosConfigView.getPanel());
+		Container padroesArquivoContainer = padroesArquivoView.getAwtContainer();
+		Container relatoriosConfigContainer = relatoriosConfigView.getAwtContainer();
 
-		padroesArquivoView.addViewFlexivelListener(new FramePackListener(padroesArquivoView.getPanel()));
-		relatoriosConfigView.addViewFlexivelListener(new FramePackListener(relatoriosConfigView.getPanel()));
+		conteudoPanel.add(padroesArquivoContainer);
+		conteudoPanel.add(relatoriosConfigContainer);
+
+		padroesArquivoView.addViewFlexivelListener(new FramePackListener(padroesArquivoContainer));
+		relatoriosConfigView.addViewFlexivelListener(new FramePackListener(relatoriosConfigContainer));
 
 		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
 	}
 
-	public static void main(String[] args) {
-		new RelatoriosView();
-	}
-
-	public JPanel getPanel() {
+	@Override
+	public Container getAwtContainer() {
 		return conteudoPanel;
 	}
 

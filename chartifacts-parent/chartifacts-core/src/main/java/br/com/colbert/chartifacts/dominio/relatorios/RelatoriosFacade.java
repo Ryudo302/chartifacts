@@ -154,7 +154,8 @@ public class RelatoriosFacade implements Serializable {
 	private String exportarCancoesComMaiorPermanencia(HistoricoParada historicoParada) {
 		StringBuilder builder = new StringBuilder();
 
-		CancoesComMaiorPermanencia cancoesComMaiorPermanencia = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO));
+		CancoesComMaiorPermanencia cancoesComMaiorPermanencia = getRelatorioGenerator(
+				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TipoLocal.POSICAO));
 
 		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaiorPermanencia);
 		int quantidadeSeparadores = tops.size() - 1;

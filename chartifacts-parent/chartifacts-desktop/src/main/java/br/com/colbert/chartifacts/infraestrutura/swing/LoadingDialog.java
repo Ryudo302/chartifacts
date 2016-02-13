@@ -2,8 +2,7 @@ package br.com.colbert.chartifacts.infraestrutura.swing;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.Beans;
-import java.io.*;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -11,6 +10,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.swing.*;
 
+import br.com.colbert.chartifacts.infraestrutura.io.ImagensRepository;
+import br.com.colbert.chartifacts.infraestrutura.mvp.View;
 import br.com.colbert.chartifacts.ui.MainWindow;
 
 /**
@@ -21,14 +22,20 @@ import br.com.colbert.chartifacts.ui.MainWindow;
  */
 @ApplicationScoped
 @LoadingView
-public class LoadingDialog implements Serializable {
+public class LoadingDialog implements View {
 
 	private static final long serialVersionUID = 8248885596292025385L;
+
+	private static final int LARGURA_PADRAO = 200;
+	private static final int ALTURA_PADRAO = 230;
+	private static final String ARQUIVO_IMAGEM_LOADING = "images/carregando.gif";
 
 	private JDialog dialog;
 
 	@Inject
-	private MainWindow mainWindow;
+	private transient MainWindow mainWindow;
+	@Inject
+	private transient ImagensRepository imagensRepository;
 
 	public static void main(String[] args) throws IOException {
 		new LoadingDialog().init();
@@ -36,37 +43,36 @@ public class LoadingDialog implements Serializable {
 
 	@PostConstruct
 	protected void init() throws IOException {
-		dialog = new JDialog(mainWindow != null ? mainWindow.getFrame() : null, true);
+		dialog = new JDialog(mainWindow != null ? (Frame) mainWindow.getAwtContainer() : null, true);
 		dialog.setUndecorated(true);
-		dialog.setPreferredSize(new Dimension(200, 230));
+		dialog.setPreferredSize(new Dimension(LARGURA_PADRAO, ALTURA_PADRAO));
 		dialog.setResizable(false);
 		dialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		dialog.setLocationRelativeTo(mainWindow != null ? mainWindow.getFrame() : null);
+		dialog.setLocationRelativeTo(mainWindow != null ? mainWindow.getAwtContainer() : null);
 
 		dialog.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					dialog.setVisible(false);
+				if (isTeclaEsc(event)) {
+					close();
 				}
+			}
+
+			private boolean isTeclaEsc(KeyEvent event) {
+				return event.getKeyCode() == KeyEvent.VK_ESCAPE;
 			}
 		});
 
-		JLabel imagemLabel = new JLabel();
-		imagemLabel.setIcon(Beans.isDesignTime() ? null : new ImageIcon(Thread.currentThread().getContextClassLoader()
-				.getResource("images/carregando.gif")));
+		JLabel imagemLabel = new JLabel(imagensRepository.recuperarIcone(ARQUIVO_IMAGEM_LOADING));
 		dialog.getContentPane().add(imagemLabel, BorderLayout.CENTER);
 
 		dialog.pack();
 	}
 
-	public void close() {
-		dialog.setVisible(false);
-	}
-
-	public void show() {
-		dialog.setVisible(true);
+	@Override
+	public Container getAwtContainer() {
+		return getWindow();
 	}
 
 	@Produces

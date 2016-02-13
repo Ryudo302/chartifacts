@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.ui;
 
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
-import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
+import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
 
 /**
  * Painel que exibe informações de um {@link RelatoriosConfiguration}.
@@ -20,7 +20,7 @@ import br.com.colbert.chartifacts.infraestrutura.view.AbstractViewFlexivel;
  * @since 20/04/2015
  */
 @Singleton
-public class RelatoriosConfigView extends AbstractViewFlexivel {
+public class RelatoriosConfigViewPart extends AbstractViewFlexivel {
 
 	private static final long serialVersionUID = -7418030376508842522L;
 
@@ -33,7 +33,7 @@ public class RelatoriosConfigView extends AbstractViewFlexivel {
 	/**
 	 * Create the panel.
 	 */
-	public RelatoriosConfigView() {
+	public RelatoriosConfigViewPart() {
 		conteudoPanel = new JPanel();
 		conteudoPanel.setBorder(new TitledBorder(null, "Relat\u00F3rios", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
@@ -66,9 +66,9 @@ public class RelatoriosConfigView extends AbstractViewFlexivel {
 
 		limiteSpinner = new JSpinner();
 		limiteSpinner.setEnabled(false);
-		limiteSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
 		limiteSpinner.setToolTipText("Quantidade máxima de itens a serem listados em cada relatório");
-		contentPanel.add(limiteSpinner, "4, 2, fill, center");
+		limiteSpinner.setPreferredSize(new Dimension(50, 20));
+		contentPanel.add(limiteSpinner, "4, 2, left, center");
 
 		contentPanel.addComponentListener(new ComponentAdapter() {
 
@@ -89,7 +89,8 @@ public class RelatoriosConfigView extends AbstractViewFlexivel {
 		relatoriosConfiguration.limiteTamanho().ifPresent(limite -> limiteSpinner.setValue(limite));
 	}
 
-	public JPanel getPanel() {
+	@Override
+	public Container getAwtContainer() {
 		return conteudoPanel;
 	}
 }

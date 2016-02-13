@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.aplicacao;
 
-import java.io.*;
+import java.io.File;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
@@ -11,15 +11,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.mvp4j.AppController;
 import org.slf4j.Logger;
 
+import br.com.colbert.chartifacts.infraestrutura.mvp.*;
 import br.com.colbert.chartifacts.infraestrutura.swing.WorkerDoneListener;
 import br.com.colbert.chartifacts.ui.*;
 
 /**
+ * <em>Presenter</em> da tela de geração de relatórios.
  *
  * @author Thiago Colbert
  * @since 28/04/2015
  */
-public class RelatoriosPresenter implements Serializable {
+public class RelatoriosPresenter implements Presenter {
 
 	private static final long serialVersionUID = 8034832520010295862L;
 
@@ -39,16 +41,18 @@ public class RelatoriosPresenter implements Serializable {
 		appController.bindPresenter(view, this);
 	}
 
+	@Override
 	public void start() {
 	}
 
-	public JPanel getViewPanel() {
-		return view.getPanel();
+	@Override
+	public View getView() {
+		return view;
 	}
 
 	public void escolherArquivoEntrada() {
 		JFileChooser fileChooser = criarFileChooser();
-		int opcao = fileChooser.showOpenDialog(view.getPanel());
+		int opcao = fileChooser.showOpenDialog(view.getAwtContainer());
 		if (opcao == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
 			view.setArquivoEntrada(file);
@@ -57,7 +61,7 @@ public class RelatoriosPresenter implements Serializable {
 
 	public void escolherArquivoSaida() {
 		JFileChooser fileChooser = criarFileChooser();
-		int opcao = fileChooser.showSaveDialog(view.getPanel());
+		int opcao = fileChooser.showSaveDialog(view.getAwtContainer());
 		if (opcao == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
 			view.setArquivoSaida(file);
@@ -76,9 +80,9 @@ public class RelatoriosPresenter implements Serializable {
 		File arquivoSaida = view.getArquivoSaida();
 
 		if (arquivoEntrada == null) {
-			JOptionPane.showMessageDialog(view.getPanel(), "Informe o arquivo a ser analizado!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(view.getAwtContainer(), "Informe o arquivo a ser analizado!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
 		} else if (arquivoSaida == null) {
-			JOptionPane.showMessageDialog(view.getPanel(), "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(view.getAwtContainer(), "Informe o arquivo de saída!", "Informar arquivo", JOptionPane.WARNING_MESSAGE);
 		} else {
 			GeracaoRelatoriosWorker worker = geradorRelatorios.get();
 			worker.setArquivoEntrada(arquivoEntrada);
@@ -88,13 +92,13 @@ public class RelatoriosPresenter implements Serializable {
 			worker.addWorkerDoneListener(new WorkerDoneListener() {
 				@Override
 				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(), "Relatórios gerados com sucesso" + ":\n\n" + arquivoSaida,
-							"Sucesso", JOptionPane.INFORMATION_MESSAGE));
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getAwtContainer(),
+							"Relatórios gerados com sucesso" + ":\n\n" + arquivoSaida, "Sucesso", JOptionPane.INFORMATION_MESSAGE));
 				}
 
 				@Override
 				public void doneWithError(SwingWorker<?, ?> worker, Throwable error) {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getPanel(),
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view.getAwtContainer(),
 							"Erro ao gravar arquivo de relatórios" + ":\n\n" + error.getLocalizedMessage(), "Erro", JOptionPane.ERROR_MESSAGE));
 				}
 			});
