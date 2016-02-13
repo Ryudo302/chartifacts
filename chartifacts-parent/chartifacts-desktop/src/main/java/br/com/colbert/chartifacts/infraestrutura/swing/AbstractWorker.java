@@ -25,7 +25,7 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> {
 	protected Throwable lastError;
 
 	@Inject
-	private WorkerWaitListener workerWaitListener;
+	private transient WorkerWaitListener workerWaitListener;
 
 	@PostConstruct
 	protected void init() {

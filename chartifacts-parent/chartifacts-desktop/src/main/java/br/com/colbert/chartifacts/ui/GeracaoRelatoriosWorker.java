@@ -25,12 +25,11 @@ import br.com.colbert.chartifacts.infraestrutura.swing.AbstractWorker;
 public class GeracaoRelatoriosWorker extends AbstractWorker<Path, Void> {
 
 	@Inject
-	private Logger logger;
-
+	private transient Logger logger;
 	@Inject
-	private HistoricoParadaFileParser historicoParadaFileParser;
+	private transient HistoricoParadaFileParser historicoParadaFileParser;
 	@Inject
-	private RelatoriosFacade relatoriosFacade;
+	private transient RelatoriosFacade relatoriosFacade;
 
 	private File arquivoEntrada;
 	private File arquivoSaida;
