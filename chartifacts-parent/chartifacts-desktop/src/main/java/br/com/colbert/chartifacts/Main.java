@@ -1,9 +1,11 @@
 package br.com.colbert.chartifacts;
 
+import java.awt.EventQueue;
 import java.io.IOException;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.swing.*;
 
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
@@ -27,13 +29,13 @@ public class Main {
 		Main.arguments = new Args(args);
 		StartMain.main(args);
 	}
-	
+
 	@Inject
 	private transient Logger logger;
 
 	@Inject
 	private MainPresenter mainPresenter;
-	
+
 	@Inject
 	private ConsoleRunner consoleRunner;
 
@@ -51,8 +53,16 @@ public class Main {
 			consoleRunner.run(arguments);
 			System.exit(0);
 		} else {
-			logger.info("Executando em modo GUI");
-			mainPresenter.start();
+			EventQueue.invokeLater(() -> {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException exception) {
+					logger.error("Erro ao definir Look & Feel", exception);
+				}
+
+				logger.info("Executando em modo GUI");
+				mainPresenter.start();
+			});
 		}
 	}
 }

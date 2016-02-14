@@ -2,9 +2,10 @@ package br.com.colbert.chartifacts.infraestrutura.mvp;
 
 import java.awt.Container;
 import java.io.Serializable;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  * Serviço que permite a exibição de mensagens na tela.
@@ -26,9 +27,11 @@ class MensagensService implements Serializable {
 	 *            conteúdo da mensagem
 	 * @param titulo
 	 *            título da janela contendo a mensagem
+	 * @param icone
+	 *            ícone exibido na janela para melhor identificar a natureza da mensagem
 	 */
-	public void mostrarMensagemInformativa(View parentView, Object mensagem, String titulo) {
-		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.INFORMATION_MESSAGE);
+	public void mostrarMensagemInformativa(View parentView, Object mensagem, String titulo, Optional<ImageIcon> icone) {
+		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.INFORMATION_MESSAGE, icone);
 	}
 
 	/**
@@ -42,7 +45,7 @@ class MensagensService implements Serializable {
 	 *            título da janela contendo a mensagem
 	 */
 	public void mostrarMensagemAlerta(View parentView, Object mensagem, String titulo) {
-		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.WARNING_MESSAGE);
+		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.WARNING_MESSAGE, Optional.empty());
 	}
 
 	/**
@@ -56,10 +59,14 @@ class MensagensService implements Serializable {
 	 *            título da janela contendo a mensagem
 	 */
 	public void mostrarMensagemErro(View parentView, Object mensagem, String titulo) {
-		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.ERROR_MESSAGE);
+		mostrarMensagem(parentView.getAwtContainer(), mensagem, titulo, JOptionPane.ERROR_MESSAGE, Optional.empty());
 	}
 
-	private void mostrarMensagem(Container container, Object mensagem, String titulo, int tipo) {
-		JOptionPane.showMessageDialog(container, mensagem, titulo, tipo);
+	private void mostrarMensagem(Container container, Object mensagem, String titulo, int tipo, Optional<ImageIcon> icone) {
+		if (icone.isPresent()) {
+			JOptionPane.showMessageDialog(container, mensagem, titulo, tipo, icone.get());
+		} else {
+			JOptionPane.showMessageDialog(container, mensagem, titulo, tipo);
+		}
 	}
 }

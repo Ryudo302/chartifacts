@@ -28,12 +28,12 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	private static final long serialVersionUID = 3515381357514035259L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	@Inject
-	private CancaoStringParser cancaoStringParser;
+	private transient CancaoStringParser cancaoStringParser;
 	@Inject
-	private ChartRunStringParser chartRunStringParser;
+	private transient ChartRunStringParser chartRunStringParser;
 
 	/**
 	 * @throws NullPointerException
@@ -58,26 +58,29 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 		try (Stream<String> linhas = Files.lines(Paths.get(arquivo.toURI()))) {
 			ItemHistoricoParadaBuilder itemBuilder = ItemHistoricoParadaBuilder.novo(calculadoraPontos);
 
-			linhas.filter(linha -> StringUtils.isNotBlank(linha)).forEach(
-					linha -> {
-						logger.trace("Linha atual: {}", linha);
+			linhas.filter(linha -> StringUtils.isNotBlank(linha)).forEach(linha -> {
+				logger.trace("Linha atual: {}", linha);
 
-						if (isLinhaArtistaCancaoPeriodo(linha)) {
-							logger.trace("Identificando artistas, canção e período");
-							itemBuilder.comCancao(cancaoStringParser.parse(linha)).comPeriodo(
-									IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now()));
-						} else if (isLinhaChartRun(linha)) {
-							logger.trace("Identificando chart-run");
-							itemBuilder.comChartRun(chartRunStringParser.parse(linha, quantidadePosicoesParada));
-						}
+				if (isLinhaArtistaCancaoPeriodo(linha)) {
+					logger.trace("Identificando artistas, canção e período");
+					itemBuilder.comCancao(cancaoStringParser.parse(linha))
+							.comPeriodo(IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now()));
+				} else if (isLinhaChartRun(linha)) {
+					logger.trace("Identificando chart-run");
+					itemBuilder.comChartRun(chartRunStringParser.parse(linha, quantidadePosicoesParada));
+				}
 
-						if (itemBuilder.isReadyToBuild()) {
-							itens.add(itemBuilder.build());
-							itemBuilder.clear();
-						}
-					});
+				if (itemBuilder.isReadyToBuild()) {
+					itens.add(itemBuilder.build());
+					itemBuilder.clear();
+				}
+			});
 		} catch (IOException | UncheckedIOException exception) {
 			throw new ParserException("Erro ao ler arquivo: " + arquivo, exception);
+		}
+
+		if (itens.isEmpty()) {
+			throw new ParserException("Nenhum histórico identificado no arquivo: " + arquivo);
 		}
 
 		logger.debug("Criando histórico com {} ítens", itens.size());

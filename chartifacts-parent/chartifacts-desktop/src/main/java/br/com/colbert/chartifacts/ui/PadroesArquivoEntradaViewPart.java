@@ -41,7 +41,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 	 */
 	public PadroesArquivoEntradaViewPart() {
 		conteudoPanel = new JPanel();
-		conteudoPanel.setBorder(new TitledBorder(null, "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		conteudoPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Padr\u00F5es do Arquivo", TitledBorder.LEADING,
+				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 0)));
 
 		JPanel togglePanel = new JPanel();
 		JPanel contentPanel = new JPanel();
@@ -51,7 +52,7 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		conteudoPanel.add(togglePanel);
 
-		JToggleButton togglePadroesArquivoButton = new JToggleButton("Ocultar");
+		JToggleButton togglePadroesArquivoButton = SwingComponentFactory.createSecondaryJToggleButton("Ocultar");
 		togglePadroesArquivoButton.addActionListener(event -> {
 			togglePadroesArquivoButton.setText(togglePadroesArquivoButton.isSelected() ? "Ocultar" : "Mostrar");
 			contentPanel.setVisible(togglePadroesArquivoButton.isSelected());
@@ -67,58 +68,50 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		conteudoPanel.add(contentPanel);
 
-		JLabel nomeArtistaLabel = new JLabel("Nome de Artista:");
+		JLabel nomeArtistaLabel = SwingComponentFactory.createCommonJLabel("Nome de Artista:");
 		contentPanel.add(nomeArtistaLabel, "2, 2, right, center");
 
-		nomeArtistaField = new JTextField();
+		nomeArtistaField = SwingComponentFactory.createCommonJTextField("Regex utilizada para identificar os nomes dos artistas", 10);
 		nomeArtistaField.setEditable(false);
-		nomeArtistaField.setToolTipText("Regex utilizada para identificar os nomes dos artistas");
 		contentPanel.add(nomeArtistaField, "4, 2, fill, default");
-		nomeArtistaField.setColumns(10);
 
-		JLabel separadoresArtistasLabel = new JLabel("Separadores de Artistas:");
+		JLabel separadoresArtistasLabel = SwingComponentFactory.createCommonJLabel("Separadores de Artistas:");
 		contentPanel.add(separadoresArtistasLabel, "2, 4, right, default");
 
-		separadoresArtistasField = new JTextField();
+		separadoresArtistasField = SwingComponentFactory
+				.createCommonJTextField("Regex utilizada para identificar segmentos de texto que separem um artista do outro", 10);
 		separadoresArtistasField.setEditable(false);
-		separadoresArtistasField.setToolTipText("Regex utilizada para identificar segmentos de texto que separem um artista do outro");
-		separadoresArtistasField.setColumns(10);
 		contentPanel.add(separadoresArtistasField, "4, 4, fill, default");
 
-		JLabel separadorArtistaCancaoLabel = new JLabel("Separador Artista/Canção:");
+		JLabel separadorArtistaCancaoLabel = SwingComponentFactory.createCommonJLabel("Separador Artista/Canção:");
 		contentPanel.add(separadorArtistaCancaoLabel, "2, 6, right, default");
 
-		separadorArtistaCancaoField = new JTextField();
+		separadorArtistaCancaoField = SwingComponentFactory.createCommonJTextField(
+				"Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção", 10);
 		separadorArtistaCancaoField.setEditable(false);
-		separadorArtistaCancaoField.setToolTipText("Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção");
-		separadorArtistaCancaoField.setColumns(10);
 		contentPanel.add(separadorArtistaCancaoField, "4, 6, fill, default");
 
-		JLabel tituloCancaoLabel = new JLabel("Título de Canção:");
+		JLabel tituloCancaoLabel = SwingComponentFactory.createCommonJLabel("Título de Canção:");
 		contentPanel.add(tituloCancaoLabel, "2, 8, right, default");
 
-		tituloCancaoField = new JTextField();
+		tituloCancaoField = SwingComponentFactory.createCommonJTextField("Regex utilizada para identificar o título da canção", 10);
 		tituloCancaoField.setEditable(false);
-		tituloCancaoField.setToolTipText("Regex utilizada para identificar o título da canção");
-		tituloCancaoField.setColumns(10);
 		contentPanel.add(tituloCancaoField, "4, 8, fill, default");
 
-		JLabel separadorTitulosAlternativosLabel = new JLabel("Separador de Títulos Alternativos:");
+		JLabel separadorTitulosAlternativosLabel = SwingComponentFactory.createCommonJLabel("Separador de Títulos Alternativos:");
 		contentPanel.add(separadorTitulosAlternativosLabel, "2, 10, right, default");
 
-		separadorTitulosAlternativosField = new JTextField();
+		separadorTitulosAlternativosField = SwingComponentFactory
+				.createCommonJTextField("Regex utilizada para identificar títulos alternativos da canção", 10);
 		separadorTitulosAlternativosField.setEditable(false);
-		separadorTitulosAlternativosField.setToolTipText("Regex utilizada para identificar títulos alternativos da canção");
-		separadorTitulosAlternativosField.setColumns(10);
 		contentPanel.add(separadorTitulosAlternativosField, "4, 10, fill, default");
 
-		JLabel separadorPosicoesChartRunLabel = new JLabel("Separador de Posições de Chart-run:");
+		JLabel separadorPosicoesChartRunLabel = SwingComponentFactory.createCommonJLabel("Separador de Posições de Chart-run:");
 		contentPanel.add(separadorPosicoesChartRunLabel, "2, 12, right, default");
 
-		separadorPosicoesChartRunField = new JTextField();
+		separadorPosicoesChartRunField = SwingComponentFactory.createCommonJTextField("Expressão utilizada para separar as posições dos chart-runs",
+				10);
 		separadorPosicoesChartRunField.setEditable(false);
-		separadorPosicoesChartRunField.setToolTipText("Expressão utilizada para separar as posições dos chart-runs");
-		separadorPosicoesChartRunField.setColumns(10);
 		contentPanel.add(separadorPosicoesChartRunField, "4, 12, fill, center");
 
 		contentPanel.addComponentListener(new ComponentAdapter() {

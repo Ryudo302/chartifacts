@@ -3,6 +3,7 @@ package br.com.colbert.chartifacts.infraestrutura.swing;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -64,7 +65,7 @@ public class LoadingDialog implements View {
 			}
 		});
 
-		JLabel imagemLabel = new JLabel(imagensRepository.recuperarIcone(ARQUIVO_IMAGEM_LOADING));
+		JLabel imagemLabel = new JLabel(imagensRepository.recuperarIcone(ARQUIVO_IMAGEM_LOADING, Optional.empty()).get());
 		dialog.getContentPane().add(imagemLabel, BorderLayout.CENTER);
 
 		dialog.pack();

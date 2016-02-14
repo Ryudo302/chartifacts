@@ -69,7 +69,7 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 		File arquivoSaida = view.getArquivoSaida();
 
 		if (arquivoEntrada == null) {
-			mostrarMensagemAlerta("Informe o arquivo a ser analizado!", "Informar arquivo");
+			mostrarMensagemAlerta("Informe o arquivo a ser analisado!", "Informar arquivo");
 		} else if (arquivoSaida == null) {
 			mostrarMensagemAlerta("Informe o arquivo de saída!", "Informar arquivo");
 		} else {

@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.infraestrutura.swing;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.SwingWorker.StateValue;
 
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class WorkerWaitListener implements WorkerStateListener {
 		if (exibindo) {
 			logger.trace("Ocultando tela");
 			exibindo = false;
-			loadingView.close();
+			SwingUtilities.invokeLater(() -> loadingView.close());
 		}
 	}
 
@@ -52,7 +52,7 @@ public class WorkerWaitListener implements WorkerStateListener {
 		if (!exibindo) {
 			logger.trace("Exibindo tela");
 			exibindo = true;
-			loadingView.show();
+			SwingUtilities.invokeLater(() -> loadingView.show());
 		}
 	}
 }

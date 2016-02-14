@@ -1,8 +1,10 @@
 package br.com.colbert.chartifacts.infraestrutura.mvp;
 
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import org.mvp4j.AppController;
 import org.slf4j.Logger;
@@ -57,10 +59,25 @@ public abstract class AbstractPresenter<V extends View> implements Presenter<V> 
 	 *            conteúdo da mensagem
 	 * @param titulo
 	 *            título da mensagem
-	 * @see MensagensService#mostrarMensagemInformativa(View, Object, String)
+	 * @param icone
+	 *            ícone exibido na janela para melhor identificar a natureza da mensagem
+	 * @see MensagensService#mostrarMensagemInformativa(View, Object, String, java.util.Optional)
+	 */
+	protected void mostrarMensagemInformativa(Object mensagem, String titulo, Optional<ImageIcon> icone) {
+		SwingUtilities.invokeLater(() -> mensagensService.mostrarMensagemInformativa(view, mensagem, titulo, icone));
+	}
+
+	/**
+	 * Exibe uma mensagem informativa na tela.
+	 * 
+	 * @param mensagem
+	 *            conteúdo da mensagem
+	 * @param titulo
+	 *            título da mensagem
+	 * @see #mostrarMensagemInformativa(Object, String, Optional)
 	 */
 	protected void mostrarMensagemInformativa(Object mensagem, String titulo) {
-		SwingUtilities.invokeLater(() -> mensagensService.mostrarMensagemInformativa(view, mensagem, titulo));
+		mostrarMensagemInformativa(mensagem, titulo, Optional.empty());
 	}
 
 	/**

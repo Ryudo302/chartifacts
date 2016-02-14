@@ -2,15 +2,17 @@ package br.com.colbert.chartifacts.ui;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import javax.inject.*;
 import javax.swing.*;
 
 import org.mvp4j.annotation.Action;
 import org.mvp4j.annotation.MVP;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
+import br.com.colbert.chartifacts.infraestrutura.io.ImagensRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.View;
 
 /**
@@ -26,6 +28,9 @@ public class MainWindow implements View {
 	private static final long serialVersionUID = 1998102092578023349L;
 
 	private final JFrame frame;
+
+	@Inject
+	private transient ImagensRepository imagensRepository;
 
 	@Action(EventAction = "actionPerformed", EventType = ActionListener.class, name = "sobre")
 	private transient final JMenuItem menuItemSobre;
@@ -71,6 +76,9 @@ public class MainWindow implements View {
 
 	@PostConstruct
 	protected void init() {
+		menuItemRelatorios.setIcon(imagensRepository.recuperarIcone("images/report.png", Optional.of(new Dimension(20, 20))).get());
+		menuItemSobre.setIcon(imagensRepository.recuperarIcone("images/chart.png", Optional.of(new Dimension(20, 20))).get());
+
 		frame.pack();
 	}
 
@@ -80,19 +88,26 @@ public class MainWindow implements View {
 	}
 
 	/**
+	 * Define a imagem de ícone da janela.
+	 * 
+	 * @param icone
+	 *            a imagem
+	 */
+	public void setIcone(Image icone) {
+		frame.setIconImage(icone);
+	}
+
+	/**
 	 * 
 	 * @param view
 	 */
 	public void setContentView(View view) {
 		// TODO Não funciona
-		/*String viewName = view.getName();
-		Container contentPane = frame.getContentPane();
-		CardLayout layout = (CardLayout) contentPane.getLayout();
-		layout.addLayoutComponent(view.getAwtContainer(), viewName);
-		layout.show(contentPane, viewName);
-		contentPane.revalidate();
-		frame.revalidate();
-		frame.pack();*/
+		/*
+		 * String viewName = view.getName(); Container contentPane = frame.getContentPane(); CardLayout layout = (CardLayout) contentPane.getLayout();
+		 * layout.addLayoutComponent(view.getAwtContainer(), viewName); layout.show(contentPane, viewName); contentPane.revalidate();
+		 * frame.revalidate(); frame.pack();
+		 */
 
 		frame.setContentPane(view.getAwtContainer());
 		frame.revalidate();

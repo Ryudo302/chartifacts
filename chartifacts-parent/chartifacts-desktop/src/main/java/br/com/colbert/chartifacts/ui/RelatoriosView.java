@@ -3,6 +3,7 @@ package br.com.colbert.chartifacts.ui;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
@@ -16,6 +17,7 @@ import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
+import br.com.colbert.chartifacts.infraestrutura.io.ImagensRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.*;
 import br.com.colbert.chartifacts.infraestrutura.swing.ArquivoFormatter;
 
@@ -58,6 +60,8 @@ public class RelatoriosView implements View, Serializable {
 	private transient RelatoriosConfigViewPart relatoriosConfigView;
 	@Inject
 	private transient ArquivoFormatter arquivoFormatter;
+	@Inject
+	private transient ImagensRepository imagensRepository;
 
 	private final JFormattedTextField arquivoEntradaField;
 	private final JFormattedTextField arquivoSaidaField;
@@ -85,46 +89,37 @@ public class RelatoriosView implements View, Serializable {
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, }));
 
-		arquivoEntradaField = new JFormattedTextField();
-		arquivoEntradaField.setColumns(50);
-		topoPanel.add(arquivoEntradaField, "4, 2, fill, center");
+		arquivoEntradaField = SwingComponentFactory.createCommonJFormattedTextField(50);
 		arquivoEntradaField.setEditable(false);
+		topoPanel.add(arquivoEntradaField, "4, 2, fill, center");
 
-		escolherArquivoEntradaButton = new JButton("Procurar...");
+		escolherArquivoEntradaButton = SwingComponentFactory.createSecondaryJButton("Procurar...", "Selecionar o arquivo de histórico");
 		topoPanel.add(escolherArquivoEntradaButton, "6, 2, center, center");
-		escolherArquivoEntradaButton.setToolTipText("Selecionar o arquivo de histórico");
 
-		JLabel arquivoSaidaLabel = new JLabel("Arquivo de Saída:");
-		arquivoSaidaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		JLabel arquivoSaidaLabel = SwingComponentFactory.createHighlightsJLabel("Arquivo de Saída:");
 		topoPanel.add(arquivoSaidaLabel, "2, 4, right, center");
 
-		arquivoSaidaField = new JFormattedTextField();
-		arquivoSaidaField.setColumns(50);
+		arquivoSaidaField = SwingComponentFactory.createCommonJFormattedTextField(50);
 		arquivoSaidaField.setEditable(false);
 		topoPanel.add(arquivoSaidaField, "4, 4, fill, center");
 
-		escolherArquivoSaidaButton = new JButton("Procurar...");
-		escolherArquivoSaidaButton.setToolTipText("Selecionar o arquivo de saída");
+		escolherArquivoSaidaButton = SwingComponentFactory.createSecondaryJButton("Procurar...", "Selecionar o arquivo de saída");
 		topoPanel.add(escolherArquivoSaidaButton, "6, 4, center, center");
 
-		JLabel quantidadePosicoesLabel = new JLabel("Quantidade de Posições:");
-		quantidadePosicoesLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		JLabel quantidadePosicoesLabel = SwingComponentFactory.createHighlightsJLabel("Quantidade de Posições:");
 		topoPanel.add(quantidadePosicoesLabel, "2, 6, right, center");
 
-		quantidadePosicoesSpinner = new JSpinner();
-		quantidadePosicoesSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
-		quantidadePosicoesSpinner.setToolTipText("Total de posições na parada musical");
-		quantidadePosicoesSpinner.setPreferredSize(new Dimension(50, 20));
+		quantidadePosicoesSpinner = SwingComponentFactory.createCommonJSpinner(
+				new SpinnerNumberModel(new Integer(10), new Integer(0), null, new Integer(1)), "Total de posições na parada musical");
 		topoPanel.add(quantidadePosicoesSpinner, "4, 6, left, center");
 
 		JPanel botoesPanel = new JPanel();
 		topoPanel.add(botoesPanel, "2, 8, 5, 1, fill, center");
 
-		executarButton = new JButton("Executar");
+		executarButton = SwingComponentFactory.createPrimaryJButton("Executar", "Gera todos os relatórios");
 		botoesPanel.add(executarButton);
 
-		JLabel arquivoEntradaLabel = new JLabel("Arquivo de Entrada:");
-		arquivoEntradaLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		JLabel arquivoEntradaLabel = SwingComponentFactory.createHighlightsJLabel("Arquivo de Entrada:");
 		topoPanel.add(arquivoEntradaLabel, "2, 2, right, center");
 
 		conteudoPanel.add(topoPanel);
@@ -142,6 +137,8 @@ public class RelatoriosView implements View, Serializable {
 		relatoriosConfigView.addViewFlexivelListener(new FramePackListener(relatoriosConfigContainer));
 
 		arquivoEntradaField.setFormatterFactory(new DefaultFormatterFactory(arquivoFormatter));
+
+		executarButton.setIcon(imagensRepository.recuperarIcone("images/executar.png", Optional.of(new Dimension(20, 20))).get());
 	}
 
 	@Override
