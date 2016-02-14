@@ -12,6 +12,7 @@ import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
+import br.com.colbert.chartifacts.infraestrutura.swing.SwingComponentFactory;
 
 /**
  * Painel contendo informações de um {@link StringParsersConfig}.

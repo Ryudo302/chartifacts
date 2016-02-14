@@ -19,7 +19,7 @@ import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.infraestrutura.io.ImagensRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.*;
-import br.com.colbert.chartifacts.infraestrutura.swing.ArquivoFormatter;
+import br.com.colbert.chartifacts.infraestrutura.swing.*;
 
 /**
  * Tela que permite a geração de relatórios da parada musical.

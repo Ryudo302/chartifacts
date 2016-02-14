@@ -13,6 +13,7 @@ import com.jgoodies.forms.layout.*;
 import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
 import br.com.colbert.chartifacts.infraestrutura.properties.RelatoriosPropertiesConfiguration;
+import br.com.colbert.chartifacts.infraestrutura.swing.SwingComponentFactory;
 
 /**
  * Painel que exibe informações de um {@link RelatoriosConfiguration}.

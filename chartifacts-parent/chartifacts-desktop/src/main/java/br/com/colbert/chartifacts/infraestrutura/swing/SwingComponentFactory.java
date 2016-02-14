@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.ui;
+package br.com.colbert.chartifacts.infraestrutura.swing;
 
 import java.awt.*;
 import java.io.Serializable;
