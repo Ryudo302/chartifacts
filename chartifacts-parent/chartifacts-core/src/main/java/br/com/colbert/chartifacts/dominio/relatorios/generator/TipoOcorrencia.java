@@ -3,7 +3,7 @@ package br.com.colbert.chartifacts.dominio.relatorios.generator;
 import java.util.*;
 import java.util.stream.Stream;
 
-import br.com.colbert.chartifacts.dominio.chartrun.TipoVariacaoPosicao;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.TipoVariacaoPosicao;
 
 /**
  * Tipos de ocorrências que podem ser utilizados pelos relatórios.

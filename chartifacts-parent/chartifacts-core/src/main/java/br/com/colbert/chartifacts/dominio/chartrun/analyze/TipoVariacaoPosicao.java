@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 /**
  * Os tipos de variação de posição que podem ocorrer dentro de um <em>chart-run</em>.

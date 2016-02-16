@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.dominio.relatorios;
 
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoLocal.TOP;
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.ESTREIA;
-import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.TEMPO;
+import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.*;
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoVariacao.MAIOR;
 
 import java.io.Serializable;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import br.com.colbert.base.dominio.Entidade;
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.export.ToFormatedStringConverter;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.*;
@@ -100,6 +101,8 @@ public class RelatoriosFacade implements Serializable {
 			relatoriosTextBuilder.append(exportarCancoesComMaiorEntrada(historicoParada, tipoVariacao));
 			separador(relatoriosTextBuilder);
 		});
+		relatoriosTextBuilder.append(exportarCancoesComMaiorSaida(historicoParada));
+		separador(relatoriosTextBuilder);
 		relatoriosTextBuilder.append(exportarCancoesComMaisTempoEmTop(historicoParada));
 		return relatoriosTextBuilder.toString();
 	}
@@ -212,6 +215,20 @@ public class RelatoriosFacade implements Serializable {
 		cancoesComMaiorVariacao.setTipoVariacao(tipoVariacao);
 
 		builder.append(criarRelatorioTextBuilder(cancoesComMaiorVariacao, tipoVariacao));
+		cancoesComMaiorVariacao.gerar(historicoParada).ifPresent(relatorioAtual -> builder
+				.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), posicaoUnicaStringConverter())));
+
+		return builder.toString();
+	}
+	
+	private String exportarCancoesComMaiorSaida(HistoricoParada historicoParada) {
+		CancoesComMaiorVariacao cancoesComMaiorVariacao = getRelatorioGenerator(
+				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(SAIDA));
+
+		StringBuilder builder = new StringBuilder();
+		cancoesComMaiorVariacao.setTipoVariacao(SAIDA.getTipoVariacaoPosicao());
+
+		builder.append(criarRelatorioTextBuilder(cancoesComMaiorVariacao, SAIDA));
 		cancoesComMaiorVariacao.gerar(historicoParada).ifPresent(relatorioAtual -> builder
 				.append(relatorioTextExporter.export(relatorioAtual, cancao -> cancaoFormatter.format(cancao), posicaoUnicaStringConverter())));
 

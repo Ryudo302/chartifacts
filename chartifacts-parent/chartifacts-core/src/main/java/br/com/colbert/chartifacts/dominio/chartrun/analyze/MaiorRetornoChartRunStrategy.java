@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Estratégia para identificar o maior retorno dentro de um <em>chart-run</em>.
@@ -35,8 +37,8 @@ public class MaiorRetornoChartRunStrategy implements MaiorVariacaoPosicaoEspecif
 			elementoAnterior = elementoAtual;
 		}
 
-		return maiorRetorno != null && (posicaoEspecifica == null || posicaoEspecifica != null && posicaoEspecifica.equals(maiorRetorno)) ? Optional
-				.of(VariacaoPosicaoBuilder.retorno().em(maiorRetorno).build()) : Optional.empty();
+		return maiorRetorno != null && (posicaoEspecifica == null || posicaoEspecifica != null && posicaoEspecifica.equals(maiorRetorno))
+				? Optional.of(VariacaoPosicaoBuilder.retorno().em(maiorRetorno).build()) : Optional.empty();
 	}
 
 	private boolean isRetorno(ElementoChartRun elementoAnterior, ElementoChartRun elementoAtual) {

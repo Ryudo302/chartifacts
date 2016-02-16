@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.Builder;
 import org.slf4j.*;
 
 import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.PermanenciaPosicao;
 
 /**
  * Classe que facilita a criação de instâncias de {@link Estatisticas}.

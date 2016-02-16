@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.*;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Uma variação de posições dentro de um <em>chart-run</em>.

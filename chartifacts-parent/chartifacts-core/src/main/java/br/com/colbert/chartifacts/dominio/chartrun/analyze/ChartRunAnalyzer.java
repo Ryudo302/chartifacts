@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.*;
@@ -12,6 +12,8 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Iterators;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Classe que permite a análise de {@link ChartRun}s para extrair informações a respeito deles.

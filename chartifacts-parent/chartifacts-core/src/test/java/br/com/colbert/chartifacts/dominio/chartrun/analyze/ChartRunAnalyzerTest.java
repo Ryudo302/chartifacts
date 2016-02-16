@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -11,6 +11,8 @@ import javax.inject.Inject;
 import org.jglue.cdiunit.AdditionalPackages;
 import org.junit.Test;
 
+import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.ChartRunAnalyzer;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**

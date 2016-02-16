@@ -1,6 +1,8 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.util.Optional;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Extensão de {@link MaiorVariacaoChartRunStrategy} que permite restringir para uma posição específica.

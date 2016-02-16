@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.*;

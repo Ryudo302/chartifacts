@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.Builder;
 import org.jboss.weld.exceptions.IllegalStateException;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Classe que facilida a construção de instâncias de {@link VariacaoPosicao}.
@@ -219,8 +221,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		protected ElementoChartRun validar(ElementoChartRun posicao) {
 			if (posicaoA != null && posicaoA.isPresenca() && posicaoB != null && posicaoB.isPresenca()
 					&& !(Math.signum(posicaoA.compareTo(posicaoB)) == tipoVariacao.delta())) {
-				throw new IllegalArgumentException("Definição inválida para este tipo de variação (" + tipoVariacao + "): [" + posicaoA + '-'
-						+ posicaoB + "]");
+				throw new IllegalArgumentException("Definição inválida para este tipo de variação (" + tipoVariacao + "): [" + posicaoA + '-' + posicaoB + "]");
 			} else {
 				return posicao;
 			}

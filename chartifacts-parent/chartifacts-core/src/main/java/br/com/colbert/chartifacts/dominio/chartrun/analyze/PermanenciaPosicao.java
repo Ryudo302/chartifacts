@@ -1,10 +1,12 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+
+import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 
 /**
  * Uma permanência em uma mesma posição dentro de um <em>chart-run</em>.

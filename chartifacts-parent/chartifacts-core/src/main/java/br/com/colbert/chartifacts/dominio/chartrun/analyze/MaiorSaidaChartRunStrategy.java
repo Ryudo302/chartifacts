@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Estratégia para identificar a maior saída dentro de um <em>chart-run</em>.
@@ -37,8 +39,8 @@ public class MaiorSaidaChartRunStrategy implements MaiorVariacaoPosicaoEspecific
 			elementoAnterior = elementoAtual;
 		}
 
-		return maiorSaida != null && (posicaoEspecifica == null || posicaoEspecifica != null && posicaoEspecifica.equals(maiorSaida)) ? Optional
-				.of(VariacaoPosicaoBuilder.saida().em(maiorSaida).build()) : Optional.empty();
+		return maiorSaida != null && (posicaoEspecifica == null || posicaoEspecifica != null && posicaoEspecifica.equals(maiorSaida))
+				? Optional.of(VariacaoPosicaoBuilder.saida().em(maiorSaida).build()) : Optional.empty();
 	}
 
 	private boolean isSaida(ElementoChartRun elementoAnterior, ElementoChartRun elementoAtual) {

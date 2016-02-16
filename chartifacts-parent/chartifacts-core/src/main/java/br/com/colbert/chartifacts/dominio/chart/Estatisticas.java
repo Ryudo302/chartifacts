@@ -3,7 +3,7 @@ package br.com.colbert.chartifacts.dominio.chart;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import br.com.colbert.base.dominio.AbstractEntidade;
-import br.com.colbert.chartifacts.dominio.chartrun.PermanenciaPosicao;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.PermanenciaPosicao;
 
 /**
  * Estatísticas de uma canção dentro de uma parada musical.

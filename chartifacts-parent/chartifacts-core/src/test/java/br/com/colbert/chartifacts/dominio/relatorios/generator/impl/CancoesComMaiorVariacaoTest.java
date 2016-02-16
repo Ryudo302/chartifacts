@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import br.com.colbert.chartifacts.dominio.chart.ParserException;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.dominio.relatorios.*;
 

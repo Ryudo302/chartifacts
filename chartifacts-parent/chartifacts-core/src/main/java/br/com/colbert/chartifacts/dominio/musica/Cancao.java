@@ -2,6 +2,7 @@ package br.com.colbert.chartifacts.dominio.musica;
 
 import java.util.*;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.*;
 
 import br.com.colbert.base.dominio.AbstractEntidade;
@@ -60,6 +61,15 @@ public class Cancao extends AbstractEntidade implements Comparable<Cancao> {
 
 	public List<Artista> getArtistas() {
 		return Collections.unmodifiableList(artistas);
+	}
+
+	/**
+	 * Obtém qual o artista principal da canção.
+	 * 
+	 * @return o artista principal, caso a canção possua artistas associados
+	 */
+	public Optional<Artista> getArtistaPrincipal() {
+		return CollectionUtils.size(artistas) > 0 ? Optional.ofNullable(artistas.get(0)) : Optional.empty();
 	}
 
 	@Override

@@ -1,9 +1,11 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
 import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
+
+import br.com.colbert.chartifacts.dominio.chartrun.*;
 
 /**
  * Estratégia para identificar a maior queda de posições dentro de um <em>chart-run</em>.
