@@ -1,13 +1,13 @@
 package br.com.colbert.chartifacts.aplicacao;
 
-import java.io.File;
-import java.text.MessageFormat;
+import java.io.*;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import br.com.colbert.chartifacts.infraestrutura.io.HtmlTemplateRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractPresenter;
 import br.com.colbert.chartifacts.infraestrutura.swing.*;
 import br.com.colbert.chartifacts.ui.*;
@@ -22,8 +22,12 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 	private static final long serialVersionUID = 8034832520010295862L;
 
+	private static final String ARQUIVO_HTML_RELATORIO_GERADO_SUCESSO = "relatorios-gerados-sucesso.html";
+
 	@Inject
 	private transient Instance<GeracaoRelatoriosWorker> geradorRelatorios;
+	@Inject
+	private transient HtmlTemplateRepository htmlTemplateRepository;
 
 	private File ultimoArquivoSelecionado;
 
@@ -83,15 +87,20 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 				@Override
 				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					mostrarMensagemInformativa(new HTMLMessage(
-							MessageFormat.format("<p>Relatórios gerados com sucesso:<br /><br /><a href=\"{0}\" target=\"_blank\">{1}</a></p>",
-									arquivoSaida, arquivoSaida)),
-							"Sucesso");
+					try {
+						mostrarMensagemInformativa(
+								new HTMLMessage(
+										htmlTemplateRepository.carregarTemplate(ARQUIVO_HTML_RELATORIO_GERADO_SUCESSO, arquivoSaida, arquivoSaida).get()),
+								"Sucesso");
+					} catch (IOException exception) {
+						logger.error("Erro ao carregar template", exception);
+						mostrarMensagemErro("Erro ao carregar conteúdo da janela:\n\n" + exception.getLocalizedMessage(), "Erro");
+					}
 				}
 
 				@Override
 				public void doneWithError(SwingWorker<?, ?> worker, Throwable error) {
-					mostrarMensagemErro("Erro ao gravar arquivo de relatórios" + ":\n\n" + error.getLocalizedMessage(), "Erro");
+					mostrarMensagemErro("Erro ao gravar arquivo de relatórios:\n\n" + error.getLocalizedMessage(), "Erro");
 				}
 			});
 

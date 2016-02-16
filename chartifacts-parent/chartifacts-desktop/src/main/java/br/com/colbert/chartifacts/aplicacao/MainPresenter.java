@@ -62,14 +62,14 @@ public class MainPresenter extends AbstractPresenter<MainWindow> {
 		logger.info("Sobre");
 
 		try {
-			String conteudoHtml = htmlTemplateRepository.carregarTemplate(ARQUIVO_HTML_SOBRE, informacoesAplicacao.getNome().toUpperCase(),
-					informacoesAplicacao.getVersao(), informacoesAplicacao.getNumeroBuild(), informacoesAplicacao.getAutor()).get();
-			logger.debug("Template carregado:\n{}", conteudoHtml);
-			mostrarMensagemInformativa(new HTMLMessage(conteudoHtml), MessageFormat.format("Sobre {0}", informacoesAplicacao.getNome()),
+			mostrarMensagemInformativa(
+					new HTMLMessage(htmlTemplateRepository.carregarTemplate(ARQUIVO_HTML_SOBRE, informacoesAplicacao.getNome().toUpperCase(),
+							informacoesAplicacao.getVersao(), informacoesAplicacao.getNumeroBuild(), informacoesAplicacao.getAutor()).get()),
+					MessageFormat.format("Sobre {0}", informacoesAplicacao.getNome()),
 					imagensRepository.recuperarIcone(CAMINHO_ARQUIVO_ICONE_APLICACAO, Optional.of(new Dimension(65, 60))));
 		} catch (IOException exception) {
 			logger.error("Erro ao carregar template", exception);
-			mostrarMensagemErro("Erro ao carregar conteúdo da janela:\n\n" + exception.getLocalizedMessage(), informacoesAplicacao.getNome());
+			mostrarMensagemErro("Erro ao carregar conteúdo da janela:\n\n" + exception.getLocalizedMessage(), "Erro");
 		}
 	}
 }

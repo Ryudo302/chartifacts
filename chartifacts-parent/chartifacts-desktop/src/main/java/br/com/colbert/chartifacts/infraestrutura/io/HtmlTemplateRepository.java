@@ -43,8 +43,10 @@ public class HtmlTemplateRepository implements Serializable {
 		InputStream templateStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(buildCaminhoArquivo(nomeArquivo));
 		if (templateStream != null) {
 			String template = IOUtils.toString(templateStream);
+			logger.debug("Arquivo carregado:\n{}", template);
 			return Optional.of(MessageFormat.format(template, argumentos));
 		} else {
+			logger.warn("Arquivo não localizado: {}", nomeArquivo);
 			return Optional.empty();
 		}
 	}
