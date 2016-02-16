@@ -1,5 +1,6 @@
 package br.com.colbert.chartifacts.infraestrutura.mvp;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,9 @@ import javax.swing.*;
 
 import org.mvp4j.AppController;
 import org.slf4j.Logger;
+
+import br.com.colbert.chartifacts.infraestrutura.io.HtmlTemplateRepository;
+import br.com.colbert.chartifacts.infraestrutura.swing.HTMLMessage;
 
 /**
  * Implementação-base para todas as classes que implementem {@link Presenter}.
@@ -29,6 +33,8 @@ public abstract class AbstractPresenter<V extends View> implements Presenter<V> 
 	private transient AppController appController;
 	@Inject
 	private transient MensagensService mensagensService;
+	@Inject
+	private transient HtmlTemplateRepository htmlTemplateRepository;
 
 	/**
 	 * A <em>view</em> atualmente associada à esta instância.
@@ -104,6 +110,28 @@ public abstract class AbstractPresenter<V extends View> implements Presenter<V> 
 	 */
 	protected void mostrarMensagemErro(Object mensagem, String titulo) {
 		SwingUtilities.invokeLater(() -> mensagensService.mostrarMensagemErro(view, mensagem, titulo));
+	}
+
+	/**
+	 * Carrega um template HTML de mensagem.
+	 * 
+	 * @param nomeArquivo
+	 *            arquivo do template HTML
+	 * @param argumentos
+	 *            argumentos a serem repassados ao template
+	 * @return a mensagem HTML carregada
+	 */
+	protected HTMLMessage carregarMensagemHtml(String nomeArquivo, Object... argumentos) {
+		String conteudoHtml;
+
+		try {
+			conteudoHtml = htmlTemplateRepository.carregarTemplate(nomeArquivo, argumentos).get();
+		} catch (IOException exception) {
+			logger.error("Erro ao carregar template", exception);
+			conteudoHtml = "Erro ao carregar template:\n\n" + exception.getLocalizedMessage();
+		}
+
+		return new HTMLMessage(conteudoHtml);
 	}
 
 	@Override

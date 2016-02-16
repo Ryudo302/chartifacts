@@ -1,15 +1,14 @@
 package br.com.colbert.chartifacts.aplicacao;
 
-import java.io.*;
+import java.io.File;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import br.com.colbert.chartifacts.infraestrutura.io.HtmlTemplateRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractPresenter;
-import br.com.colbert.chartifacts.infraestrutura.swing.*;
+import br.com.colbert.chartifacts.infraestrutura.swing.WorkerDoneListener;
 import br.com.colbert.chartifacts.ui.*;
 
 /**
@@ -26,8 +25,6 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 	@Inject
 	private transient Instance<GeracaoRelatoriosWorker> geradorRelatorios;
-	@Inject
-	private transient HtmlTemplateRepository htmlTemplateRepository;
 
 	private File ultimoArquivoSelecionado;
 
@@ -36,6 +33,9 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 		super(view);
 	}
 
+	/**
+	 * 
+	 */
 	public void escolherArquivoEntrada() {
 		JFileChooser fileChooser = criarFileChooser();
 		int opcao = fileChooser.showOpenDialog(view.getAwtContainer());
@@ -46,6 +46,9 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void escolherArquivoSaida() {
 		JFileChooser fileChooser = criarFileChooser();
 		int opcao = fileChooser.showSaveDialog(view.getAwtContainer());
@@ -68,6 +71,9 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 		return fileChooser;
 	}
 
+	/**
+	 * 
+	 */
 	public void gerarRelatorios() {
 		File arquivoEntrada = view.getArquivoEntrada();
 		File arquivoSaida = view.getArquivoSaida();
@@ -87,15 +93,7 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 				@Override
 				public void doneWithSuccess(SwingWorker<?, ?> worker) {
-					try {
-						mostrarMensagemInformativa(
-								new HTMLMessage(
-										htmlTemplateRepository.carregarTemplate(ARQUIVO_HTML_RELATORIO_GERADO_SUCESSO, arquivoSaida, arquivoSaida).get()),
-								"Sucesso");
-					} catch (IOException exception) {
-						logger.error("Erro ao carregar template", exception);
-						mostrarMensagemErro("Erro ao carregar conteúdo da janela:\n\n" + exception.getLocalizedMessage(), "Erro");
-					}
+					mostrarMensagemInformativa(carregarMensagemHtml(ARQUIVO_HTML_RELATORIO_GERADO_SUCESSO, arquivoSaida, arquivoSaida), "Sucesso");
 				}
 
 				@Override
