@@ -54,7 +54,7 @@ public class RelatoriosPresenter extends AbstractPresenter<RelatoriosView> {
 
 	private JFileChooser criarFileChooser() {
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileFilter(new FileNameExtensionFilter("Text File (*.txt)", "txt"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo Texto (*.txt)", "txt"));
 		fileChooser.setMultiSelectionEnabled(false);
 
 		if (ultimoArquivoSelecionado != null) {
