@@ -34,6 +34,12 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 
 	private Properties properties;
 
+	/**
+	 * Carrega todas as propriedades a partir do arquivo.
+	 * 
+	 * @throws IOException
+	 *             caso ocorra algum erro de I/O
+	 */
 	@PostConstruct
 	protected void init() throws IOException {
 		properties = new Properties();

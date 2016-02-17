@@ -39,7 +39,7 @@ public class ArquivoFormatter extends JFormattedTextField.AbstractFormatter {
 	}
 
 	@Override
-	public Object stringToValue(String text) throws ParseException {
+	public File stringToValue(String text) throws ParseException {
 		logger.trace("To File: {}", text);
 
 		if (StringUtils.isBlank(text)) {

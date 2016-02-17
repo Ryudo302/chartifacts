@@ -66,12 +66,15 @@ public final class SwingComponentFactory implements Serializable {
 	}
 
 	/**
+	 * @param toolTipText
 	 * @wbp.factory
+	 * @wbp.factory.parameter.source toolTipText "Tooltip"
 	 * @wbp.factory.parameter.source columns 50
 	 */
-	public static JFormattedTextField createCommonJFormattedTextField(int columns) {
+	public static JFormattedTextField createCommonJFormattedTextField(String toolTipText, int columns) {
 		JFormattedTextField formattedTextField = new JFormattedTextField();
 		formattedTextField.setFont(COMMON_TEXT_FIELD_FONT);
+		formattedTextField.setToolTipText(toolTipText);
 		formattedTextField.setColumns(columns);
 		return formattedTextField;
 	}

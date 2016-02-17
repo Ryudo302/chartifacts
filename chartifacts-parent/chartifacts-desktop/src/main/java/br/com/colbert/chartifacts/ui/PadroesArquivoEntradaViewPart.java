@@ -2,17 +2,20 @@ package br.com.colbert.chartifacts.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultFormatterFactory;
 
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
-import br.com.colbert.chartifacts.infraestrutura.swing.SwingComponentFactory;
+import br.com.colbert.chartifacts.infraestrutura.properties.StringParsersPropertiesConfig;
+import br.com.colbert.chartifacts.infraestrutura.swing.*;
 
 /**
  * Painel contendo informações de um {@link StringParsersConfig}.
@@ -27,23 +30,25 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 
 	private final JPanel conteudoPanel;
 
-	private final JTextField nomeArtistaField;
-	private final JTextField separadoresArtistasField;
-	private final JTextField separadorArtistaCancaoField;
-	private final JTextField tituloCancaoField;
-	private final JTextField separadorTitulosAlternativosField;
+	private final JFormattedTextField nomeArtistaField;
+	private final JFormattedTextField separadoresArtistasField;
+	private final JFormattedTextField separadorArtistaCancaoField;
+	private final JFormattedTextField tituloCancaoField;
+	private final JFormattedTextField separadorTitulosAlternativosField;
 	private final JTextField separadorPosicoesChartRunField;
 
 	@Inject
-	private transient StringParsersConfig parsersConfig;
+	private transient StringParsersPropertiesConfig parsersConfig;
+	@Inject
+	private transient PatternFormatter patternFormatter;
 
 	/**
 	 * Create the conteudoPanel.
 	 */
 	public PadroesArquivoEntradaViewPart() {
 		conteudoPanel = new JPanel();
-		conteudoPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Padr\u00F5es do Arquivo", TitledBorder.LEADING,
-				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 0)));
+		conteudoPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP,
+				new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 0)));
 
 		JPanel togglePanel = new JPanel();
 		JPanel contentPanel = new JPanel();
@@ -72,47 +77,40 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		JLabel nomeArtistaLabel = SwingComponentFactory.createCommonJLabel("Nome de Artista:");
 		contentPanel.add(nomeArtistaLabel, "2, 2, right, center");
 
-		nomeArtistaField = SwingComponentFactory.createCommonJTextField("Regex utilizada para identificar os nomes dos artistas", 10);
-		nomeArtistaField.setEditable(false);
+		nomeArtistaField = SwingComponentFactory.createCommonJFormattedTextField("Regex utilizada para identificar os nomes dos artistas", 10);
 		contentPanel.add(nomeArtistaField, "4, 2, fill, default");
 
 		JLabel separadoresArtistasLabel = SwingComponentFactory.createCommonJLabel("Separadores de Artistas:");
 		contentPanel.add(separadoresArtistasLabel, "2, 4, right, default");
 
 		separadoresArtistasField = SwingComponentFactory
-				.createCommonJTextField("Regex utilizada para identificar segmentos de texto que separem um artista do outro", 10);
-		separadoresArtistasField.setEditable(false);
+				.createCommonJFormattedTextField("Regex utilizada para identificar segmentos de texto que separem um artista do outro", 10);
 		contentPanel.add(separadoresArtistasField, "4, 4, fill, default");
 
 		JLabel separadorArtistaCancaoLabel = SwingComponentFactory.createCommonJLabel("Separador Artista/Canção:");
 		contentPanel.add(separadorArtistaCancaoLabel, "2, 6, right, default");
 
-		separadorArtistaCancaoField = SwingComponentFactory.createCommonJTextField(
+		separadorArtistaCancaoField = SwingComponentFactory.createCommonJFormattedTextField(
 				"Regex utilizada para identificar segmentos de texto que separem os nomes de artistas do título da canção", 10);
-		separadorArtistaCancaoField.setEditable(false);
 		contentPanel.add(separadorArtistaCancaoField, "4, 6, fill, default");
 
 		JLabel tituloCancaoLabel = SwingComponentFactory.createCommonJLabel("Título de Canção:");
 		contentPanel.add(tituloCancaoLabel, "2, 8, right, default");
 
-		tituloCancaoField = SwingComponentFactory.createCommonJTextField("Regex utilizada para identificar o título da canção", 10);
-		tituloCancaoField.setEditable(false);
+		tituloCancaoField = SwingComponentFactory.createCommonJFormattedTextField("Regex utilizada para identificar o título da canção", 10);
 		contentPanel.add(tituloCancaoField, "4, 8, fill, default");
 
 		JLabel separadorTitulosAlternativosLabel = SwingComponentFactory.createCommonJLabel("Separador de Títulos Alternativos:");
 		contentPanel.add(separadorTitulosAlternativosLabel, "2, 10, right, default");
 
 		separadorTitulosAlternativosField = SwingComponentFactory
-				.createCommonJTextField("Regex utilizada para identificar títulos alternativos da canção", 10);
-		separadorTitulosAlternativosField.setEditable(false);
+				.createCommonJFormattedTextField("Regex utilizada para identificar títulos alternativos da canção", 10);
 		contentPanel.add(separadorTitulosAlternativosField, "4, 10, fill, default");
 
 		JLabel separadorPosicoesChartRunLabel = SwingComponentFactory.createCommonJLabel("Separador de Posições de Chart-run:");
 		contentPanel.add(separadorPosicoesChartRunLabel, "2, 12, right, default");
 
-		separadorPosicoesChartRunField = SwingComponentFactory.createCommonJTextField("Expressão utilizada para separar as posições dos chart-runs",
-				10);
-		separadorPosicoesChartRunField.setEditable(false);
+		separadorPosicoesChartRunField = SwingComponentFactory.createCommonJTextField("Expressão utilizada para separar as posições dos chart-runs", 10);
 		contentPanel.add(separadorPosicoesChartRunField, "4, 12, fill, center");
 
 		contentPanel.addComponentListener(new ComponentAdapter() {
@@ -131,16 +129,45 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 
 	@PostConstruct
 	protected void init() {
-		nomeArtistaField.setText(parsersConfig.nomeArtistaPattern().pattern());
-		separadoresArtistasField.setText(parsersConfig.separadoresArtistasPattern().pattern());
-		separadorArtistaCancaoField.setText(parsersConfig.separadorArtistaCancaoPattern().pattern());
-		tituloCancaoField.setText(parsersConfig.tituloCancaoPattern().pattern());
-		separadorTitulosAlternativosField.setText(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
+		modelToView();
+
+		DefaultFormatterFactory patternFormatterFactory = new DefaultFormatterFactory(patternFormatter);
+		nomeArtistaField.setFormatterFactory(patternFormatterFactory);
+		separadoresArtistasField.setFormatterFactory(patternFormatterFactory);
+		separadorArtistaCancaoField.setFormatterFactory(patternFormatterFactory);
+		tituloCancaoField.setFormatterFactory(patternFormatterFactory);
+		separadorTitulosAlternativosField.setFormatterFactory(patternFormatterFactory);
+	}
+
+	private void modelToView() {
+		nomeArtistaField.setValue(parsersConfig.nomeArtistaPattern().pattern());
+		separadoresArtistasField.setValue(parsersConfig.separadoresArtistasPattern().pattern());
+		separadorArtistaCancaoField.setValue(parsersConfig.separadorArtistaCancaoPattern().pattern());
+		tituloCancaoField.setValue(parsersConfig.tituloCancaoPattern().pattern());
+		separadorTitulosAlternativosField.setValue(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
 		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
+	}
+
+	private void viewToModel() {
+		parsersConfig.setNomeArtistaPattern((Pattern) nomeArtistaField.getValue());
+		parsersConfig.setSeparadoresArtistasPattern((Pattern) separadoresArtistasField.getValue());
+		parsersConfig.setSeparadorArtistaCancaoPattern((Pattern) separadorArtistaCancaoField.getValue());
+		parsersConfig.setTituloCancaoPattern((Pattern) tituloCancaoField.getValue());
+		parsersConfig.setTitulosAlternativosCancaoSeparadorPattern((Pattern) separadorTitulosAlternativosField.getValue());
+		parsersConfig.setSeparadorPosicoesChartRun(separadorPosicoesChartRunField.getText());
 	}
 
 	@Override
 	public Container getAwtContainer() {
 		return conteudoPanel;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public StringParsersPropertiesConfig getParsersConfig() {
+		viewToModel();
+		return parsersConfig;
 	}
 }

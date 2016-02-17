@@ -1,9 +1,15 @@
 package br.com.colbert.chartifacts.infraestrutura.properties;
 
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.*;
+import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
 
@@ -15,7 +21,7 @@ import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
  */
 public class StringParsersPropertiesConfig implements StringParsersConfig {
 
-	private static final String NOME_ARQUIVO_PROPERTIES = "parser";
+	private static final String NOME_ARQUIVO = "parser.properties";
 
 	private static final String NOME_ARTISTA_KEY = "artista.nome";
 	private static final String SEPARADORES_ARTISTAS_KEY = "artista.separadores";
@@ -24,46 +30,89 @@ public class StringParsersPropertiesConfig implements StringParsersConfig {
 	private static final String SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY = "cancao.titulosAlternativos.separador";
 	private static final String SEPARADOR_POSICOES_CHARTRUN_KEY = "chartrun.posicoes.separador";
 
-	private final ResourceBundle bundle = ResourceBundle.getBundle(NOME_ARQUIVO_PROPERTIES);
+	@Inject
+	private transient Logger logger;
+
+	private Properties properties;
+
+	/**
+	 * Carrega todas as propriedades a partir do arquivo.
+	 * 
+	 * @throws IOException
+	 *             caso ocorra algum erro de I/O
+	 */
+	@PostConstruct
+	protected void init() throws IOException {
+		properties = new Properties();
+		properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(NOME_ARQUIVO));
+		logger.debug("Propriedades carregadas");
+	}
 
 	@Override
 	public Pattern nomeArtistaPattern() {
-		return Pattern.compile(bundle.getString(NOME_ARTISTA_KEY));
+		return Pattern.compile(getString(NOME_ARTISTA_KEY));
+	}
+
+	public void setNomeArtistaPattern(Pattern pattern) {
+		setPatternProperty(NOME_ARTISTA_KEY, pattern);
 	}
 
 	@Override
 	public Pattern separadoresArtistasPattern() {
-		return Pattern.compile(bundle.getString(SEPARADORES_ARTISTAS_KEY));
+		return Pattern.compile(getString(SEPARADORES_ARTISTAS_KEY));
+	}
+
+	public void setSeparadoresArtistasPattern(Pattern pattern) {
+		setPatternProperty(SEPARADORES_ARTISTAS_KEY, pattern);
 	}
 
 	@Override
 	public Pattern separadorArtistaCancaoPattern() {
-		return Pattern.compile(bundle.getString(SEPARADOR_ARTISTAS_E_CANCAO_KEY));
+		return Pattern.compile(getString(SEPARADOR_ARTISTAS_E_CANCAO_KEY));
+	}
+
+	public void setSeparadorArtistaCancaoPattern(Pattern pattern) {
+		setPatternProperty(SEPARADOR_ARTISTAS_E_CANCAO_KEY, pattern);
 	}
 
 	@Override
 	public Pattern tituloCancaoPattern() {
-		return Pattern.compile(bundle.getString(TITULO_CANCAO_KEY));
+		return Pattern.compile(getString(TITULO_CANCAO_KEY));
+	}
+
+	public void setTituloCancaoPattern(Pattern pattern) {
+		setPatternProperty(TITULO_CANCAO_KEY, pattern);
 	}
 
 	@Override
 	public Pattern titulosAlternativosCancaoSeparadorPattern() {
-		return Pattern.compile(bundle.getString(SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY));
+		return Pattern.compile(getString(SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY));
+	}
+
+	public void setTitulosAlternativosCancaoSeparadorPattern(Pattern pattern) {
+		setPatternProperty(SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY, pattern);
 	}
 
 	@Override
 	public String separadorPosicoesChartRun() {
-		return bundle.getString(SEPARADOR_POSICOES_CHARTRUN_KEY);
+		return getString(SEPARADOR_POSICOES_CHARTRUN_KEY);
+	}
+
+	public void setSeparadorPosicoesChartRun(String separador) {
+		properties.setProperty(SEPARADOR_POSICOES_CHARTRUN_KEY, separador);
+	}
+
+	private void setPatternProperty(String key, Pattern pattern) {
+		properties.setProperty(key, pattern != null ? pattern.pattern() : null);
+	}
+
+	private String getString(String key) {
+		logger.trace("Obtendo propriedade: {}", key);
+		return StringUtils.defaultIfBlank(properties.getProperty(key), '!' + key + '!');
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("bundle", toString(bundle)).toString();
-	}
-
-	private String toString(ResourceBundle bundle) {
-		StringBuilder builder = new StringBuilder();
-		bundle.keySet().forEach(key -> builder.append(key).append('=').append(bundle.getString(key)).append(", "));
-		return builder.delete(builder.length() - 2, builder.length()).toString();
+		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("properties", properties).toString();
 	}
 }

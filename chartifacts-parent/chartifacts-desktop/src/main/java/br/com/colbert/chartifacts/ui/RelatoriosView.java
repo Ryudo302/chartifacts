@@ -83,13 +83,13 @@ public class RelatoriosView implements View, Serializable {
 
 		JPanel topoPanel = new JPanel();
 		topoPanel.setLayout(new FormLayout(
-				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
+				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"),
+						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LINE_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, }));
 
-		arquivoEntradaField = SwingComponentFactory.createCommonJFormattedTextField(50);
+		arquivoEntradaField = SwingComponentFactory.createCommonJFormattedTextField("Arquivo de histórico a ser analisado", 50);
 		arquivoEntradaField.setEditable(false);
 		topoPanel.add(arquivoEntradaField, "4, 2, fill, center");
 
@@ -99,7 +99,7 @@ public class RelatoriosView implements View, Serializable {
 		JLabel arquivoSaidaLabel = SwingComponentFactory.createHighlightsJLabel("Arquivo de Saída:");
 		topoPanel.add(arquivoSaidaLabel, "2, 4, right, center");
 
-		arquivoSaidaField = SwingComponentFactory.createCommonJFormattedTextField(50);
+		arquivoSaidaField = SwingComponentFactory.createCommonJFormattedTextField("Arquivo de saída dos relatórios gerados", 50);
 		arquivoSaidaField.setEditable(false);
 		topoPanel.add(arquivoSaidaField, "4, 4, fill, center");
 
@@ -109,8 +109,8 @@ public class RelatoriosView implements View, Serializable {
 		JLabel quantidadePosicoesLabel = SwingComponentFactory.createHighlightsJLabel("Quantidade de Posições:");
 		topoPanel.add(quantidadePosicoesLabel, "2, 6, right, center");
 
-		quantidadePosicoesSpinner = SwingComponentFactory.createCommonJSpinner(
-				new SpinnerNumberModel(new Integer(10), new Integer(0), null, new Integer(1)), "Total de posições na parada musical");
+		quantidadePosicoesSpinner = SwingComponentFactory.createCommonJSpinner(new SpinnerNumberModel(new Integer(10), new Integer(0), null, new Integer(1)),
+				"Total de posições na parada musical");
 		topoPanel.add(quantidadePosicoesSpinner, "4, 6, left, center");
 
 		JPanel botoesPanel = new JPanel();
