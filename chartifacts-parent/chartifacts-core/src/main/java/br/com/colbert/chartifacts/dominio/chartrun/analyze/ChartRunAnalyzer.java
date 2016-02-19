@@ -1,13 +1,14 @@
 package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.stream.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.*;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
@@ -37,9 +38,8 @@ public class ChartRunAnalyzer implements Serializable {
 	private Instance<MaiorVariacaoChartRunStrategy> estrategias;
 
 	/**
-	 * Obtém a maior ocorrência de um determinado tipo de variação dentro de um <em>chart-run</em>, desde que envolva a posição
-	 * informada. Caso a posição informada seja <code>null</code>, será retornada a maior ocorrência independentemente de
-	 * posições.
+	 * Obtém a maior ocorrência de um determinado tipo de variação dentro de um <em>chart-run</em>, desde que envolva a posição informada. Caso a posição
+	 * informada seja <code>null</code>, será retornada a maior ocorrência independentemente de posições.
 	 *
 	 * @param chartRun
 	 *            o <em>chart-run</em> analisado
@@ -56,44 +56,8 @@ public class ChartRunAnalyzer implements Serializable {
 	public Optional<VariacaoPosicao> getMaiorVariacao(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicaoEspecifica) {
 		logger.debug("Obtendo maior {} no chart-run: {}", tipoVariacao, chartRun);
 		logger.debug("Restringindo por posição: {}", posicaoEspecifica);
-		return posicaoEspecifica != null ? getMaiorVariacaoEspecifica(chartRun, tipoVariacao, posicaoEspecifica) : getMaiorVariacaoGeral(chartRun,
-				tipoVariacao);
-	}
-
-	private Optional<VariacaoPosicao> getMaiorVariacaoEspecifica(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicao) {
-		Optional<VariacaoPosicao> variacaoPosicao = Optional.empty();
-
-		logger.debug("Iterando sobre {} estratégias", Iterators.size(estrategiasPosicaoEspecifica.iterator()));
-		Iterator<MaiorVariacaoPosicaoEspecificaChartRunStrategy> iterator = estrategiasPosicaoEspecifica.iterator();
-		while (iterator.hasNext()) {
-			MaiorVariacaoPosicaoEspecificaChartRunStrategy estrategia = iterator.next();
-			if (estrategia.getTipoVariacao() == tipoVariacao) {
-				logger.debug("Utilizando estratégia: {}", estrategia);
-				variacaoPosicao = estrategia.identificar(chartRun, posicao);
-				logger.debug("Maior {} identificado(a): {}", tipoVariacao, variacaoPosicao);
-				break;
-			}
-		}
-
-		return variacaoPosicao;
-	}
-
-	private Optional<VariacaoPosicao> getMaiorVariacaoGeral(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao) {
-		Optional<VariacaoPosicao> variacaoPosicao = Optional.empty();
-
-		logger.debug("Iterando sobre {} estratégias", Iterators.size(estrategias.iterator()));
-		Iterator<MaiorVariacaoChartRunStrategy> iterator = estrategias.iterator();
-		while (iterator.hasNext()) {
-			MaiorVariacaoChartRunStrategy estrategia = iterator.next();
-			if (estrategia.getTipoVariacao() == tipoVariacao) {
-				logger.debug("Utilizando estratégia: {}", estrategia);
-				variacaoPosicao = estrategia.identificar(chartRun);
-				logger.debug("Maior {} identificado(a): {}", tipoVariacao, variacaoPosicao);
-				break;
-			}
-		}
-
-		return variacaoPosicao;
+		return posicaoEspecifica != null ? getMaiorVariacaoEspecifica(chartRun, tipoVariacao, posicaoEspecifica)
+				: getMaiorVariacaoGeral(chartRun, tipoVariacao);
 	}
 
 	/**
@@ -112,6 +76,35 @@ public class ChartRunAnalyzer implements Serializable {
 	 */
 	public Optional<VariacaoPosicao> getMaiorVariacao(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao) {
 		return getMaiorVariacao(chartRun, tipoVariacao, null);
+	}
+
+	private Optional<VariacaoPosicao> getMaiorVariacaoEspecifica(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicao) {
+		return getMaiorVariacao(estrategiasPosicaoEspecifica, chartRun, tipoVariacao, posicao);
+	}
+
+	private Optional<VariacaoPosicao> getMaiorVariacaoGeral(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao) {
+		return getMaiorVariacao(estrategias, chartRun, tipoVariacao, null);
+	}
+
+	private <S extends MaiorVariacaoChartRunStrategy> Optional<VariacaoPosicao> getMaiorVariacao(Instance<S> estrategias, ChartRun chartRun,
+			TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicao) {
+		Optional<VariacaoPosicao> variacaoPosicao;
+
+		logger.debug("Iterando sobre {} estratégias", Iterators.size(estrategias.iterator()));
+		Optional<S> optional = StreamSupport.stream(estrategias.spliterator(), false).filter(estrategia -> estrategia.getTipoVariacao() == tipoVariacao)
+				.findFirst();
+
+		if (optional.isPresent()) {
+			S estrategia = optional.get();
+			logger.debug("Utilizando estratégia: {}", estrategia);
+			variacaoPosicao = estrategia.identificar(chartRun);
+			logger.debug("Maior {} identificado(a): {}", tipoVariacao, variacaoPosicao);
+		} else {
+			logger.warn("Nenhuma estratégia identificada: {} {}", tipoVariacao, posicao != null ? posicao : StringUtils.EMPTY);
+			variacaoPosicao = Optional.empty();
+		}
+
+		return variacaoPosicao;
 	}
 
 	/**
