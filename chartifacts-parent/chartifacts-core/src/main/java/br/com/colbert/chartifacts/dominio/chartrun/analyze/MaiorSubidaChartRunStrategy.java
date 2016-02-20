@@ -32,11 +32,13 @@ public class MaiorSubidaChartRunStrategy implements MaiorVariacaoChartRunStrateg
 		List<ElementoChartRun> elementos = Objects.requireNonNull(chartRun, "Chart-run").getElementos();
 		ElementoChartRun elementoAnterior = elementos.get(0);
 		for (ElementoChartRun elementoAtual : elementos) {
-			int variacao = elementoAnterior.compareTo(elementoAtual);
-			if (variacao > maiorSubida) {
-				posicaoA = elementoAnterior;
-				posicaoB = elementoAtual;
-				maiorSubida = variacao;
+			if (elementoAnterior.isPresenca() && elementoAtual.isPresenca()) {
+				int variacao = elementoAnterior.compareTo(elementoAtual);
+				if (variacao > maiorSubida) {
+					posicaoA = elementoAnterior;
+					posicaoB = elementoAtual;
+					maiorSubida = variacao;
+				}
 			}
 
 			elementoAnterior = elementoAtual;

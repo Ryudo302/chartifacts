@@ -1,7 +1,6 @@
 package br.com.colbert.chartifacts.dominio.relatorios;
 
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoLocal.TOP;
-import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.ESTREIA;
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoOcorrencia.*;
 import static br.com.colbert.chartifacts.dominio.relatorios.generator.TipoVariacao.MAIOR;
 
@@ -16,9 +15,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import br.com.colbert.base.dominio.Entidade;
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.dominio.chartrun.analyze.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.dominio.relatorios.export.ToFormatedStringConverter;
@@ -220,10 +218,9 @@ public class RelatoriosFacade implements Serializable {
 
 		return builder.toString();
 	}
-	
+
 	private String exportarCancoesComMaiorSaida(HistoricoParada historicoParada) {
-		CancoesComMaiorVariacao cancoesComMaiorVariacao = getRelatorioGenerator(
-				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(SAIDA));
+		CancoesComMaiorVariacao cancoesComMaiorVariacao = getRelatorioGenerator(RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(SAIDA));
 
 		StringBuilder builder = new StringBuilder();
 		cancoesComMaiorVariacao.setTipoVariacao(SAIDA.getTipoVariacaoPosicao());
@@ -236,7 +233,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	private ToFormatedStringConverter<VariacaoPosicao> posicaoUnicaStringConverter() {
-		return variacao -> '#' + variacao.getElementoB().toString();
+		return variacao -> '#' + (variacao.getElementoA().isPresenca() ? variacao.getElementoA().toString() : variacao.getElementoB().toString());
 	}
 
 	private String exportarCancoesComMaisTempoEmTop(HistoricoParada historicoParada) {
@@ -263,8 +260,7 @@ public class RelatoriosFacade implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Entidade, V extends Comparable<V>, R extends RelatorioGenerator<T, V>> R getRelatorioGenerator(
-			RelatorioGeneratorConfig config) {
+	private <R extends RelatorioGenerator<?, ?>> R getRelatorioGenerator(RelatorioGeneratorConfig config) {
 		return (R) relatorioGeneratorFactory.get(config).get();
 	}
 

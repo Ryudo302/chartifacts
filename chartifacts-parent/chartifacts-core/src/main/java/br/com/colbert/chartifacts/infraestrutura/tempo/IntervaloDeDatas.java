@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.infraestrutura.tempo;
 
 import java.io.Serializable;
 import java.time.*;
-import java.util.Objects;
+import java.util.*;
 
 import org.apache.commons.lang3.builder.*;
 
@@ -51,15 +51,15 @@ public class IntervaloDeDatas implements Comparable<IntervaloDeDatas>, Serializa
 	 */
 	public IntervaloDeDatas adicionar(Period periodo) {
 		Objects.requireNonNull(periodo, "O período a ser adicionado é obrigatório");
-		return new IntervaloDeDatas(dataInicial.plus(periodo), dataFinal.plus(periodo));
+		return new IntervaloDeDatas(dataInicial.plus(periodo), dataFinal != null ? dataFinal.plus(periodo) : null);
 	}
 
 	public LocalDate getDataInicial() {
 		return dataInicial;
 	}
 
-	public LocalDate getDataFinal() {
-		return dataFinal;
+	public Optional<LocalDate> getDataFinal() {
+		return Optional.ofNullable(dataFinal);
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public class IntervaloDeDatas implements Comparable<IntervaloDeDatas>, Serializa
 	}
 
 	/**
-	 * Classe utilizada para permitir o encadeamento de métodos na criação de um {@link IntervaloDeDatas}. Esta necessita que seja
-	 * definida a data inicial do intervalo.
+	 * Classe utilizada para permitir o encadeamento de métodos na criação de um {@link IntervaloDeDatas}. Esta necessita que seja definida a data
+	 * inicial do intervalo.
 	 *
 	 * @author Thiago Colbert
 	 * @since 09/12/2014
@@ -106,8 +106,8 @@ public class IntervaloDeDatas implements Comparable<IntervaloDeDatas>, Serializa
 	}
 
 	/**
-	 * Classe utilizada para permitir o encadeamento de métodos na criação de um {@link IntervaloDeDatas}. Esta necessita que seja
-	 * definida a data final do intervalo.
+	 * Classe utilizada para permitir o encadeamento de métodos na criação de um {@link IntervaloDeDatas}. Esta necessita que seja definida a data
+	 * final do intervalo.
 	 *
 	 * @author Thiago Colbert
 	 * @since 09/12/2014
@@ -137,6 +137,15 @@ public class IntervaloDeDatas implements Comparable<IntervaloDeDatas>, Serializa
 			}
 
 			return new IntervaloDeDatas(dataInicial, dataFinal);
+		}
+
+		/**
+		 * Cria um intervalo sem data final.
+		 * 
+		 * @return o intervalo criado
+		 */
+		public IntervaloDeDatas semFim() {
+			return new IntervaloDeDatas(dataInicial, null);
 		}
 	}
 }

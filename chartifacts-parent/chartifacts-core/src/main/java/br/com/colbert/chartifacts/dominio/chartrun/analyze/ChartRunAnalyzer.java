@@ -27,14 +27,15 @@ public class ChartRunAnalyzer implements Serializable {
 	private static final long serialVersionUID = 5383863001731237061L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 
 	@Inject
 	@Any
-	private Instance<MaiorVariacaoPosicaoEspecificaChartRunStrategy> estrategiasPosicaoEspecifica;
+	private transient Instance<MaiorVariacaoPosicaoEspecificaChartRunStrategy> estrategiasPosicaoEspecifica;
+
 	@Inject
 	@Any
-	private Instance<MaiorVariacaoChartRunStrategy> estrategias;
+	private transient Instance<MaiorVariacaoChartRunStrategy> estrategias;
 
 	/**
 	 * Obtém a maior ocorrência de um determinado tipo de variação dentro de um <em>chart-run</em>, desde que envolva a posição informada. Caso a
@@ -96,7 +97,13 @@ public class ChartRunAnalyzer implements Serializable {
 		if (optional.isPresent()) {
 			S estrategia = optional.get();
 			logger.debug("Utilizando estratégia: {}", estrategia);
-			variacaoPosicao = estrategia.identificar(chartRun);
+
+			if (posicao != null) {
+				variacaoPosicao = ((MaiorVariacaoPosicaoEspecificaChartRunStrategy) estrategia).identificar(chartRun, posicao);
+			} else {
+				variacaoPosicao = estrategia.identificar(chartRun);
+			}
+			
 			logger.debug("Maior {} identificado(a): {}", tipoVariacao, variacaoPosicao);
 		} else {
 			logger.warn("Nenhuma estratégia identificada: {} {}", tipoVariacao, posicao != null ? posicao : StringUtils.EMPTY);

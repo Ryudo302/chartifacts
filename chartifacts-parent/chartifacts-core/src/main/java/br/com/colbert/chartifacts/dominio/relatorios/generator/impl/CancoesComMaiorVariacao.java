@@ -1,12 +1,13 @@
 package br.com.colbert.chartifacts.dominio.relatorios.generator.impl;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.dominio.chartrun.analyze.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
@@ -20,8 +21,8 @@ import br.com.colbert.chartifacts.infraestrutura.ordenacao.TipoOrdenacao;
  * @author Thiago Colbert
  * @since 13/03/2015
  */
-@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = { TipoOcorrencia.SUBIDA, TipoOcorrencia.QUEDA,
-		TipoOcorrencia.ESTREIA, TipoOcorrencia.RETORNO, TipoOcorrencia.SAIDA })
+@RelatorioGeneratorFlow(tipoEntidade = TipoEntidade.CANCAO, tipoVariacao = TipoVariacao.MAIOR, tipoOcorrencia = { TipoOcorrencia.SUBIDA,
+		TipoOcorrencia.QUEDA, TipoOcorrencia.ESTREIA, TipoOcorrencia.RETORNO, TipoOcorrencia.SAIDA })
 public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, VariacaoPosicao> {
 
 	private static final long serialVersionUID = -1293203212227492588L;
@@ -34,14 +35,14 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.ESTREIA, TipoOrdenacao.ASCENDENTE);
 		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.QUEDA, TipoOrdenacao.DESCENCENTE);
 		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.RETORNO, TipoOrdenacao.ASCENDENTE);
-		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.SAIDA, TipoOrdenacao.ASCENDENTE);
+		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.SAIDA, TipoOrdenacao.DESCENCENTE);
 		ORDENACOES_DAS_VARIACOES.put(TipoVariacaoPosicao.SUBIDA, TipoOrdenacao.ASCENDENTE);
 	}
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
 	@Inject
-	private ChartRunAnalyzer chartRunAnalyzer;
+	private transient ChartRunAnalyzer chartRunAnalyzer;
 
 	private TipoVariacaoPosicao tipoVariacao;
 	private TipoOrdenacao tipoOrdenacao;
@@ -59,7 +60,13 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 
 		Map<Cancao, VariacaoPosicao> itens = new HashMap<>();
 
-		historico.getItens().stream().forEach(itemHistorico -> {
+		Stream<ItemHistoricoParada> itensStream = historico.getItens().stream();
+		if (tipoVariacao == TipoVariacaoPosicao.SAIDA) {
+			// desconsidera os itens ainda presentes na parada
+			itensStream = itensStream.filter(item -> !item.isCorrente());
+		}
+
+		itensStream.forEach(itemHistorico -> {
 			Cancao cancao = itemHistorico.getCancao();
 			ChartRun chartRun = itemHistorico.getChartRun();
 
@@ -71,7 +78,8 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 	}
 
 	private Comparator<VariacaoPosicao> getComparator() {
-		return tipoOrdenacao == TipoOrdenacao.DESCENCENTE ? (valor1, valor2) -> valor1.compareTo(valor2) : (valor1, valor2) -> valor2.compareTo(valor1);
+		return tipoOrdenacao == TipoOrdenacao.DESCENCENTE ? (valor1, valor2) -> valor1.compareTo(valor2)
+				: (valor1, valor2) -> valor2.compareTo(valor1);
 	}
 
 	public void setTipoVariacao(TipoVariacaoPosicao tipoVariacao) {
@@ -81,5 +89,17 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 
 	public void setPosicao(ElementoChartRun posicao) {
 		this.posicao = posicao;
+	}
+
+	/**
+	 * Define o número da posição utilizada.
+	 * 
+	 * @param numeroPosicao
+	 * @throws IllegalArgumentException
+	 *             caso o número de posição informado seja inválido
+	 * @see ElementoChartRun#valueOf(int)
+	 */
+	public void setPosicao(Integer numeroPosicao) {
+		setPosicao(ElementoChartRun.valueOf(numeroPosicao));
 	}
 }

@@ -54,4 +54,13 @@ public class ItemHistoricoParada extends AbstractEntidade {
 	public Estatisticas getEstatisticas() {
 		return estatisticas;
 	}
+
+	/**
+	 * Verifica se o ítem de histórico ainda é corrente - ou seja, ainda não saiu da parada.
+	 * 
+	 * @return <code>true</code>/<code>false</code>
+	 */
+	public boolean isCorrente() {
+		return !getPeriodo().getDataFinal().isPresent();
+	}
 }

@@ -13,6 +13,8 @@ import org.junit.Test;
 import br.com.colbert.chartifacts.dominio.chartrun.*;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
+import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.*;
+
 /**
  * Testes unitários da {@link MaiorQuedaChartRunStrategy}.
  *
@@ -22,23 +24,35 @@ import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 public class MaiorQuedaChartRunStrategyTest extends AbstractTestCase {
 
 	@Inject
-	private MaiorQuedaChartRunStrategy strategy;
+	private transient MaiorQuedaChartRunStrategy strategy;
 
 	@Test
 	public void testIdentificarComQuedas() {
-		ChartRun chartRun = ChartRun.novo(ElementoChartRun.valueOf(10), ElementoChartRun.valueOf(12), ElementoChartRun.valueOf(20));
+		ChartRun chartRun = ChartRun.novo(10, 12, 20);
 
 		Optional<VariacaoPosicao> maiorQueda = strategy.identificar(chartRun);
 		assertThat(maiorQueda.isPresent(), is(true));
 
 		VariacaoPosicao variacao = maiorQueda.get();
-		assertThat(variacao.getElementoA(), is(equalTo(ElementoChartRun.valueOf(12))));
-		assertThat(variacao.getElementoB(), is(equalTo(ElementoChartRun.valueOf(20))));
+		assertThat(variacao.getNumeroPosicaoA(), is(equalTo(12)));
+		assertThat(variacao.getNumeroPosicaoB(), is(equalTo(20)));
+	}
+
+	@Test
+	public void testIdentificarComQuedasESaidas() {
+		ChartRun chartRun = ChartRun.novo(5, 10, 12, NUMERO_POSICAO_AUSENCIA, 15, 18);
+
+		Optional<VariacaoPosicao> maiorQueda = strategy.identificar(chartRun);
+		assertThat(maiorQueda.isPresent(), is(true));
+
+		VariacaoPosicao variacao = maiorQueda.get();
+		assertThat(variacao.getNumeroPosicaoA(), is(equalTo(5)));
+		assertThat(variacao.getNumeroPosicaoB(), is(equalTo(10)));
 	}
 
 	@Test
 	public void testIdentificarSemQuedas() {
-		ChartRun chartRun = ChartRun.novo(ElementoChartRun.valueOf(10), ElementoChartRun.valueOf(7), ElementoChartRun.valueOf(5));
+		ChartRun chartRun = ChartRun.novo(10, 7, 5);
 
 		Optional<VariacaoPosicao> maiorQueda = strategy.identificar(chartRun);
 		assertThat(maiorQueda.isPresent(), is(false));

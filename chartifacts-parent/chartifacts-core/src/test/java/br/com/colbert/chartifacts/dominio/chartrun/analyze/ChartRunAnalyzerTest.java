@@ -21,7 +21,7 @@ import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
  * @author Thiago Colbert
  * @since 13/03/2015
  */
-@AdditionalPackages(ChartRun.class)
+@AdditionalPackages({ ChartRun.class, MaiorVariacaoChartRunStrategy.class })
 public class ChartRunAnalyzerTest extends AbstractTestCase {
 
 	private ChartRun chartRun;

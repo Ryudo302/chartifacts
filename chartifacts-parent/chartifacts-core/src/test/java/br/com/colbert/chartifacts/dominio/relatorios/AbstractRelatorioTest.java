@@ -9,6 +9,7 @@ import org.jglue.cdiunit.AdditionalPackages;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chartrun.analyze.ChartRunAnalyzer;
 import br.com.colbert.chartifacts.dominio.relatorios.generator.impl.AbstractRelatorioGenerator;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
@@ -19,7 +20,7 @@ import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
  * @author Thiago Colbert
  * @since 15/03/2015
  */
-@AdditionalPackages({ ChartRun.class, AbstractRelatorioGenerator.class })
+@AdditionalPackages({ ChartRun.class, AbstractRelatorioGenerator.class, ChartRunAnalyzer.class })
 public abstract class AbstractRelatorioTest extends AbstractTestCase {
 
 	private static final String NOME_ARQUIVO_HISTORICO = "historico.txt";
