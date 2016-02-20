@@ -9,7 +9,6 @@ import javax.enterprise.inject.*;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Iterators;
@@ -38,8 +37,8 @@ public class ChartRunAnalyzer implements Serializable {
 	private Instance<MaiorVariacaoChartRunStrategy> estrategias;
 
 	/**
-	 * Obtém a maior ocorrência de um determinado tipo de variação dentro de um <em>chart-run</em>, desde que envolva a posição informada. Caso a posição
-	 * informada seja <code>null</code>, será retornada a maior ocorrência independentemente de posições.
+	 * Obtém a maior ocorrência de um determinado tipo de variação dentro de um <em>chart-run</em>, desde que envolva a posição informada. Caso a
+	 * posição informada seja <code>null</code>, será retornada a maior ocorrência independentemente de posições.
 	 *
 	 * @param chartRun
 	 *            o <em>chart-run</em> analisado
@@ -91,8 +90,8 @@ public class ChartRunAnalyzer implements Serializable {
 		Optional<VariacaoPosicao> variacaoPosicao;
 
 		logger.debug("Iterando sobre {} estratégias", Iterators.size(estrategias.iterator()));
-		Optional<S> optional = StreamSupport.stream(estrategias.spliterator(), false).filter(estrategia -> estrategia.getTipoVariacao() == tipoVariacao)
-				.findFirst();
+		Optional<S> optional = StreamSupport.stream(estrategias.spliterator(), false)
+				.filter(estrategia -> estrategia.getTipoVariacao() == tipoVariacao).findFirst();
 
 		if (optional.isPresent()) {
 			S estrategia = optional.get();
@@ -117,11 +116,30 @@ public class ChartRunAnalyzer implements Serializable {
 	 * @return a maior permanência na posição informada ou vazio caso a posição não exista no <em>chart-run</em>
 	 * @throws NullPointerException
 	 *             caso qualquer dos parâmetros seja <code>null</code>
+	 * @see #getMaiorPermanencia(ChartRun, Integer)
 	 */
 	public Optional<PermanenciaPosicao> getMaiorPermanencia(ChartRun chartRun, ElementoChartRun posicao) {
 		logger.debug("Obtendo maior permanência na posição {} no chart-run: {}", posicao, chartRun);
 		int permanencia = chartRun.getElementos().stream().filter(elemento -> elemento.equals(posicao)).collect(Collectors.counting()).intValue();
 		logger.debug("Permanência identificada: {}", permanencia);
 		return permanencia != 0 ? Optional.of(new PermanenciaPosicao(posicao, permanencia)) : Optional.empty();
+	}
+
+	/**
+	 * Obtém a maior permanência em uma determinada posição no <em>chart-run</em>.
+	 *
+	 * @param chartRun
+	 *            o <em>chart-run</em> analisado
+	 * @param posicao
+	 *            a posição a ser verificada
+	 * @return a maior permanência na posição informada ou vazio caso a posição não exista no <em>chart-run</em>
+	 * @throws NullPointerException
+	 *             caso qualquer dos parâmetros seja <code>null</code>
+	 * @throws IllegalArgumentException
+	 *             caso o valor de posição informado seja inválido
+	 * @see ElementoChartRun#valueOf(int)
+	 */
+	public Optional<PermanenciaPosicao> getMaiorPermanencia(ChartRun chartRun, Integer posicao) {
+		return getMaiorPermanencia(chartRun, ElementoChartRun.valueOf(posicao));
 	}
 }

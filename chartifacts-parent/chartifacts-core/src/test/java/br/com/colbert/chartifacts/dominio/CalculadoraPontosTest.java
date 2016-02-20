@@ -1,13 +1,12 @@
 package br.com.colbert.chartifacts.dominio;
 
+import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.NUMERO_POSICAO_AUSENCIA;
 import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
 
 import org.junit.*;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.CalculadoraPontos;
+import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
 
 /**
  * Testes unitários da classe {@link CalculadoraPontos}.
@@ -24,7 +23,7 @@ public class CalculadoraPontosTest {
 
 	@Before
 	public void setUp() {
-		calculadora = new CalculadoraPontos(ElementoChartRun.valueOf(VALOR_MAIOR_ELEMENTO));
+		calculadora = new CalculadoraPontos(VALOR_MAIOR_ELEMENTO);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -34,14 +33,14 @@ public class CalculadoraPontosTest {
 
 	@Test
 	public void testCalcularPontosListOfElementoChartRunZeros() {
-		ChartRun chartRun = new ChartRun(Arrays.asList(ElementoChartRun.AUSENCIA, ElementoChartRun.AUSENCIA, ElementoChartRun.AUSENCIA));
+		ChartRun chartRun = ChartRun.novo(NUMERO_POSICAO_AUSENCIA, NUMERO_POSICAO_AUSENCIA, NUMERO_POSICAO_AUSENCIA);
 		double pontos = calculadora.calcularPontos(chartRun);
 		assertEquals(0, pontos, DELTA);
 	}
 
 	@Test
 	public void testCalcularPontosListOfElementoChartRunValida() {
-		ChartRun chartRun = new ChartRun(Arrays.asList(ElementoChartRun.valueOf(1), ElementoChartRun.valueOf(2), ElementoChartRun.valueOf(3)));
+		ChartRun chartRun = ChartRun.novo(1, 2, 3);
 		double pontos = calculadora.calcularPontos(chartRun);
 		assertEquals(20 + 19 + 18, pontos, DELTA);
 	}

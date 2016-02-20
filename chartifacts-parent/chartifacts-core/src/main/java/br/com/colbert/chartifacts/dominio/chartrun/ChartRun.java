@@ -8,9 +8,8 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import br.com.colbert.base.dominio.AbstractEntidade;
 
 /**
- * Um <em>chart-run</em> é uma descrição da situação da canção em cada segmento do período em que ela esteve dentro da parada
- * musical. Essa situação pode ser tanto uma posição dentro da parada quanto uma "posição fora", que ocorre quando uma música
- * entra na parada, sai e posteriormente retorna.
+ * Um <em>chart-run</em> é uma descrição da situação da canção em cada segmento do período em que ela esteve dentro da parada musical. Essa situação
+ * pode ser tanto uma posição dentro da parada quanto uma "posição fora", que ocorre quando uma música entra na parada, sai e posteriormente retorna.
  *
  * @author Thiago Colbert
  * @since 11/03/2015
@@ -52,6 +51,22 @@ public class ChartRun extends AbstractEntidade {
 	 */
 	public static ChartRun novo(ElementoChartRun... elementos) {
 		return new ChartRun(Arrays.asList(elementos));
+	}
+
+	/**
+	 * Método utilitário para criar um <em>chart-run</em> a partir dos valores de posições informados.
+	 *
+	 * @param elementos
+	 *            do <em>chart-run</em>
+	 * @return a instância criada
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 * @throws IllegalArgumentException
+	 *             caso seja informado um array vazio ou caso algum dos valores de posições seja inválido
+	 * @see ElementoChartRun#valueOf(int)
+	 */
+	public static ChartRun novo(Integer... posicoes) {
+		return novo(Arrays.stream(posicoes).map(posicao -> ElementoChartRun.valueOf(posicao)).toArray(ElementoChartRun[]::new));
 	}
 
 	/**

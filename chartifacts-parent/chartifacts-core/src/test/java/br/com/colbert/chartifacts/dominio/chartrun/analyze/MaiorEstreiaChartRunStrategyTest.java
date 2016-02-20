@@ -1,5 +1,6 @@
 package br.com.colbert.chartifacts.dominio.chartrun.analyze;
 
+import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.NUMERO_POSICAO_AUSENCIA;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -10,7 +11,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**
@@ -26,13 +27,13 @@ public class MaiorEstreiaChartRunStrategyTest extends AbstractTestCase {
 
 	@Test
 	public void testIdentificar() {
-		ChartRun chartRun = ChartRun.novo(ElementoChartRun.valueOf(3), ElementoChartRun.valueOf(2));
+		ChartRun chartRun = ChartRun.novo(3, 2);
 
 		Optional<VariacaoPosicao> maiorEstreia = strategy.identificar(chartRun);
 		assertThat(maiorEstreia.isPresent(), is(true));
 
 		VariacaoPosicao variacao = maiorEstreia.get();
-		assertThat(variacao.getElementoA(), is(equalTo(ElementoChartRun.AUSENCIA)));
-		assertThat(variacao.getElementoB(), is(equalTo(ElementoChartRun.valueOf(3))));
+		assertThat(variacao.getNumeroPosicaoA(), is(equalTo(NUMERO_POSICAO_AUSENCIA)));
+		assertThat(variacao.getNumeroPosicaoB(), is(equalTo(3)));
 	}
 }

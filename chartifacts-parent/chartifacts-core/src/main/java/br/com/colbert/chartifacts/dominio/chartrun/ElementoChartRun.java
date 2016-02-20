@@ -8,8 +8,8 @@ import org.apache.commons.lang3.builder.*;
 import br.com.colbert.base.dominio.AbstractEntidade;
 
 /**
- * Um elemento de <em>chart-run</em> é um objeto podendo indicar tanto uma posição de uma canção dentro de uma parada em um
- * determinado segmento de período de tempo quanto uma "posição fora" da parada.
+ * Um elemento de <em>chart-run</em> é um objeto podendo indicar tanto uma posição de uma canção dentro de uma parada em um determinado segmento de
+ * período de tempo quanto uma "posição fora" da parada.
  *
  * @author Thiago Colbert
  * @since 11/03/2015
@@ -48,10 +48,10 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	 *            o número da posição
 	 * @return elemento representando o número de posição informado
 	 * @throws IllegalArgumentException
-	 *             caso o número informado seja inválido (menor ou igual a 0)
+	 *             caso o número informado seja inválido (menor que 0)
 	 */
 	public static ElementoChartRun valueOf(int numeroPosicao) {
-		Validate.isTrue(numeroPosicao > 0, "O número da posição deve ser > 0");
+		Validate.isTrue(numeroPosicao >= 0, "O número da posição deve ser >= 0");
 
 		ElementoChartRun elemento = cacheElementos.get(numeroPosicao);
 		if (elemento == null) {
@@ -63,8 +63,7 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	}
 
 	/**
-	 * Obtém o número da posição da parada musical que o elemento representa. O valor {@value #NUMERO_POSICAO_AUSENCIA} indica
-	 * ausência da parada.
+	 * Obtém o número da posição da parada musical que o elemento representa. O valor {@value #NUMERO_POSICAO_AUSENCIA} indica ausência da parada.
 	 *
 	 * @return o número da posição
 	 */

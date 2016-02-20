@@ -44,6 +44,15 @@ public class PermanenciaPosicao implements Comparable<PermanenciaPosicao>, Seria
 		return posicao;
 	}
 
+	/**
+	 * Obtém o número da posição.
+	 * 
+	 * @return o número da posição
+	 */
+	public Integer getNumeroPosicao() {
+		return getPosicao().getNumeroPosicao();
+	}
+
 	public int getQuantidade() {
 		return quantidade;
 	}

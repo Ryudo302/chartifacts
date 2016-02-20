@@ -24,8 +24,12 @@ public class CalculadoraPontos implements Serializable {
 	private double pontuacao;
 
 	/**
+	 * TODO Javadoc
 	 *
 	 * @param maiorElemento
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 * @see #CalculadoraPontos(Integer)
 	 */
 	public CalculadoraPontos(ElementoChartRun maiorElemento) {
 		if (Objects.requireNonNull(maiorElemento, "Maior elemento").isAusencia()) {
@@ -34,6 +38,18 @@ public class CalculadoraPontos implements Serializable {
 
 		logger.debug("Definindo o maior elemento como sendo {}", maiorElemento);
 		this.maiorElemento = maiorElemento;
+	}
+
+	/**
+	 * TODO Javadoc
+	 * 
+	 * @param maiorPosicao
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 * @see ElementoChartRun#valueOf(int)
+	 */
+	public CalculadoraPontos(int maiorPosicao) {
+		this(ElementoChartRun.valueOf(maiorPosicao));
 	}
 
 	public double calcularPontos(ChartRun chartRun) {

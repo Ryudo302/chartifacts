@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.*;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 
 /**
  * Uma variação de posições dentro de um <em>chart-run</em>.
@@ -49,8 +49,26 @@ public class VariacaoPosicao implements Comparable<VariacaoPosicao>, Serializabl
 		return elementoA;
 	}
 
+	/**
+	 * Obtém o número da posição do primeiro elemento.
+	 * 
+	 * @return o número da posição
+	 */
+	public Integer getNumeroPosicaoA() {
+		return getElementoA().getNumeroPosicao();
+	}
+
 	public ElementoChartRun getElementoB() {
 		return elementoB;
+	}
+
+	/**
+	 * Obtém o número da posição do segundo elemento.
+	 * 
+	 * @return o número da posição
+	 */
+	public Integer getNumeroPosicaoB() {
+		return getElementoB().getNumeroPosicao();
 	}
 
 	public TipoVariacaoPosicao getTipoVariacao() {

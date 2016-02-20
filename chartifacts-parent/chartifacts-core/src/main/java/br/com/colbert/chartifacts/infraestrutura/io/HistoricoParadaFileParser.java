@@ -13,7 +13,6 @@ import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 
 /**
@@ -51,7 +50,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 		logger.info("Analisando arquivo de histórico de uma parada com um total de {} posições: {}", quantidadePosicoesParada, arquivo);
 
 		Validate.isTrue(quantidadePosicoesParada > 0, "A quantidade de posições deve ser maior que zero");
-		CalculadoraPontos calculadoraPontos = new CalculadoraPontos(ElementoChartRun.valueOf(quantidadePosicoesParada));
+		CalculadoraPontos calculadoraPontos = new CalculadoraPontos(quantidadePosicoesParada);
 
 		Collection<ItemHistoricoParada> itens = new ArrayList<>();
 
