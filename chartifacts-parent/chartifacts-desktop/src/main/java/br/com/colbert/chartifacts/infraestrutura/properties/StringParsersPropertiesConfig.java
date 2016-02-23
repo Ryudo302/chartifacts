@@ -29,6 +29,9 @@ public class StringParsersPropertiesConfig implements StringParsersConfig {
 	private static final String TITULO_CANCAO_KEY = "cancao.titulo";
 	private static final String SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY = "cancao.titulosAlternativos.separador";
 	private static final String SEPARADOR_POSICOES_CHARTRUN_KEY = "chartrun.posicoes.separador";
+	private static final String PERIODO_INTERVALO_KEY = "periodo.intervalo";
+	private static final String FORMATO_DATAS_KEY = "datas.formato";
+
 
 	@Inject
 	private transient Logger logger;
@@ -100,6 +103,24 @@ public class StringParsersPropertiesConfig implements StringParsersConfig {
 
 	public void setSeparadorPosicoesChartRun(String separador) {
 		properties.setProperty(SEPARADOR_POSICOES_CHARTRUN_KEY, separador);
+	}
+	
+	@Override
+	public Pattern periodoIntervaloPattern() {
+		return Pattern.compile(getString(PERIODO_INTERVALO_KEY));
+	}
+	
+	public void setPeriodoIntervaloPattern(Pattern pattern) {
+		setPatternProperty(PERIODO_INTERVALO_KEY, pattern);
+	}
+
+	@Override
+	public String formatoDatas() {
+		return properties.getProperty(FORMATO_DATAS_KEY);
+	}
+
+	public void setFormatoDatas(String formatoDatas) {
+		properties.setProperty(FORMATO_DATAS_KEY, formatoDatas);
 	}
 
 	private void setPatternProperty(String key, Pattern pattern) {

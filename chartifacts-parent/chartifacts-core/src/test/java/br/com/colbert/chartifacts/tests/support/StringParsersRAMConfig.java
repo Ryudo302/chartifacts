@@ -24,6 +24,9 @@ public class StringParsersRAMConfig implements StringParsersConfig {
 
 	private static final String SEPARADOR_POSICOES_CHARTRUN = StringUtils.SPACE;
 
+	private static final String FORMATO_DATAS = "dd/MM/yyyy";
+	private static final Pattern PERIODO_INTERVALO_PATTERN = Pattern.compile("\\(([0-9\\\\/]+) ~ ([0-9\\\\/]*)\\)");
+
 	@Override
 	public Pattern nomeArtistaPattern() {
 		return NOME_ARTISTA_PATTERN;
@@ -52,5 +55,15 @@ public class StringParsersRAMConfig implements StringParsersConfig {
 	@Override
 	public String separadorPosicoesChartRun() {
 		return SEPARADOR_POSICOES_CHARTRUN;
+	}
+
+	@Override
+	public String formatoDatas() {
+		return FORMATO_DATAS;
+	}
+
+	@Override
+	public Pattern periodoIntervaloPattern() {
+		return PERIODO_INTERVALO_PATTERN;
 	}
 }

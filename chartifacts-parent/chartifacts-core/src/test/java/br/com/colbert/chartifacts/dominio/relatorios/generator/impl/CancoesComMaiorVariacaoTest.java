@@ -114,7 +114,7 @@ public class CancoesComMaiorVariacaoTest extends AbstractRelatorioTest {
 
 		Relatorio<Cancao, VariacaoPosicao> relatorio = relatorioOptional.get();
 		assertThat(relatorio, is(notNullValue(Relatorio.class)));
-		assertThat(relatorio.size(), is(equalTo(5)));
+		assertThat(relatorio.size(), is(equalTo(4)));
 
 		VariacaoPosicao variacaoPosicao = relatorio.getItens().get(CANCAO_ARTISTA1_ARTISTA2);
 		assertThat(variacaoPosicao, is(notNullValue(VariacaoPosicao.class)));

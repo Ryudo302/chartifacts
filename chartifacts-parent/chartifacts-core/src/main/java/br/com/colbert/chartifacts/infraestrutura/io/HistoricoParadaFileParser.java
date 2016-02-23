@@ -2,7 +2,6 @@ package br.com.colbert.chartifacts.infraestrutura.io;
 
 import java.io.*;
 import java.nio.file.*;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -13,7 +12,6 @@ import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 
 /**
  * <em>Parser</em> que permite a obtenção de instâncias de {@link HistoricoParada} a partir de um arquivo externo.
@@ -33,6 +31,8 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	private transient CancaoStringParser cancaoStringParser;
 	@Inject
 	private transient ChartRunStringParser chartRunStringParser;
+	@Inject
+	private transient IntervaloDeDatasStringParser intervaloDeDatasStringParser;
 
 	/**
 	 * @throws NullPointerException
@@ -62,8 +62,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 
 				if (isLinhaArtistaCancaoPeriodo(linha)) {
 					logger.trace("Identificando artistas, canção e período");
-					itemBuilder.comCancao(cancaoStringParser.parse(linha))
-							.comPeriodo(IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now()));
+					itemBuilder.comCancao(cancaoStringParser.parse(linha)).comPeriodo(intervaloDeDatasStringParser.parse(linha));
 				} else if (isLinhaChartRun(linha)) {
 					logger.trace("Identificando chart-run");
 					itemBuilder.comChartRun(chartRunStringParser.parse(linha, quantidadePosicoesParada));

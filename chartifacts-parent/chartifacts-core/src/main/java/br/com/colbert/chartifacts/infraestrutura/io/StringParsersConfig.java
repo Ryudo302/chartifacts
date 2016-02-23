@@ -49,6 +49,20 @@ public interface StringParsersConfig {
 	Pattern titulosAlternativosCancaoSeparadorPattern();
 
 	/**
+	 * {@link Pattern} utilizado para identificar intervalo de datas de um período.
+	 * 
+	 * @return o padrão de intervalo de datas
+	 */
+	Pattern periodoIntervaloPattern();
+
+	/**
+	 * Formato utilizado para datas.
+	 * 
+	 * @return o formato das datas
+	 */
+	String formatoDatas();
+
+	/**
 	 * {@link String} utilizada como separador das posições de um <em>chart-run</em>.
 	 *
 	 * @return o separador de posições
