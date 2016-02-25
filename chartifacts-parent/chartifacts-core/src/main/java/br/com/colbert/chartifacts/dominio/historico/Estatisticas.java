@@ -29,7 +29,7 @@ public class Estatisticas extends AbstractEntidade implements Comparable<Estatis
 	 * @param melhorPosicao
 	 *            a melhor posição alcançada pela canção na parada
 	 */
-	Estatisticas(double pontuacao, int permanenciaTotal, PermanenciaPosicao melhorPosicao) {
+	public Estatisticas(double pontuacao, int permanenciaTotal, PermanenciaPosicao melhorPosicao) {
 		this.pontuacao = pontuacao;
 		this.permanenciaTotal = permanenciaTotal;
 		this.melhorPosicao = melhorPosicao;

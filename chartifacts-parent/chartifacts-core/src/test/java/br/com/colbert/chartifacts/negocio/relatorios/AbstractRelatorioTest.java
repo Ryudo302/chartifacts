@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jglue.cdiunit.AdditionalPackages;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 import br.com.colbert.chartifacts.negocio.chartrun.ChartRunAnalyzer;

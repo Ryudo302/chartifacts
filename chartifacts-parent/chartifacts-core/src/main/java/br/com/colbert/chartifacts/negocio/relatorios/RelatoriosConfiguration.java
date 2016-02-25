@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.negocio.relatorios;
 
 import java.util.*;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.RelatorioGenerator;
 
 /**
@@ -39,7 +39,7 @@ public interface RelatoriosConfiguration {
 	 *
 	 * @return as posições definidas
 	 */
-	<T extends RelatorioGenerator<?, ?>> Collection<ElementoChartRun> posicoesRelatorio(T relatorioGenerator);
+	<T extends RelatorioGenerator<?, ?>> Collection<PosicaoChart> posicoesRelatorio(T relatorioGenerator);
 
 	/**
 	 * Obtém o título definido para um determinado relatório.

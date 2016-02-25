@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.negocio.chartrun;
 
 import java.util.Optional;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 
 /**
  * Estratégia para identificar a maior ocorrência de um tipo de variação em um <em>chart-run</em>.

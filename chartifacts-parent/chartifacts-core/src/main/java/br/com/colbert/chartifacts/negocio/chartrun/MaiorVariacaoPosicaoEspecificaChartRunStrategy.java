@@ -2,7 +2,7 @@ package br.com.colbert.chartifacts.negocio.chartrun;
 
 import java.util.Optional;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Extensão de {@link MaiorVariacaoChartRunStrategy} que permite restringir para uma posição específica.
@@ -23,7 +23,7 @@ public interface MaiorVariacaoPosicaoEspecificaChartRunStrategy extends MaiorVar
 	 * @throws NullPointerException
 	 *             caso seja informado <code>null</code> como <em>chart-run</em>
 	 */
-	Optional<VariacaoPosicao> identificar(ChartRun chartRun, ElementoChartRun posicaoEspecifica);
+	Optional<VariacaoPosicao> identificar(ChartRun chartRun, PosicaoChart posicaoEspecifica);
 
 	@Override
 	public default Optional<VariacaoPosicao> identificar(ChartRun chartRun) {

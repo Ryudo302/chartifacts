@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.dominio.historico.ParserException;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.negocio.relatorios.*;
@@ -30,7 +30,7 @@ public class CancoesComMaisTempoEmTopTest extends AbstractRelatorioTest {
 
 	@Test
 	public void testGerarRelatorioHistoricoParada() throws ParserException {
-		generator.setPosicao(ElementoChartRun.valueOf(4));
+		generator.setPosicao(PosicaoChart.valueOf(4));
 
 		Optional<Relatorio<Cancao, Integer>> relatorioOptional = generator.gerar(parseHistoricoParada());
 		assertThat(relatorioOptional.isPresent(), is(true));

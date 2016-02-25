@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.dominio.historico.ParserException;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.negocio.relatorios.*;
@@ -31,7 +31,7 @@ public class ArtistasComMaisTopTest extends AbstractRelatorioTest {
 
 	@PostConstruct
 	public void setUp() {
-		generator.setPosicao(ElementoChartRun.valueOf(2));
+		generator.setPosicao(PosicaoChart.valueOf(2));
 	}
 
 	@Test

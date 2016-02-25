@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Estratégia para identificar a maior saída dentro de um <em>chart-run</em>.
@@ -24,14 +24,14 @@ public class MaiorSaidaChartRunStrategy implements MaiorVariacaoPosicaoEspecific
 	}
 
 	@Override
-	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, ElementoChartRun posicaoEspecifica) {
-		List<ElementoChartRun> elementos = new ArrayList<>(Objects.requireNonNull(chartRun, "Chart-run").getElementos());
+	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, PosicaoChart posicaoEspecifica) {
+		List<PosicaoChart> elementos = new ArrayList<>(Objects.requireNonNull(chartRun, "Chart-run").getElementos());
 		// adiciona uma ausência ao final para que a última posição seja considerada uma saída
-		elementos.add(ElementoChartRun.AUSENCIA);
+		elementos.add(PosicaoChart.AUSENCIA);
 
-		ElementoChartRun elementoAnterior = elementos.get(0);
-		ElementoChartRun maiorSaida = null;
-		for (ElementoChartRun elementoAtual : elementos) {
+		PosicaoChart elementoAnterior = elementos.get(0);
+		PosicaoChart maiorSaida = null;
+		for (PosicaoChart elementoAtual : elementos) {
 			if (isSaida(elementoAnterior, elementoAtual) && elementoAnterior.compareTo(maiorSaida) < 0) {
 				maiorSaida = elementoAnterior;
 			}
@@ -43,7 +43,7 @@ public class MaiorSaidaChartRunStrategy implements MaiorVariacaoPosicaoEspecific
 				? Optional.of(VariacaoPosicaoBuilder.saida().em(maiorSaida).build()) : Optional.empty();
 	}
 
-	private boolean isSaida(ElementoChartRun elementoAnterior, ElementoChartRun elementoAtual) {
+	private boolean isSaida(PosicaoChart elementoAnterior, PosicaoChart elementoAtual) {
 		return elementoAnterior.isPresenca() && elementoAtual.isAusencia();
 	}
 }

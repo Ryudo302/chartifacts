@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.historico.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.negocio.chartrun.*;
@@ -29,7 +29,7 @@ public class CancoesComMaiorPermanencia extends AbstractRelatorioGenerator<Canca
 	@Inject
 	private ChartRunAnalyzer chartRunAnalyzer;
 
-	private ElementoChartRun posicao;
+	private PosicaoChart posicao;
 
 	@Override
 	protected Optional<Relatorio<Cancao, PermanenciaPosicao>> gerarRelatorio(HistoricoParada historico) {
@@ -50,7 +50,7 @@ public class CancoesComMaiorPermanencia extends AbstractRelatorioGenerator<Canca
 		return itens.isEmpty() ? Optional.empty() : Optional.of(new Relatorio<>(itens, (valor1, valor2) -> valor2.compareTo(valor1)));
 	}
 
-	public void setPosicao(ElementoChartRun posicao) {
+	public void setPosicao(PosicaoChart posicao) {
 		this.posicao = posicao;
 	}
 }

@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.Artista;
 import br.com.colbert.chartifacts.infraestrutura.export.RelatorioTextExporter;
@@ -127,7 +127,7 @@ public class RelatoriosFacade implements Serializable {
 
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTempoEmTop);
+		Collection<PosicaoChart> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTempoEmTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -149,7 +149,7 @@ public class RelatoriosFacade implements Serializable {
 
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTop);
+		Collection<PosicaoChart> tops = relatoriosConfig.posicoesRelatorio(artistasComMaisTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -172,7 +172,7 @@ public class RelatoriosFacade implements Serializable {
 		CancoesComMaiorPermanencia cancoesComMaiorPermanencia = getRelatorioGenerator(
 				RelatorioGeneratorConfig.cancao().com(MAIOR).ocorrencia(TEMPO).em(TipoLocal.POSICAO));
 
-		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaiorPermanencia);
+		Collection<PosicaoChart> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaiorPermanencia);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 
@@ -242,7 +242,7 @@ public class RelatoriosFacade implements Serializable {
 
 		StringBuilder builder = new StringBuilder();
 
-		Collection<ElementoChartRun> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaisTempoEmTop);
+		Collection<PosicaoChart> tops = relatoriosConfig.posicoesRelatorio(cancoesComMaisTempoEmTop);
 		int quantidadeSeparadores = tops.size() - 1;
 		List<Integer> separadores = new ArrayList<>(quantidadeSeparadores);
 

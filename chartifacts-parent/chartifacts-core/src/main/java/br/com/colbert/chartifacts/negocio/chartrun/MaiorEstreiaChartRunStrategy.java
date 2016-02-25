@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Estratégia para identificar a maior estreia dentro de um <em>chart-run</em>.
@@ -24,8 +24,8 @@ public class MaiorEstreiaChartRunStrategy implements MaiorVariacaoPosicaoEspecif
 	}
 
 	@Override
-	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, ElementoChartRun posicaoEspecifica) {
-		ElementoChartRun posicaoEstreia = Objects.requireNonNull(chartRun, "Chart-run").getElementos().get(0);
+	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, PosicaoChart posicaoEspecifica) {
+		PosicaoChart posicaoEstreia = Objects.requireNonNull(chartRun, "Chart-run").getElementos().get(0);
 		return posicaoEspecifica == null || posicaoEspecifica != null && posicaoEstreia.equals(posicaoEspecifica)
 				? Optional.of(VariacaoPosicaoBuilder.estreia().em(posicaoEstreia).build()) : Optional.empty();
 	}

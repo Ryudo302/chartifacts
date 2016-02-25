@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.negocio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.RelatorioGenerator;
 
@@ -75,10 +75,10 @@ public class RelatoriosPropertiesConfiguration implements RelatoriosConfiguratio
 	}
 
 	@Override
-	public <T extends RelatorioGenerator<?, ?>> Collection<ElementoChartRun> posicoesRelatorio(T relatorioGenerator) {
-		List<ElementoChartRun> tops = new ArrayList<>();
+	public <T extends RelatorioGenerator<?, ?>> Collection<PosicaoChart> posicoesRelatorio(T relatorioGenerator) {
+		List<PosicaoChart> tops = new ArrayList<>();
 		String[] topsString = getString(getClassName(relatorioGenerator) + ".posicoes").split(",");
-		Stream.of(topsString).forEach(topString -> tops.add(ElementoChartRun.valueOf(Integer.valueOf(topString))));
+		Stream.of(topsString).forEach(topString -> tops.add(PosicaoChart.valueOf(Integer.valueOf(topString))));
 		return tops;
 	}
 

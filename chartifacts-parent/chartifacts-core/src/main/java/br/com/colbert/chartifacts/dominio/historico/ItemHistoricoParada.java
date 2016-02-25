@@ -1,7 +1,7 @@
 package br.com.colbert.chartifacts.dominio.historico;
 
 import br.com.colbert.base.dominio.AbstractEntidade;
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 

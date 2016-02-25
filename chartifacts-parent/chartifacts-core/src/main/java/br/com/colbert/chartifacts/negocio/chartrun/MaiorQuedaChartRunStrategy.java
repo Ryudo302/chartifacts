@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Estratégia para identificar a maior queda de posições dentro de um <em>chart-run</em>.
@@ -25,13 +25,13 @@ public class MaiorQuedaChartRunStrategy implements MaiorVariacaoChartRunStrategy
 
 	@Override
 	public Optional<VariacaoPosicao> identificar(ChartRun chartRun) {
-		ElementoChartRun posicaoA = ElementoChartRun.AUSENCIA;
-		ElementoChartRun posicaoB = ElementoChartRun.AUSENCIA;
+		PosicaoChart posicaoA = PosicaoChart.AUSENCIA;
+		PosicaoChart posicaoB = PosicaoChart.AUSENCIA;
 
 		int maiorQueda = 0;
-		List<ElementoChartRun> elementos = Objects.requireNonNull(chartRun, "Chart-run").getElementos();
-		ElementoChartRun elementoAnterior = elementos.get(0);
-		for (ElementoChartRun elementoAtual : elementos) {
+		List<PosicaoChart> elementos = Objects.requireNonNull(chartRun, "Chart-run").getElementos();
+		PosicaoChart elementoAnterior = elementos.get(0);
+		for (PosicaoChart elementoAtual : elementos) {
 			if (elementoAnterior.isPresenca() && elementoAtual.isPresenca()) {
 				int variacao = elementoAtual.compareTo(elementoAnterior);
 				if (variacao > maiorQueda) {

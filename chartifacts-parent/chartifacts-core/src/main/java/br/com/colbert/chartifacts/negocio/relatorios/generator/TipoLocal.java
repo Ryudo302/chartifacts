@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.negocio.relatorios.generator;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 
 /**
  * Tipos de locais que podem ser utilizados pelos relatórios.
@@ -16,12 +16,12 @@ public enum TipoLocal {
 	PARADA,
 
 	/**
-	 * Um grupo de {@link ElementoChartRun} que estejam abaixo de um outro específico.
+	 * Um grupo de {@link PosicaoChart} que estejam abaixo de um outro específico.
 	 */
 	TOP,
 
 	/**
-	 * Um {@link ElementoChartRun} específico.
+	 * Um {@link PosicaoChart} específico.
 	 */
 	POSICAO;
 }

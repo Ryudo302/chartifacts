@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.historico.ParserException;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.negocio.chartrun.PermanenciaPosicao;
@@ -32,7 +32,7 @@ public class CancoesComMaiorPermanenciaTest extends AbstractRelatorioTest {
 
 	@Test
 	public void testGerarRelatorioHistoricoParada() throws ParserException {
-		generator.setPosicao(ElementoChartRun.valueOf(3));
+		generator.setPosicao(PosicaoChart.valueOf(3));
 
 		Optional<Relatorio<Cancao, PermanenciaPosicao>> relatorioOptional = generator.gerar(parseHistoricoParada());
 		assertThat(relatorioOptional.isPresent(), is(true));
@@ -43,7 +43,7 @@ public class CancoesComMaiorPermanenciaTest extends AbstractRelatorioTest {
 
 		PermanenciaPosicao variacaoPosicao = relatorio.getItens().get(new Cancao("TESTE", Arrays.asList(new Artista("TESTE"))));
 		assertThat(variacaoPosicao, is(notNullValue(PermanenciaPosicao.class)));
-		assertThat(variacaoPosicao.getPosicao(), is(equalTo(ElementoChartRun.valueOf(3))));
+		assertThat(variacaoPosicao.getPosicao(), is(equalTo(PosicaoChart.valueOf(3))));
 		assertThat(variacaoPosicao.getQuantidade(), is(equalTo(3)));
 	}
 }

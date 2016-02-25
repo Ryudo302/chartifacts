@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.negocio.relatorios.generator.impl;
 
-import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.NUMERO_POSICAO_AUSENCIA;
+import static br.com.colbert.chartifacts.dominio.chart.PosicaoChart.NUMERO_POSICAO_AUSENCIA;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 

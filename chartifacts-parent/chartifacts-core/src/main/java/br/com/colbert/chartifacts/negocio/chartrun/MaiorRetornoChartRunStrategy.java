@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Estratégia para identificar o maior retorno dentro de um <em>chart-run</em>.
@@ -24,12 +24,12 @@ public class MaiorRetornoChartRunStrategy implements MaiorVariacaoPosicaoEspecif
 	}
 
 	@Override
-	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, ElementoChartRun posicaoEspecifica) {
-		List<ElementoChartRun> elementos = Objects.requireNonNull(chartRun, "Chart-run").getElementos();
+	public Optional<VariacaoPosicao> identificar(ChartRun chartRun, PosicaoChart posicaoEspecifica) {
+		List<PosicaoChart> elementos = Objects.requireNonNull(chartRun, "Chart-run").getElementos();
 
-		ElementoChartRun elementoAnterior = elementos.get(0);
-		ElementoChartRun maiorRetorno = null;
-		for (ElementoChartRun elementoAtual : elementos) {
+		PosicaoChart elementoAnterior = elementos.get(0);
+		PosicaoChart maiorRetorno = null;
+		for (PosicaoChart elementoAtual : elementos) {
 			if (isRetorno(elementoAnterior, elementoAtual) && elementoAtual.compareTo(maiorRetorno) < 0) {
 				maiorRetorno = elementoAtual;
 			}
@@ -41,7 +41,7 @@ public class MaiorRetornoChartRunStrategy implements MaiorVariacaoPosicaoEspecif
 				? Optional.of(VariacaoPosicaoBuilder.retorno().em(maiorRetorno).build()) : Optional.empty();
 	}
 
-	private boolean isRetorno(ElementoChartRun elementoAnterior, ElementoChartRun elementoAtual) {
+	private boolean isRetorno(PosicaoChart elementoAnterior, PosicaoChart elementoAtual) {
 		return elementoAnterior.isAusencia() && elementoAtual.isPresenca();
 	}
 }

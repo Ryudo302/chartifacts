@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.Builder;
 import org.jboss.weld.exceptions.IllegalStateException;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Classe que facilida a construção de instâncias de {@link VariacaoPosicao}.
@@ -75,7 +75,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             caso a posição informada seja inválida
 	 */
-	protected ElementoChartRun validar(ElementoChartRun posicao) {
+	protected PosicaoChart validar(PosicaoChart posicao) {
 		return posicao;
 	}
 
@@ -90,7 +90,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 	 *            o tipo de variação
 	 * @return a instância criada
 	 */
-	protected VariacaoPosicao nova(ElementoChartRun posicaoA, ElementoChartRun posicaoB, TipoVariacaoPosicao tipoVariacao) {
+	protected VariacaoPosicao nova(PosicaoChart posicaoA, PosicaoChart posicaoB, TipoVariacaoPosicao tipoVariacao) {
 		return new VariacaoPosicao(posicaoA, posicaoB, tipoVariacao);
 	}
 
@@ -100,7 +100,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 
 		private final TipoVariacaoPosicao tipoVariacao;
 
-		private ElementoChartRun posicao;
+		private PosicaoChart posicao;
 
 		VariacaoPrimeiraPosicaoUnicaBuilder(TipoVariacaoPosicao tipoVariacao) {
 			this.tipoVariacao = tipoVariacao;
@@ -115,13 +115,13 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		 * @throws IllegalArgumentException
 		 *             caso a posição informada seja inválida
 		 */
-		public VariacaoPrimeiraPosicaoUnicaBuilder em(ElementoChartRun posicao) {
+		public VariacaoPrimeiraPosicaoUnicaBuilder em(PosicaoChart posicao) {
 			this.posicao = validar(posicao);
 			return this;
 		}
 
 		@Override
-		protected ElementoChartRun validar(ElementoChartRun posicao) {
+		protected PosicaoChart validar(PosicaoChart posicao) {
 			if (posicao.isAusencia()) {
 				throw new IllegalArgumentException("A posição não pode ser ausência");
 			} else {
@@ -131,7 +131,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 
 		@Override
 		public VariacaoPosicao build() {
-			return nova(posicao, ElementoChartRun.AUSENCIA, tipoVariacao);
+			return nova(posicao, PosicaoChart.AUSENCIA, tipoVariacao);
 		}
 	}
 
@@ -141,7 +141,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 
 		private final TipoVariacaoPosicao tipoVariacao;
 
-		private ElementoChartRun posicao;
+		private PosicaoChart posicao;
 
 		VariacaoSegundaPosicaoUnicaBuilder(TipoVariacaoPosicao tipoVariacao) {
 			this.tipoVariacao = tipoVariacao;
@@ -156,13 +156,13 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		 * @throws IllegalArgumentException
 		 *             caso a posição informada seja inválida
 		 */
-		public VariacaoSegundaPosicaoUnicaBuilder em(ElementoChartRun posicao) {
+		public VariacaoSegundaPosicaoUnicaBuilder em(PosicaoChart posicao) {
 			this.posicao = validar(posicao);
 			return this;
 		}
 
 		@Override
-		protected ElementoChartRun validar(ElementoChartRun posicao) {
+		protected PosicaoChart validar(PosicaoChart posicao) {
 			if (posicao.isAusencia()) {
 				throw new IllegalArgumentException("A posição não pode ser ausência");
 			} else {
@@ -172,7 +172,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 
 		@Override
 		public VariacaoPosicao build() {
-			return nova(ElementoChartRun.AUSENCIA, posicao, tipoVariacao);
+			return nova(PosicaoChart.AUSENCIA, posicao, tipoVariacao);
 		}
 	}
 
@@ -182,8 +182,8 @@ public class VariacaoPosicaoBuilder implements Serializable {
 
 		private final TipoVariacaoPosicao tipoVariacao;
 
-		private ElementoChartRun posicaoA;
-		private ElementoChartRun posicaoB;
+		private PosicaoChart posicaoA;
+		private PosicaoChart posicaoB;
 
 		VariacaoPosicaoComumBuilder(TipoVariacaoPosicao tipoVariacao) {
 			this.tipoVariacao = tipoVariacao;
@@ -198,7 +198,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		 * @throws IllegalArgumentException
 		 *             caso a posição informada seja inválida
 		 */
-		public VariacaoPosicaoComumBuilder de(ElementoChartRun posicaoA) {
+		public VariacaoPosicaoComumBuilder de(PosicaoChart posicaoA) {
 			this.posicaoA = validar(posicaoA);
 			return this;
 		}
@@ -212,13 +212,13 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		 * @throws IllegalArgumentException
 		 *             caso a posição informada seja inválida
 		 */
-		public VariacaoPosicaoComumBuilder para(ElementoChartRun posicaoB) {
+		public VariacaoPosicaoComumBuilder para(PosicaoChart posicaoB) {
 			this.posicaoB = validar(posicaoB);
 			return this;
 		}
 
 		@Override
-		protected ElementoChartRun validar(ElementoChartRun posicao) {
+		protected PosicaoChart validar(PosicaoChart posicao) {
 			if (posicaoA != null && posicaoA.isPresenca() && posicaoB != null && posicaoB.isPresenca()
 					&& !(Math.signum(posicaoA.compareTo(posicaoB)) == tipoVariacao.delta())) {
 				throw new IllegalArgumentException("Definição inválida para este tipo de variação (" + tipoVariacao + "): [" + posicaoA + '-' + posicaoB + "]");

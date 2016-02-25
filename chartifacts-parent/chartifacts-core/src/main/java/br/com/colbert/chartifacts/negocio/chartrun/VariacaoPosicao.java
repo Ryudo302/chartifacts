@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.*;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 
 /**
  * Uma variação de posições dentro de um <em>chart-run</em>.
@@ -17,8 +17,8 @@ public class VariacaoPosicao implements Comparable<VariacaoPosicao>, Serializabl
 
 	private static final long serialVersionUID = 6501780629438286038L;
 
-	private final ElementoChartRun elementoA;
-	private final ElementoChartRun elementoB;
+	private final PosicaoChart elementoA;
+	private final PosicaoChart elementoB;
 	private final TipoVariacaoPosicao tipoVariacao;
 
 	/**
@@ -35,7 +35,7 @@ public class VariacaoPosicao implements Comparable<VariacaoPosicao>, Serializabl
 	 * @throws IllegalArgumentException
 	 *             caso sejam informadas duas ausências
 	 */
-	public VariacaoPosicao(ElementoChartRun elementoA, ElementoChartRun elementoB, TipoVariacaoPosicao tipoVariacao) {
+	public VariacaoPosicao(PosicaoChart elementoA, PosicaoChart elementoB, TipoVariacaoPosicao tipoVariacao) {
 		this.elementoA = Objects.requireNonNull(elementoA, "Elemento A");
 		this.elementoB = Objects.requireNonNull(elementoB, "Elemento B");
 		this.tipoVariacao = Objects.requireNonNull(tipoVariacao, "Tipo de variação");
@@ -45,7 +45,7 @@ public class VariacaoPosicao implements Comparable<VariacaoPosicao>, Serializabl
 		}
 	}
 
-	public ElementoChartRun getElementoA() {
+	public PosicaoChart getElementoA() {
 		return elementoA;
 	}
 
@@ -58,7 +58,7 @@ public class VariacaoPosicao implements Comparable<VariacaoPosicao>, Serializabl
 		return getElementoA().getNumeroPosicao();
 	}
 
-	public ElementoChartRun getElementoB() {
+	public PosicaoChart getElementoB() {
 		return elementoB;
 	}
 

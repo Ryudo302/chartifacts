@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.infraestrutura.ordenacao.TipoOrdenacao;
@@ -46,7 +46,7 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 
 	private TipoVariacaoPosicao tipoVariacao;
 	private TipoOrdenacao tipoOrdenacao;
-	private ElementoChartRun posicao;
+	private PosicaoChart posicao;
 
 	@Override
 	protected Optional<Relatorio<Cancao, VariacaoPosicao>> gerarRelatorio(HistoricoParada historico) {
@@ -87,7 +87,7 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 		tipoOrdenacao = ORDENACOES_DAS_VARIACOES.get(tipoVariacao);
 	}
 
-	public void setPosicao(ElementoChartRun posicao) {
+	public void setPosicao(PosicaoChart posicao) {
 		this.posicao = posicao;
 	}
 
@@ -97,9 +97,9 @@ public class CancoesComMaiorVariacao extends AbstractRelatorioGenerator<Cancao, 
 	 * @param numeroPosicao
 	 * @throws IllegalArgumentException
 	 *             caso o número de posição informado seja inválido
-	 * @see ElementoChartRun#valueOf(int)
+	 * @see PosicaoChart#valueOf(int)
 	 */
 	public void setPosicao(Integer numeroPosicao) {
-		setPosicao(ElementoChartRun.valueOf(numeroPosicao));
+		setPosicao(PosicaoChart.valueOf(numeroPosicao));
 	}
 }

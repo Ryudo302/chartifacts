@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Iterators;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Classe que permite a análise de {@link ChartRun}s para extrair informações a respeito deles.
@@ -53,7 +53,7 @@ public class ChartRunAnalyzer implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             caso o tipo de variação informado seja desconhecido
 	 */
-	public Optional<VariacaoPosicao> getMaiorVariacao(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicaoEspecifica) {
+	public Optional<VariacaoPosicao> getMaiorVariacao(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, PosicaoChart posicaoEspecifica) {
 		logger.debug("Obtendo maior {} no chart-run: {}", tipoVariacao, chartRun);
 		logger.debug("Restringindo por posição: {}", posicaoEspecifica);
 		return posicaoEspecifica != null ? getMaiorVariacaoEspecifica(chartRun, tipoVariacao, posicaoEspecifica)
@@ -72,13 +72,13 @@ public class ChartRunAnalyzer implements Serializable {
 	 *             caso qualquer dos parâmetros seja <code>null</code>
 	 * @throws IllegalArgumentException
 	 *             caso o tipo de variação informado seja desconhecido
-	 * @see #getMaiorVariacao(ChartRun, TipoVariacaoPosicao, ElementoChartRun)
+	 * @see #getMaiorVariacao(ChartRun, TipoVariacaoPosicao, PosicaoChart)
 	 */
 	public Optional<VariacaoPosicao> getMaiorVariacao(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao) {
 		return getMaiorVariacao(chartRun, tipoVariacao, null);
 	}
 
-	private Optional<VariacaoPosicao> getMaiorVariacaoEspecifica(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicao) {
+	private Optional<VariacaoPosicao> getMaiorVariacaoEspecifica(ChartRun chartRun, TipoVariacaoPosicao tipoVariacao, PosicaoChart posicao) {
 		return getMaiorVariacao(estrategiasPosicaoEspecifica, chartRun, tipoVariacao, posicao);
 	}
 
@@ -87,7 +87,7 @@ public class ChartRunAnalyzer implements Serializable {
 	}
 
 	private <S extends MaiorVariacaoChartRunStrategy> Optional<VariacaoPosicao> getMaiorVariacao(Instance<S> estrategias, ChartRun chartRun,
-			TipoVariacaoPosicao tipoVariacao, ElementoChartRun posicao) {
+			TipoVariacaoPosicao tipoVariacao, PosicaoChart posicao) {
 		Optional<VariacaoPosicao> variacaoPosicao;
 
 		logger.debug("Iterando sobre {} estratégias", Iterators.size(estrategias.iterator()));
@@ -125,7 +125,7 @@ public class ChartRunAnalyzer implements Serializable {
 	 *             caso qualquer dos parâmetros seja <code>null</code>
 	 * @see #getMaiorPermanencia(ChartRun, Integer)
 	 */
-	public Optional<PermanenciaPosicao> getMaiorPermanencia(ChartRun chartRun, ElementoChartRun posicao) {
+	public Optional<PermanenciaPosicao> getMaiorPermanencia(ChartRun chartRun, PosicaoChart posicao) {
 		logger.debug("Obtendo maior permanência na posição {} no chart-run: {}", posicao, chartRun);
 		int permanencia = chartRun.getElementos().stream().filter(elemento -> elemento.equals(posicao)).collect(Collectors.counting()).intValue();
 		logger.debug("Permanência identificada: {}", permanencia);
@@ -144,9 +144,9 @@ public class ChartRunAnalyzer implements Serializable {
 	 *             caso qualquer dos parâmetros seja <code>null</code>
 	 * @throws IllegalArgumentException
 	 *             caso o valor de posição informado seja inválido
-	 * @see ElementoChartRun#valueOf(int)
+	 * @see PosicaoChart#valueOf(int)
 	 */
 	public Optional<PermanenciaPosicao> getMaiorPermanencia(ChartRun chartRun, Integer posicao) {
-		return getMaiorPermanencia(chartRun, ElementoChartRun.valueOf(posicao));
+		return getMaiorPermanencia(chartRun, PosicaoChart.valueOf(posicao));
 	}
 }

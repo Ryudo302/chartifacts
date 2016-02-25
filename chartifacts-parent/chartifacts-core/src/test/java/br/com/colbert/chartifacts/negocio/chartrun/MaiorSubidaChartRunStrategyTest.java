@@ -1,6 +1,6 @@
 package br.com.colbert.chartifacts.negocio.chartrun;
 
-import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.NUMERO_POSICAO_AUSENCIA;
+import static br.com.colbert.chartifacts.dominio.chart.PosicaoChart.NUMERO_POSICAO_AUSENCIA;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**

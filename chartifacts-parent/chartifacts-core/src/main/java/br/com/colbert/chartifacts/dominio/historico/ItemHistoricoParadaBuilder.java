@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.Builder;
 import org.jboss.weld.exceptions.IllegalStateException;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 

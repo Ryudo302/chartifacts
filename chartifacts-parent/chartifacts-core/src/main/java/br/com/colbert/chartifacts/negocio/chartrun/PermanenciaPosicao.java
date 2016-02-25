@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 
 /**
  * Uma permanência em uma mesma posição dentro de um <em>chart-run</em>.
@@ -18,7 +18,7 @@ public class PermanenciaPosicao implements Comparable<PermanenciaPosicao>, Seria
 
 	private static final long serialVersionUID = 1423027728419665501L;
 
-	private final ElementoChartRun posicao;
+	private final PosicaoChart posicao;
 	private final int quantidade;
 
 	/**
@@ -33,14 +33,14 @@ public class PermanenciaPosicao implements Comparable<PermanenciaPosicao>, Seria
 	 * @throws IllegalArgumentException
 	 *             caso seja informada uma quantidade inválida (menor ou igual a 0)
 	 */
-	public PermanenciaPosicao(ElementoChartRun posicao, int quantidade) {
+	public PermanenciaPosicao(PosicaoChart posicao, int quantidade) {
 		this.posicao = Objects.requireNonNull(posicao, "Posição");
 
 		Validate.isTrue(quantidade > 0, "A quantidade deve ser um valor maior que zero");
 		this.quantidade = quantidade;
 	}
 
-	public ElementoChartRun getPosicao() {
+	public PosicaoChart getPosicao() {
 		return posicao;
 	}
 

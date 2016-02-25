@@ -24,6 +24,11 @@ public enum TipoVariacaoPosicao {
 	SAIDA(-2),
 
 	/**
+	 * A canção permaneceu na mesma posição.
+	 */
+	PERMANENCIA(0),
+
+	/**
 	 * A canção diminuiu sua posição dentro da parada.
 	 */
 	SUBIDA(1),

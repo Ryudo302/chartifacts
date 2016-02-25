@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.enterprise.inject.Alternative;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.negocio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.RelatorioGenerator;
 
@@ -34,8 +34,8 @@ public class RelatoriosRAMConfiguration implements RelatoriosConfiguration {
 	}
 
 	@Override
-	public <T extends RelatorioGenerator<?, ?>> Collection<ElementoChartRun> posicoesRelatorio(T relatorioGenerator) {
-		return Arrays.asList(ElementoChartRun.valueOf(2), ElementoChartRun.valueOf(3));
+	public <T extends RelatorioGenerator<?, ?>> Collection<PosicaoChart> posicoesRelatorio(T relatorioGenerator) {
+		return Arrays.asList(PosicaoChart.valueOf(2), PosicaoChart.valueOf(3));
 	}
 
 	@Override

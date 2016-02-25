@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.historico.HistoricoParada;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
 import br.com.colbert.chartifacts.negocio.relatorios.Relatorio;
@@ -28,7 +28,7 @@ public class CancoesComMaisTempoEmTop extends AbstractRelatorioGenerator<Cancao,
 	@Inject
 	private Logger logger;
 
-	private ElementoChartRun posicao;
+	private PosicaoChart posicao;
 
 	@Override
 	protected Optional<Relatorio<Cancao, Integer>> gerarRelatorio(HistoricoParada historico) {
@@ -54,7 +54,7 @@ public class CancoesComMaisTempoEmTop extends AbstractRelatorioGenerator<Cancao,
 	 * @param posicao
 	 *            a posição de corte
 	 */
-	public void setPosicao(ElementoChartRun posicao) {
+	public void setPosicao(PosicaoChart posicao) {
 		Validate.isTrue(posicao.isPresenca(), "A posição não pode ser uma ausência");
 		this.posicao = posicao;
 	}

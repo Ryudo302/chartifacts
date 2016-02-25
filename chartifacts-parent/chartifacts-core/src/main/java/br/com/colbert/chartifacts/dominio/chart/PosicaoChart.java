@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chart;
 
 import java.util.*;
 
@@ -8,13 +8,13 @@ import org.apache.commons.lang3.builder.*;
 import br.com.colbert.base.dominio.AbstractEntidade;
 
 /**
- * Um elemento de <em>chart-run</em> é um objeto podendo indicar tanto uma posição de uma canção dentro de uma parada em um determinado segmento de
+ * Um elemento de <em>chart</em> é um objeto podendo indicar tanto uma posição de uma canção dentro de uma parada em um determinado segmento de
  * período de tempo quanto uma "posição fora" da parada.
  *
  * @author Thiago Colbert
  * @since 11/03/2015
  */
-public class ElementoChartRun extends AbstractEntidade implements Comparable<ElementoChartRun> {
+public class PosicaoChart extends AbstractEntidade implements Comparable<PosicaoChart> {
 
 	/**
 	 * Número de posição indicando ausência da canção na parada.
@@ -24,15 +24,15 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	/**
 	 * Instância única do elemento que representa a ausência da canção dentro da parada.
 	 */
-	public static final ElementoChartRun AUSENCIA = new ElementoChartRun(NUMERO_POSICAO_AUSENCIA);
+	public static final PosicaoChart AUSENCIA = new PosicaoChart(NUMERO_POSICAO_AUSENCIA);
 
 	private static final long serialVersionUID = -927488184107569051L;
 
-	private static final Map<Integer, ElementoChartRun> cacheElementos = new HashMap<>();
+	private static final Map<Integer, PosicaoChart> cacheElementos = new HashMap<>();
 
 	private final int numeroPosicao;
 
-	private ElementoChartRun(int numeroPosicao) {
+	private PosicaoChart(int numeroPosicao) {
 		this.numeroPosicao = numeroPosicao;
 	}
 
@@ -41,7 +41,7 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	 * Obtém um elemento a partir de um número de posição.
 	 * </p>
 	 * <p>
-	 * <strong>OBS.:</strong> para elementos representando ausência, utilizar {@link ElementoChartRun#AUSENCIA}.
+	 * <strong>OBS.:</strong> para elementos representando ausência, utilizar {@link PosicaoChart#AUSENCIA}.
 	 * </p>
 	 *
 	 * @param numeroPosicao
@@ -50,12 +50,12 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	 * @throws IllegalArgumentException
 	 *             caso o número informado seja inválido (menor que 0)
 	 */
-	public static ElementoChartRun valueOf(int numeroPosicao) {
+	public static PosicaoChart valueOf(int numeroPosicao) {
 		Validate.isTrue(numeroPosicao >= 0, "O número da posição deve ser >= 0");
 
-		ElementoChartRun elemento = cacheElementos.get(numeroPosicao);
+		PosicaoChart elemento = cacheElementos.get(numeroPosicao);
 		if (elemento == null) {
-			elemento = new ElementoChartRun(numeroPosicao);
+			elemento = new PosicaoChart(numeroPosicao);
 			cacheElementos.put(numeroPosicao, elemento);
 		}
 
@@ -92,7 +92,7 @@ public class ElementoChartRun extends AbstractEntidade implements Comparable<Ele
 	}
 
 	@Override
-	public int compareTo(ElementoChartRun other) {
+	public int compareTo(PosicaoChart other) {
 		return other != null ? numeroPosicao - other.numeroPosicao : -1;
 	}
 

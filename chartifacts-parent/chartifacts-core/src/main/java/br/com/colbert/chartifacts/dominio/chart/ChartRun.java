@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.chartrun;
+package br.com.colbert.chartifacts.dominio.chart;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ public class ChartRun extends AbstractEntidade {
 
 	private static final long serialVersionUID = -623585849046907048L;
 
-	private final List<ElementoChartRun> elementos;
+	private final List<PosicaoChart> elementos;
 
 	/**
 	 * Cria um novo <em>chart-run</em> com os elementos informados.
@@ -30,7 +30,7 @@ public class ChartRun extends AbstractEntidade {
 	 * @throws IllegalArgumentException
 	 *             caso a lista informada esteja vazia
 	 */
-	public ChartRun(List<ElementoChartRun> elementos) {
+	public ChartRun(List<PosicaoChart> elementos) {
 		if (Objects.requireNonNull(elementos, "elementos").isEmpty()) {
 			throw new IllegalArgumentException("Um chart-run não pode estar vazio");
 		}
@@ -49,7 +49,7 @@ public class ChartRun extends AbstractEntidade {
 	 * @throws IllegalArgumentException
 	 *             caso seja informado um array vazio
 	 */
-	public static ChartRun novo(ElementoChartRun... elementos) {
+	public static ChartRun novo(PosicaoChart... elementos) {
 		return new ChartRun(Arrays.asList(elementos));
 	}
 
@@ -63,10 +63,10 @@ public class ChartRun extends AbstractEntidade {
 	 *             caso seja informado <code>null</code>
 	 * @throws IllegalArgumentException
 	 *             caso seja informado um array vazio ou caso algum dos valores de posições seja inválido
-	 * @see ElementoChartRun#valueOf(int)
+	 * @see PosicaoChart#valueOf(int)
 	 */
 	public static ChartRun novo(Integer... posicoes) {
-		return novo(Arrays.stream(posicoes).map(posicao -> ElementoChartRun.valueOf(posicao)).toArray(ElementoChartRun[]::new));
+		return novo(Arrays.stream(posicoes).map(posicao -> PosicaoChart.valueOf(posicao)).toArray(PosicaoChart[]::new));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class ChartRun extends AbstractEntidade {
 	 * @param action
 	 *            a ação a ser executada
 	 */
-	public void forEachElemento(Consumer<? super ElementoChartRun> action) {
+	public void forEachElemento(Consumer<? super PosicaoChart> action) {
 		elementos.forEach(action);
 	}
 
@@ -88,7 +88,7 @@ public class ChartRun extends AbstractEntidade {
 		return elementos.size();
 	}
 
-	public List<ElementoChartRun> getElementos() {
+	public List<PosicaoChart> getElementos() {
 		return Collections.unmodifiableList(elementos);
 	}
 

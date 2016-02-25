@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.negocio.relatorios.Relatorio;
@@ -27,7 +27,7 @@ public class ArtistasComMaisTop extends AbstractRelatorioGenerator<Artista, Inte
 	@Inject
 	private Logger logger;
 
-	private ElementoChartRun posicao;
+	private PosicaoChart posicao;
 
 	@Override
 	protected Optional<Relatorio<Artista, Integer>> gerarRelatorio(HistoricoParada historico) {
@@ -57,7 +57,7 @@ public class ArtistasComMaisTop extends AbstractRelatorioGenerator<Artista, Inte
 	 * @param posicao
 	 *            a posição de corte
 	 */
-	public void setPosicao(ElementoChartRun posicao) {
+	public void setPosicao(PosicaoChart posicao) {
 		Validate.isTrue(posicao.isPresenca(), "A posição não pode ser uma ausência");
 		this.posicao = posicao;
 	}

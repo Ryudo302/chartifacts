@@ -1,12 +1,11 @@
-package br.com.colbert.chartifacts.dominio;
+package br.com.colbert.chartifacts.dominio.historico;
 
-import static br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun.NUMERO_POSICAO_AUSENCIA;
+import static br.com.colbert.chartifacts.dominio.chart.PosicaoChart.NUMERO_POSICAO_AUSENCIA;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.*;
 
-import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
-import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Testes unitários da classe {@link CalculadoraPontos}.
@@ -28,7 +27,7 @@ public class CalculadoraPontosTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testCalcularPontosListOfElementoChartRunNull() {
-		calculadora.calcularPontos(null);
+		calculadora.calcularPontos((ChartRun) null);
 	}
 
 	@Test
@@ -43,5 +42,11 @@ public class CalculadoraPontosTest {
 		ChartRun chartRun = ChartRun.novo(1, 2, 3);
 		double pontos = calculadora.calcularPontos(chartRun);
 		assertEquals(20 + 19 + 18, pontos, DELTA);
+	}
+
+	@Test
+	public void testCacularPontosUmaUnicaPosicao() {
+		double pontos = calculadora.calcularPontos(PosicaoChart.valueOf(1));
+		assertEquals(20, pontos, DELTA);
 	}
 }

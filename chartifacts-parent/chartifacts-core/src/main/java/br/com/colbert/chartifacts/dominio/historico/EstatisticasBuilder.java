@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.Builder;
 import org.slf4j.*;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.negocio.chartrun.PermanenciaPosicao;
 
 /**
@@ -52,13 +52,15 @@ public class EstatisticasBuilder implements Builder<Estatisticas>, Serializable 
 	 * @param chartRun
 	 *            o <em>chart-run</em> a ser utilizado
 	 * @return <code>this</code>, para chamadas encadeadas
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
 	 */
 	public EstatisticasBuilder aPartirDo(ChartRun chartRun) {
 		melhorPosicao = Integer.MAX_VALUE;
 		permanenciaMelhorPosicao = 1;
 
 		logger.debug("Identificando permanência total, melhor posição e permanência");
-		chartRun.forEachElemento(elemento -> {
+		Objects.requireNonNull(chartRun, "chartRun").forEachElemento(elemento -> {
 			if (elemento.isPresenca()) {
 				permanenciaTotal++;
 
@@ -78,9 +80,25 @@ public class EstatisticasBuilder implements Builder<Estatisticas>, Serializable 
 		return this;
 	}
 
+	/**
+	 * Calcula as informações a partir de uma única posição.
+	 * 
+	 * @param posicao
+	 * @return <code>this</code>, para chamadas encadeadas
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 */
+	public EstatisticasBuilder aPartirDaPosicao(PosicaoChart posicao) {
+		melhorPosicao = posicao.getNumeroPosicao();
+		permanenciaMelhorPosicao = 1;
+		permanenciaTotal = 1;
+		pontuacao = calculadoraPontos.calcularPontos(posicao);
+		
+		return this;
+	}
+
 	@Override
 	public Estatisticas build() {
-		return new Estatisticas(pontuacao, permanenciaTotal,
-				new PermanenciaPosicao(ElementoChartRun.valueOf(melhorPosicao), permanenciaMelhorPosicao));
+		return new Estatisticas(pontuacao, permanenciaTotal, new PermanenciaPosicao(PosicaoChart.valueOf(melhorPosicao), permanenciaMelhorPosicao));
 	}
 }

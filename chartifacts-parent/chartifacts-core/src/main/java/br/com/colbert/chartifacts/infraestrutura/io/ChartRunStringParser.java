@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chartrun.*;
+import br.com.colbert.chartifacts.dominio.chart.*;
 
 /**
  * Permite a obtenção de instâncias de {@link ChartRun} a partir dos dados presentes em uma {@link String}.
@@ -49,7 +49,7 @@ public class ChartRunStringParser implements Serializable {
 		logger.trace("Analisando: {}", texto);
 		logger.trace("Utilizando configurações: {}", parserConfig);
 
-		List<ElementoChartRun> elementos = new ArrayList<>();
+		List<PosicaoChart> elementos = new ArrayList<>();
 
 		String[] chartRunString = texto.split(parserConfig.separadorPosicoesChartRun());
 		for (String elementoString : chartRunString) {
@@ -58,10 +58,10 @@ public class ChartRunStringParser implements Serializable {
 				if (posicao > limiteValorPosicao) {
 					throw new ChartRunInvalidoException(texto, limiteValorPosicao);
 				} else {
-					elementos.add(ElementoChartRun.valueOf(posicao));
+					elementos.add(PosicaoChart.valueOf(posicao));
 				}
 			} else {
-				elementos.add(ElementoChartRun.AUSENCIA);
+				elementos.add(PosicaoChart.AUSENCIA);
 			}
 		}
 
