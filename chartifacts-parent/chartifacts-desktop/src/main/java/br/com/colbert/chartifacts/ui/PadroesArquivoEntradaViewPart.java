@@ -2,13 +2,17 @@ package br.com.colbert.chartifacts.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.*;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import javax.swing.*;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultFormatterFactory;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.jgoodies.forms.layout.*;
 
@@ -28,6 +32,27 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 
 	private static final long serialVersionUID = -154918168549652861L;
 
+	private static class RegexDataFormatter extends AbstractFormatter {
+
+		private static final long serialVersionUID = 1417087608365137567L;
+
+		@Override
+		public Object stringToValue(String text) throws ParseException {
+			try {
+				// testa se é um padrão de datas válido
+				new SimpleDateFormat(text);
+				return text;
+			} catch (IllegalArgumentException exception) {
+				throw new ParseException(text, 0);
+			}
+		}
+
+		@Override
+		public String valueToString(Object value) throws ParseException {
+			return value != null ? value.toString() : StringUtils.EMPTY;
+		}
+	}
+
 	private final JPanel conteudoPanel;
 
 	private final JFormattedTextField nomeArtistaField;
@@ -36,6 +61,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 	private final JFormattedTextField tituloCancaoField;
 	private final JFormattedTextField separadorTitulosAlternativosField;
 	private final JTextField separadorPosicoesChartRunField;
+	private final JFormattedTextField intervaloDatasField;
+	private final JFormattedTextField padraoDatasField;
 
 	@Inject
 	private transient StringParsersPropertiesConfig parsersConfig;
@@ -47,8 +74,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 	 */
 	public PadroesArquivoEntradaViewPart() {
 		conteudoPanel = new JPanel();
-		conteudoPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Padr\u00F5es do Arquivo", TitledBorder.LEADING, TitledBorder.TOP,
-				new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 0)));
+		conteudoPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Padr\u00F5es do Arquivo", TitledBorder.LEADING,
+				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 0)));
 
 		JPanel togglePanel = new JPanel();
 		JPanel contentPanel = new JPanel();
@@ -70,6 +97,7 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
 						ColumnSpec.decode("default:grow"), },
 				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 		conteudoPanel.add(contentPanel);
@@ -110,8 +138,23 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		JLabel separadorPosicoesChartRunLabel = SwingComponentFactory.createCommonJLabel("Separador de Posições de Chart-run:");
 		contentPanel.add(separadorPosicoesChartRunLabel, "2, 12, right, default");
 
-		separadorPosicoesChartRunField = SwingComponentFactory.createCommonJTextField("Expressão utilizada para separar as posições dos chart-runs", 10);
+		separadorPosicoesChartRunField = SwingComponentFactory.createCommonJTextField("Expressão utilizada para separar as posições dos chart-runs",
+				10);
 		contentPanel.add(separadorPosicoesChartRunField, "4, 12, fill, center");
+
+		JLabel intervaloDatasLabel = SwingComponentFactory.createCommonJLabel("Intervalo de Datas:");
+		contentPanel.add(intervaloDatasLabel, "2, 14, right, default");
+
+		intervaloDatasField = SwingComponentFactory.createCommonJFormattedTextField("Regex utilizada para identificar um intervalo de datas", 10);
+		contentPanel.add(intervaloDatasField, "4, 14, fill, center");
+
+		JLabel padraoDatasLabel = SwingComponentFactory.createCommonJLabel("Padrão de Datas:");
+		contentPanel.add(padraoDatasLabel, "2, 16, right, default");
+
+		padraoDatasField = SwingComponentFactory.createCommonJFormattedTextField("Formato utilizado para representar datas", 10);
+		padraoDatasField.setFormatterFactory(new DefaultFormatterFactory(new RegexDataFormatter()));
+
+		contentPanel.add(padraoDatasField, "4, 16, fill, center");
 
 		contentPanel.addComponentListener(new ComponentAdapter() {
 
@@ -137,6 +180,7 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		separadorArtistaCancaoField.setFormatterFactory(patternFormatterFactory);
 		tituloCancaoField.setFormatterFactory(patternFormatterFactory);
 		separadorTitulosAlternativosField.setFormatterFactory(patternFormatterFactory);
+		intervaloDatasField.setFormatterFactory(patternFormatterFactory);
 	}
 
 	private void modelToView() {
@@ -146,6 +190,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		tituloCancaoField.setValue(parsersConfig.tituloCancaoPattern().pattern());
 		separadorTitulosAlternativosField.setValue(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
 		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
+		intervaloDatasField.setValue(parsersConfig.periodoIntervaloPattern());
+		padraoDatasField.setValue(parsersConfig.formatoDatas());
 	}
 
 	private void viewToModel() {
@@ -155,6 +201,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		parsersConfig.setTituloCancaoPattern((Pattern) tituloCancaoField.getValue());
 		parsersConfig.setTitulosAlternativosCancaoSeparadorPattern((Pattern) separadorTitulosAlternativosField.getValue());
 		parsersConfig.setSeparadorPosicoesChartRun(separadorPosicoesChartRunField.getText());
+		parsersConfig.setPeriodoIntervaloPattern((Pattern) intervaloDatasField.getValue());
+		parsersConfig.setFormatoDatas((String) padraoDatasField.getValue());
 	}
 
 	@Override
