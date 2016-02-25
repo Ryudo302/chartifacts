@@ -16,10 +16,10 @@ import org.mvp4j.annotation.MVP;
 import com.jgoodies.forms.layout.*;
 
 import br.com.colbert.chartifacts.aplicacao.RelatoriosPresenter;
-import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
 import br.com.colbert.chartifacts.infraestrutura.io.ImagensRepository;
 import br.com.colbert.chartifacts.infraestrutura.mvp.*;
 import br.com.colbert.chartifacts.infraestrutura.swing.*;
+import br.com.colbert.chartifacts.negocio.relatorios.RelatoriosConfiguration;
 
 /**
  * Tela que permite a geração de relatórios da parada musical.

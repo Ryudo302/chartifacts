@@ -11,7 +11,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
+import br.com.colbert.chartifacts.dominio.historico.*;
+import br.com.colbert.chartifacts.negocio.parser.HistoricoParadaParser;
 
 /**
  * <em>Parser</em> que permite a obtenção de instâncias de {@link HistoricoParada} a partir de um arquivo externo.

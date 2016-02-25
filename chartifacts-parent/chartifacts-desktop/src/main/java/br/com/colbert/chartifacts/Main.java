@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
 import br.com.colbert.chartifacts.console.ConsoleRunner;
-import br.com.colbert.chartifacts.dominio.chart.ParserException;
+import br.com.colbert.chartifacts.dominio.historico.ParserException;
 
 /**
  * Classe principal da aplicação.

@@ -9,9 +9,9 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.Args;
-import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.relatorios.*;
+import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
+import br.com.colbert.chartifacts.negocio.relatorios.*;
 
 /**
  * Permite a execução da aplicação apenas via console, sem interface gráfica.

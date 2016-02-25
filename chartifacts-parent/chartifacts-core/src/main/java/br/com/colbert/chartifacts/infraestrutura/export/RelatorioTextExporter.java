@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import br.com.colbert.base.dominio.Entidade;
-import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
-import br.com.colbert.chartifacts.dominio.relatorios.export.*;
+import br.com.colbert.chartifacts.negocio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.negocio.relatorios.export.*;
 
 /**
  * Implementação de {@link RelatorioExporter} que gera uma {@link String} contendo os dados do relatório.

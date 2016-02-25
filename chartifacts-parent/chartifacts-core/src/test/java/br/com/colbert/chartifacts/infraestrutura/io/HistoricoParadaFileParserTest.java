@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
+import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 

@@ -10,10 +10,10 @@ import javax.swing.SwingWorker;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.HistoricoParada;
-import br.com.colbert.chartifacts.dominio.relatorios.*;
+import br.com.colbert.chartifacts.dominio.historico.HistoricoParada;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 import br.com.colbert.chartifacts.infraestrutura.swing.AbstractWorker;
+import br.com.colbert.chartifacts.negocio.relatorios.*;
 
 /**
  * {@link SwingWorker} responsável por gerar os relatórios da parada a partir de um arquivo de histórico e gravá-los em um arquivo de saída.

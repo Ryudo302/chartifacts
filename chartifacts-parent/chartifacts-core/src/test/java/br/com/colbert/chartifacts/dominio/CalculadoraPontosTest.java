@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.*;
 
-import br.com.colbert.chartifacts.dominio.chart.CalculadoraPontos;
 import br.com.colbert.chartifacts.dominio.chartrun.ChartRun;
+import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
 
 /**
  * Testes unitários da classe {@link CalculadoraPontos}.

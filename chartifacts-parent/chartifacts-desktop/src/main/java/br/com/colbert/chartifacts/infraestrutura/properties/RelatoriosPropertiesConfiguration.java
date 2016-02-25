@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chartrun.ElementoChartRun;
-import br.com.colbert.chartifacts.dominio.relatorios.RelatoriosConfiguration;
-import br.com.colbert.chartifacts.dominio.relatorios.generator.RelatorioGenerator;
+import br.com.colbert.chartifacts.negocio.relatorios.RelatoriosConfiguration;
+import br.com.colbert.chartifacts.negocio.relatorios.generator.RelatorioGenerator;
 
 /**
  * Implementação de {@link RelatoriosConfiguration} que utiliza um arquivo <em>properties</em>.

@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.*;
 
 import br.com.colbert.chartifacts.dominio.musica.Artista;
-import br.com.colbert.chartifacts.dominio.relatorios.Relatorio;
+import br.com.colbert.chartifacts.negocio.relatorios.Relatorio;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**
