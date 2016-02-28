@@ -1,4 +1,4 @@
-package br.com.colbert.chartifacts.dominio.historico;
+package br.com.colbert.chartifacts.negocio.parser;
 
 /**
  * Exceção lançada quando ocorre algum erro ao fazer o <em>parse</em> de determinado conteúdo.

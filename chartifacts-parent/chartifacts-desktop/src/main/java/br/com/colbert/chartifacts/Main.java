@@ -7,13 +7,14 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.swing.*;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
 import br.com.colbert.chartifacts.console.ConsoleRunner;
-import br.com.colbert.chartifacts.dominio.historico.ParserException;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 
 /**
  * Classe principal da aplicação.
@@ -25,11 +26,6 @@ public class Main {
 
 	private static Args arguments;
 
-	public static void main(String[] args) {
-		Main.arguments = new Args(args);
-		StartMain.main(args);
-	}
-
 	@Inject
 	private transient Logger logger;
 
@@ -38,6 +34,24 @@ public class Main {
 
 	@Inject
 	private ConsoleRunner consoleRunner;
+
+	/**
+	 * Método <em>main</em>.
+	 * 
+	 * @param args
+	 *            parâmetros para a aplicação
+	 */
+	public static void main(String[] args) {
+		try {
+			Main.arguments = new Args(args);
+			StartMain.main(args);
+		} catch (Throwable throwable) {
+			System.err.println("Erro ao iniciar aplicação");
+			throwable.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Erro ao iniciar aplicação: " + ExceptionUtils.getRootCauseMessage(throwable), "Erro",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
 	/**
 	 * Método invocado assim que o contexto CDI é inicializado.

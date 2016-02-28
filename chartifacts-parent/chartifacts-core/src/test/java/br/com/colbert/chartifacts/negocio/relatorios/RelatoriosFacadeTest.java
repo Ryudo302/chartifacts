@@ -10,6 +10,7 @@ import org.jglue.cdiunit.ActivatedAlternatives;
 import org.junit.Test;
 
 import br.com.colbert.chartifacts.dominio.historico.*;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.RelatorioGenerator;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.impl.AllTimeChartCancao;
 

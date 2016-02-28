@@ -99,11 +99,12 @@ public class ChartBuilder implements Builder<Chart>, Serializable {
 		final Holder<Integer> numeroPosicao = new Holder<>();
 		numeroPosicao.setValue(0);
 
-		chart.setCancoes(cancoes.stream()
-				.map(cancao -> CancaoChartBuilder
-						.novo(chart, PosicaoChart.valueOf(numeroPosicao.setValue(numeroPosicao.getValue() + 1).getValue()), cancao)
-						.utilizando(calculadoraPontos).build())
-				.collect(Collectors.toList()));
+		chart.setCancoes(
+				cancoes.stream()
+						.map(cancao -> CancaoChartBuilder
+								.novo(PosicaoChart.valueOf(numeroPosicao.setValue(numeroPosicao.getValue() + 1).getValue()), cancao)
+								.utilizando(calculadoraPontos).build())
+						.collect(Collectors.toList()));
 
 		return this;
 	}

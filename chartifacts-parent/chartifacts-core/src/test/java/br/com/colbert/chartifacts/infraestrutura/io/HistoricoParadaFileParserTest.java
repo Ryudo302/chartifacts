@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**

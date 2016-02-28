@@ -15,7 +15,6 @@ public class CancaoChart extends AbstractEntidade {
 
 	private static final long serialVersionUID = 2550403927447405800L;
 
-	private final Chart chart;
 	private final PosicaoChart posicao;
 	private final Cancao cancao;
 
@@ -26,25 +25,22 @@ public class CancaoChart extends AbstractEntidade {
 	/**
 	 * Cria uma nova instância.
 	 * 
-	 * @param chart
-	 *            a parada musical
 	 * @param posicao
 	 *            a posição dentro da parada musical
 	 * @param cancao
 	 *            a canção
 	 */
-	CancaoChart(Chart chart, PosicaoChart posicao, Cancao cancao) {
-		this.chart = chart;
+	CancaoChart(PosicaoChart posicao, Cancao cancao) {
 		this.posicao = posicao;
 		this.cancao = cancao;
 	}
 
-	public Chart getChart() {
-		return chart;
-	}
-
 	public PosicaoChart getPosicao() {
 		return posicao;
+	}
+
+	public int getNumeroPosicao() {
+		return posicao.getNumeroPosicao();
 	}
 
 	public Cancao getCancao() {

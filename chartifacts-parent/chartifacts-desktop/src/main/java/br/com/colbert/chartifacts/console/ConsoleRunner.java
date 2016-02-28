@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import br.com.colbert.chartifacts.Args;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 import br.com.colbert.chartifacts.negocio.relatorios.*;
 
 /**

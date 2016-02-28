@@ -1,7 +1,5 @@
 package br.com.colbert.chartifacts.dominio.chart;
 
-import static br.com.colbert.chartifacts.negocio.chartrun.TipoVariacaoPosicao.*;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,6 +8,7 @@ import org.apache.commons.lang3.builder.Builder;
 
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.Cancao;
+import br.com.colbert.chartifacts.negocio.chartrun.TipoVariacaoPosicao;
 
 /**
  * {@link Builder} de instâncias de {@link CancaoChart}.
@@ -25,15 +24,13 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 
 	private CalculadoraPontos calculadoraPontos;
 
-	private CancaoChartBuilder(Chart chart, PosicaoChart posicao, Cancao cancao) {
-		cancaoChart = new CancaoChart(chart, posicao, cancao);
+	private CancaoChartBuilder(PosicaoChart posicao, Cancao cancao) {
+		cancaoChart = new CancaoChart(posicao, cancao);
 	}
 
 	/**
-	 * Inicia a criação de um {@link CancaoChart}, informando a parada musical, a posição e canção.
+	 * Inicia a criação de um {@link CancaoChart}, informando a posição e canção.
 	 * 
-	 * @param chart
-	 *            a parada musical
 	 * @param posicao
 	 *            a posição
 	 * @param cancao
@@ -42,9 +39,8 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 	 * @throws NullPointerException
 	 *             caso qualquer um dos parâmetros seja <code>null</code>
 	 */
-	public static CancaoChartBuilder novo(Chart chart, PosicaoChart posicao, Cancao cancao) {
-		return new CancaoChartBuilder(Objects.requireNonNull(chart, "chart"), Objects.requireNonNull(posicao, "posicao"),
-				Objects.requireNonNull(cancao, "cancao"));
+	public static CancaoChartBuilder novo(PosicaoChart posicao, Cancao cancao) {
+		return new CancaoChartBuilder(Objects.requireNonNull(posicao, "posicao"), Objects.requireNonNull(cancao, "cancao"));
 	}
 
 	/**
@@ -61,36 +57,16 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 	}
 
 	/**
-	 * Define que a canção está estreando na parada musical.
-	 * 
-	 * @return <code>this</code>, para chamadas encadeadas de método
-	 */
-	public CancaoChartBuilder estreando() {
-		cancaoChart.setTipoVariacaoPosicao(ESTREIA);
-		cancaoChart.setValorVariacaoPosicao(0);
-		return this;
-	}
-
-	/**
-	 * Define que a canção está retornando à parada musical.
-	 * 
-	 * @return <code>this</code>, para chamadas encadeadas de método
-	 */
-	public CancaoChartBuilder retornando() {
-		cancaoChart.setTipoVariacaoPosicao(RETORNO);
-		cancaoChart.setValorVariacaoPosicao(0);
-		return this;
-	}
-
-	/**
 	 * Define que a canção está variando de posição dentro da parada musical.
 	 * 
+	 * @param tipoVariacaoPosicao
+	 *            tipo de variação
 	 * @param valorVariacao
 	 *            o valor da variação - negativo para queda, positivo para subida ou zero para permanência
 	 * @return <code>this</code>, para chamadas encadeadas de método
 	 */
-	public CancaoChartBuilder comVariacao(int valorVariacao) {
-		cancaoChart.setTipoVariacaoPosicao(valorVariacao < 0 ? QUEDA : valorVariacao > 0 ? SUBIDA : PERMANENCIA);
+	public CancaoChartBuilder comVariacao(TipoVariacaoPosicao tipoVariacaoPosicao, int valorVariacao) {
+		cancaoChart.setTipoVariacaoPosicao(tipoVariacaoPosicao);
 		cancaoChart.setValorVariacaoPosicao(valorVariacao);
 		return this;
 	}

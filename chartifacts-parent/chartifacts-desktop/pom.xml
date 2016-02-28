@@ -91,7 +91,7 @@
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.jboss.weld.environment.se.StartMain</mainClass>
+									<mainClass>br.com.colbert.chartifacts.Main</mainClass>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
@@ -113,10 +113,11 @@
 							<index>true</index>
 							<manifest>
 								<addClasspath>true</addClasspath>
-								<mainClass>org.jboss.weld.environment.se.StartMain</mainClass>
+								<mainClass>br.com.colbert.chartifacts.Main</mainClass>
 							</manifest>
 							<manifestEntries>
 								<Build-Number>${buildNumber}</Build-Number>
+								<SplashScreen-Image>images/chart.png</SplashScreen-Image>
 							</manifestEntries>
 						</archive>
 					</configuration>

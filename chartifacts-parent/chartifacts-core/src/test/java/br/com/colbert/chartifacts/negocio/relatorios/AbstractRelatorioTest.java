@@ -11,6 +11,7 @@ import br.com.colbert.chartifacts.dominio.chart.ChartRun;
 import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.infraestrutura.io.HistoricoParadaFileParser;
 import br.com.colbert.chartifacts.negocio.chartrun.ChartRunAnalyzer;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.impl.AbstractRelatorioGenerator;
 import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 

@@ -11,9 +11,9 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import br.com.colbert.chartifacts.dominio.historico.ParserException;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.negocio.chartrun.*;
+import br.com.colbert.chartifacts.negocio.parser.ParserException;
 import br.com.colbert.chartifacts.negocio.relatorios.*;
 import br.com.colbert.chartifacts.negocio.relatorios.generator.impl.CancoesComMaiorVariacao;
 
