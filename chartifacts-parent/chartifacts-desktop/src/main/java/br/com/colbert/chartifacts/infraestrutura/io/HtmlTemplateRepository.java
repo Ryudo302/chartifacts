@@ -33,25 +33,26 @@ public class HtmlTemplateRepository implements Serializable {
 	 *            nome do arquivo de template
 	 * @param argumentos
 	 *            parâmetros a serem utilizados como substituição dentro do template
-	 * @return o conteúdo do template carregado (vazio caso o arquivo não exista)
+	 * @return o conteúdo do template carregado
+	 * @throws FileNotFoundException
+	 *             caso não seja encontrado o arquivo informado
 	 * @throws IOException
 	 *             caso ocorra algum erro de I/O ao carregar o arquivo
 	 */
 	public Optional<String> carregarTemplate(String nomeArquivo, Object... argumentos) throws IOException {
 		logger.debug("Carregando arquivo '{}'. Argumentos: {}", nomeArquivo, argumentos);
 
-		InputStream templateStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(buildCaminhoArquivo(nomeArquivo));
+		InputStream templateStream = getClass().getClassLoader().getResourceAsStream(buildCaminhoArquivo(nomeArquivo));
 		if (templateStream != null) {
 			String template = IOUtils.toString(templateStream);
 			logger.debug("Arquivo carregado:\n{}", template);
 			return Optional.of(MessageFormat.format(template, argumentos));
 		} else {
-			logger.warn("Arquivo não localizado: {}", nomeArquivo);
-			return Optional.empty();
+			throw new FileNotFoundException(nomeArquivo);
 		}
 	}
 
 	private String buildCaminhoArquivo(String nomeArquivo) {
-		return DIRETORIO_ARQUIVOS + File.separatorChar + nomeArquivo;
+		return DIRETORIO_ARQUIVOS + '/' + nomeArquivo;
 	}
 }

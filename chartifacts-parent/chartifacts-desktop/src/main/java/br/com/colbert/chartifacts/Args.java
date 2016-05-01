@@ -35,8 +35,7 @@ public class Args implements Serializable {
 	private Integer quantidadePosicoesParada;
 
 	/**
-	 * Cria uma nova instância com o array de Strings representando os
-	 * argumentos informados.
+	 * Cria uma nova instância com o array de Strings representando os argumentos informados.
 	 * 
 	 * @param args
 	 */
@@ -62,6 +61,7 @@ public class Args implements Serializable {
 			switch (currentArg) {
 			case CONSOLE_MODE_ARG:
 				consoleMode = true;
+				System.setProperty("java.awt.headless", "true");
 				break;
 			case EXPORTAR_RELATORIOS_ARG:
 				exportarRelatorios = true;

@@ -7,6 +7,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.swing.*;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
@@ -48,8 +49,10 @@ public class Main {
 		} catch (Throwable throwable) {
 			System.err.println("Erro ao iniciar aplicação");
 			throwable.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Erro ao iniciar aplicação: " + ExceptionUtils.getRootCauseMessage(throwable), "Erro",
-					JOptionPane.ERROR_MESSAGE);
+			if (!SystemUtils.isJavaAwtHeadless()) {
+				JOptionPane.showMessageDialog(null, "Erro ao iniciar aplicação: " + ExceptionUtils.getRootCauseMessage(throwable), "Erro",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 
@@ -64,9 +67,17 @@ public class Main {
 	protected void contextoInicializado(@Observes ContainerInitialized event) throws ParserException, IOException {
 		if (arguments.isConsoleMode()) {
 			logger.info("Executando em modo console");
+			Thread.setDefaultUncaughtExceptionHandler((thread, error) -> logarErro(thread, error));
 			consoleRunner.run(arguments);
 			System.exit(0);
 		} else {
+			logger.info("Executando em modo GUI");
+			Thread.setDefaultUncaughtExceptionHandler((thread, error) -> {
+				logarErro(thread, error);
+				JOptionPane.showMessageDialog(null, "Ocorreu um erro não tratado pela aplicação: " + error.getLocalizedMessage(), "Erro",
+						JOptionPane.ERROR_MESSAGE);
+			});
+
 			EventQueue.invokeLater(() -> {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -74,9 +85,12 @@ public class Main {
 					logger.error("Erro ao definir Look & Feel", exception);
 				}
 
-				logger.info("Executando em modo GUI");
 				mainPresenter.start();
 			});
 		}
+	}
+
+	private void logarErro(Thread thread, Throwable error) {
+		logger.error("Erro na execução da thread {}", thread.getName(), error);
 	}
 }

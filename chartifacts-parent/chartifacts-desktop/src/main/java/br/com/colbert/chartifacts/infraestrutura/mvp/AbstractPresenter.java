@@ -120,6 +120,8 @@ public abstract class AbstractPresenter<V extends View> implements Presenter<V> 
 	 * @param argumentos
 	 *            argumentos a serem repassados ao template
 	 * @return a mensagem HTML carregada
+	 * @throws RuntimeException
+	 *             caso ocorra algum erro ao carregar o arquivo
 	 */
 	protected HTMLMessage carregarMensagemHtml(String nomeArquivo, Object... argumentos) {
 		String conteudoHtml;
@@ -127,8 +129,7 @@ public abstract class AbstractPresenter<V extends View> implements Presenter<V> 
 		try {
 			conteudoHtml = htmlTemplateRepository.carregarTemplate(nomeArquivo, argumentos).get();
 		} catch (IOException exception) {
-			logger.error("Erro ao carregar template", exception);
-			conteudoHtml = "Erro ao carregar template:\n\n" + exception.getLocalizedMessage();
+			throw new RuntimeException("Erro ao carregar template", exception);
 		}
 
 		return new HTMLMessage(conteudoHtml);
