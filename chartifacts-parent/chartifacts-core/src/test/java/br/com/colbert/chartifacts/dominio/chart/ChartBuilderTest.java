@@ -6,11 +6,14 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import org.junit.*;
 
 import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
+import br.com.colbert.chartifacts.tests.support.AbstractTestCase;
 
 /**
  * Testes unitários da {@link ChartBuilder}.
@@ -18,7 +21,10 @@ import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
  * @author ThiagoColbert
  * @since 25 de fev de 2016
  */
-public class ChartBuilderTest {
+public class ChartBuilderTest extends AbstractTestCase {
+
+	@Inject
+	private ChartBuilder chartBuilder;
 
 	private CalculadoraPontos calculadoraPontos;
 
@@ -29,29 +35,24 @@ public class ChartBuilderTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void deveriaLancarExceptionCasoNumeroSejaInvalido() {
-		ChartBuilder.novo(-1, calculadoraPontos);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void deveriaLancarExceptionCasoCalculadoraNaoSejaDefinida() {
-		ChartBuilder.novo(1, null);
+		chartBuilder.numero(-1);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void deveriaLancarExceptionCasoIntervaloNaoSejaDefinido() {
-		ChartBuilder.novo(1, calculadoraPontos).comCancoes(Arrays.asList(new Cancao("Teste", Arrays.asList(new Artista("Teste"))))).build();
+		chartBuilder.numero(1).comCancoes(Arrays.asList(new Cancao("Teste", Arrays.asList(new Artista("Teste")))), calculadoraPontos).build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void deveriaLancarExceptionCasoCancoesNaoSejamDefinidas() {
-		ChartBuilder.novo(1, calculadoraPontos).comPeriodo(IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now())).build();
+		chartBuilder.numero(1).comPeriodo(IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now())).build();
 	}
 
 	public void testNovo() {
 		IntervaloDeDatas periodo = IntervaloDeDatas.novo().de(LocalDate.now()).ate(LocalDate.now());
 		List<Cancao> cancoes = Arrays.asList(new Cancao("Teste", Arrays.asList(new Artista("Teste"))));
 
-		Chart chart = ChartBuilder.novo(1, calculadoraPontos).comPeriodo(periodo).comCancoes(cancoes).build();
+		Chart chart = chartBuilder.numero(1).comPeriodo(periodo).comCancoes(cancoes, calculadoraPontos).build();
 
 		assertThat(chart, is(notNullValue(Chart.class)));
 		assertThat(chart.getNumero(), is(equalTo(1)));

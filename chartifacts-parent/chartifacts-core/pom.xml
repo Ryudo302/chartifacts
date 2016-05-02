@@ -46,6 +46,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.any23</groupId>
+			<artifactId>apache-any23-encoding</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>

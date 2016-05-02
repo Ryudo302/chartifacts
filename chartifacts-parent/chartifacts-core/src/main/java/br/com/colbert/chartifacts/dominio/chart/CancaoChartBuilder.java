@@ -3,7 +3,6 @@ package br.com.colbert.chartifacts.dominio.chart;
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.Builder;
 
 import br.com.colbert.chartifacts.dominio.historico.*;
@@ -21,8 +20,6 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 	private static final long serialVersionUID = 3362541391811849925L;
 
 	private final CancaoChart cancaoChart;
-
-	private CalculadoraPontos calculadoraPontos;
 
 	private CancaoChartBuilder(PosicaoChart posicao, Cancao cancao) {
 		cancaoChart = new CancaoChart(posicao, cancao);
@@ -44,19 +41,6 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 	}
 
 	/**
-	 * Define a calculadora de pontos.
-	 * 
-	 * @param calculadoraPontos
-	 * @return <code>this</code>, para chamadas encadeadas de método
-	 * @throws NullPointerException
-	 *             caso qualquer um dos parâmetros seja <code>null</code>
-	 */
-	public CancaoChartBuilder utilizando(CalculadoraPontos calculadoraPontos) {
-		this.calculadoraPontos = Objects.requireNonNull(calculadoraPontos, "calculadoraPontos");
-		return this;
-	}
-
-	/**
 	 * Define que a canção está variando de posição dentro da parada musical.
 	 * 
 	 * @param tipoVariacaoPosicao
@@ -71,10 +55,35 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 		return this;
 	}
 
+	/**
+	 * Atualiza as estatísticas da canção utilizando a calculadora de pontos informada.
+	 * 
+	 * @param calculadoraPontos
+	 * @return <code>this</code>, para chamadas encadeadas de método
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 */
+	public CancaoChartBuilder atualizarEstatisticasUtilizando(CalculadoraPontos calculadoraPontos) {
+		Objects.requireNonNull(calculadoraPontos, "calculadoraPontos");
+		cancaoChart.setEstatisticas(EstatisticasBuilder.utilizando(calculadoraPontos).aPartirDaPosicao(cancaoChart.getPosicao()).build());
+		return this;
+	}
+
+	/**
+	 * Define as estatísticas da canção.
+	 * 
+	 * @param estatisticas
+	 * @return <code>this</code>, para chamadas encadeadas de método
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 */
+	public CancaoChartBuilder comEstatisticas(Estatisticas estatisticas) {
+		cancaoChart.setEstatisticas(Objects.requireNonNull(estatisticas, "estatisticas"));
+		return this;
+	}
+
 	@Override
 	public CancaoChart build() {
-		Validate.validState(calculadoraPontos != null, "Calculadora de pontos não definida");
-		cancaoChart.setEstatisticas(EstatisticasBuilder.utilizando(calculadoraPontos).aPartirDaPosicao(cancaoChart.getPosicao()).build());
 		return cancaoChart;
 	}
 }

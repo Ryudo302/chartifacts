@@ -64,11 +64,11 @@ public class ArtistaStringParser implements Serializable {
 			throw new IllegalArgumentException("Padrão para artistas ('" + parserConfig.nomeArtistaPattern() + "') não encontrado: " + linha);
 		}
 
-		return Stream.of(parserConfig.separadoresArtistasPattern().split(matcher.group(1)));
+		return Stream.of(parserConfig.separadoresArtistasPattern().split(StringUtils.defaultString(matcher.group(1), matcher.group(2))));
 	}
 
 	private String removerCaracteresEstranhosNomeArtista(String nomeArtista) {
-		return StringUtils.trim(nomeArtista).replaceAll(parserConfig.separadorArtistaCancaoPattern().pattern(), StringUtils.EMPTY)
-				.replaceAll("]", StringUtils.EMPTY);
+		return StringUtils.trim(nomeArtista).replaceAll(parserConfig.separadorArtistaCancaoPattern().pattern(), StringUtils.EMPTY).replaceAll("]",
+				StringUtils.EMPTY);
 	}
 }

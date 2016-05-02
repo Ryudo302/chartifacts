@@ -14,7 +14,7 @@ import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
  */
 public class StringParsersRAMConfig implements StringParsersConfig {
 
-	private static final Pattern NOME_ARTISTA_PATTERN = Pattern.compile("(.+) - \"");
+	private static final Pattern NOME_ARTISTA_PATTERN = Pattern.compile("(?:\\d{1,2} (.+) - \")|(?:(.+) - \")");
 	private static final Pattern SEPARADORES_ARTISTAS_PATTERN = Pattern
 			.compile("feat\\.|featuring|&|,|\\[feat\\.|presents|\\(|Duet With|intro\\.|vs\\.| or |part\\.");
 	private static final Pattern SEPARADOR_ARTISTAS_E_CANCAO_PATTERN = Pattern.compile(" - ");
