@@ -63,6 +63,21 @@ public class PosicaoChart extends AbstractEntidade implements Comparable<Posicao
 	}
 
 	/**
+	 * Método utilitário que tenta obter uma instância de {@link PosicaoChart} a partir do conteúdo da String informada.
+	 * 
+	 * @param numeroPosicao
+	 *            String contendo o número da posição desejada
+	 * @return elemento representando o número de posição informado
+	 * @throws NumberFormatException
+	 *             caso o valor informado não seja um número
+	 * @throws IllegalArgumentException
+	 *             caso o número informado seja inválido (menor que 0)
+	 */
+	public static PosicaoChart valueOf(String numeroPosicao) {
+		return valueOf(Integer.parseInt(numeroPosicao));
+	}
+
+	/**
 	 * Obtém o número da posição da parada musical que o elemento representa. O valor {@value #NUMERO_POSICAO_AUSENCIA} indica ausência da parada.
 	 *
 	 * @return o número da posição

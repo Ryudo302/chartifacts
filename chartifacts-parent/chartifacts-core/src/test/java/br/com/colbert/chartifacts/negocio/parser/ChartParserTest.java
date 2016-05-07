@@ -18,7 +18,7 @@ import org.apache.any23.encoding.TikaEncodingDetector;
 import org.junit.*;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.historico.Estatisticas;
+import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.dominio.musica.*;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 import br.com.colbert.chartifacts.negocio.chartrun.*;
@@ -49,6 +49,7 @@ public class ChartParserTest extends AbstractTestCase {
 
 		chartParser.setNumeroParadaPattern(Pattern.compile("[\\w\\s]+ #(\\d+) .*"));
 		chartParser.setPosicaoPattern(Pattern.compile("(\\d{1,2}) .+"));
+		chartParser.setCalculadoraPontos(new CalculadoraPontos(QUANTIDADE_POSICOES));
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class ChartParserTest extends AbstractTestCase {
 		Estatisticas estatisticas = cancaoChart.getEstatisticas();
 		assertThat(estatisticas.getPermanenciaTotal(), is(equalTo(5)));
 		assertThat(estatisticas.getMelhorPosicao(), is(equalTo(new PermanenciaPosicao(PosicaoChart.valueOf(1), 3))));
-		assertThat(estatisticas.getPontuacao(), is(equalTo(20)));
+		assertThat(estatisticas.getPontuacao(), is(equalTo(3.0)));
 
 		cancaoChart = cancoes.get(1);
 		assertThat(cancaoChart.getNumeroPosicao(), is(equalTo(2)));
@@ -85,7 +86,7 @@ public class ChartParserTest extends AbstractTestCase {
 		estatisticas = cancaoChart.getEstatisticas();
 		assertThat(estatisticas.getPermanenciaTotal(), is(equalTo(10)));
 		assertThat(estatisticas.getMelhorPosicao(), is(equalTo(new PermanenciaPosicao(PosicaoChart.valueOf(1), 2))));
-		assertThat(estatisticas.getPontuacao(), is(equalTo(19)));
+		assertThat(estatisticas.getPontuacao(), is(equalTo(2.0)));
 
 		cancaoChart = cancoes.get(2);
 		assertThat(cancaoChart.getNumeroPosicao(), is(equalTo(3)));
@@ -96,10 +97,10 @@ public class ChartParserTest extends AbstractTestCase {
 		estatisticas = cancaoChart.getEstatisticas();
 		assertThat(estatisticas.getPermanenciaTotal(), is(equalTo(1)));
 		assertThat(estatisticas.getMelhorPosicao(), is(equalTo(new PermanenciaPosicao(PosicaoChart.valueOf(3), 1))));
-		assertThat(estatisticas.getPontuacao(), is(equalTo(18)));
+		assertThat(estatisticas.getPontuacao(), is(equalTo(1.0)));
 
 		IntervaloDeDatas periodo = chart.getPeriodo();
 		assertThat(periodo.getDataInicial(), is(equalTo(LocalDate.of(2016, Month.JANUARY, 3))));
-		assertThat(periodo.getDataFinal(), is(equalTo(LocalDate.of(2016, Month.JANUARY, 9))));
+		assertThat(periodo.getDataFinal().get(), is(equalTo(LocalDate.of(2016, Month.JANUARY, 9))));
 	}
 }

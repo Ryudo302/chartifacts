@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.*;
-import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.*;
 
 import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 
@@ -60,6 +60,16 @@ public class PermanenciaPosicao implements Comparable<PermanenciaPosicao>, Seria
 	@Override
 	public int compareTo(PermanenciaPosicao other) {
 		return CompareToBuilder.reflectionCompare(this, other);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 	@Override

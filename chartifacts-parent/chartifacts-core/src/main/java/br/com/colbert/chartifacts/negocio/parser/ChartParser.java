@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.historico.Estatisticas;
+import br.com.colbert.chartifacts.dominio.historico.*;
 import br.com.colbert.chartifacts.infraestrutura.io.*;
 import br.com.colbert.chartifacts.negocio.chartrun.*;
 
@@ -32,15 +32,13 @@ public class ChartParser implements Parser<List<String>, Chart> {
 
 	private Pattern numeroParadaPattern;
 	private Pattern posicaoPattern;
+	private CalculadoraPontos calculadoraPontos;
 
 	@Override
 	public Chart parse(List<String> lines, int quantidadePosicoesParada) throws ParserException {
 		logger.info("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(), quantidadePosicoesParada);
-
-		Chart chart = chartBuilder.numero(parseNumeroParada(lines.get(0))).comPeriodo(intervaloDeDatasStringParser.parse(lines.get(0))).anterior(null)
+		return chartBuilder.numero(parseNumeroParada(lines.get(0))).comPeriodo(intervaloDeDatasStringParser.parse(lines.get(0))).anterior(null)
 				.proximo(null).comCancoes(parseCancoes(lines)).build();
-
-		return chart;
 	}
 
 	private int parseNumeroParada(String primeiraLinha) throws ParserException {
@@ -63,9 +61,9 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		lines.subList(0, lines.indexOf(identificarLinhaFinalParada(lines))).forEach(line -> {
 			Matcher matcher = posicaoPattern.matcher(line);
 			if (matcher.matches()) {
-				cancoes.add(parseVariacaoPosicao(line,
-						CancaoChartBuilder.novo(PosicaoChart.valueOf(Integer.valueOf(matcher.group(1))), cancaoStringParser.parse(line)))
-								.comEstatisticas(parseEstatisticas(line)).build());
+				PosicaoChart posicao = PosicaoChart.valueOf(Integer.valueOf(matcher.group(1)));
+				cancoes.add(parseVariacaoPosicao(line, CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line)))
+						.comEstatisticas(parseEstatisticas(line, calculadoraPontos.calcularPontos(posicao))).build());
 			}
 		});
 
@@ -92,11 +90,11 @@ public class ChartParser implements Parser<List<String>, Chart> {
 			switch (tipoVariacaoPosicaoString) {
 			case "+":
 				tipoVariacaoPosicao = TipoVariacaoPosicao.SUBIDA;
-				valorVariacaoPosicao = group.charAt(1);
+				valorVariacaoPosicao = Integer.parseInt(String.valueOf(group.charAt(1)));
 				break;
 			case "-":
 				tipoVariacaoPosicao = TipoVariacaoPosicao.QUEDA;
-				valorVariacaoPosicao = group.charAt(1);
+				valorVariacaoPosicao = Integer.parseInt(String.valueOf(group.charAt(1)));
 				break;
 			case "=":
 				tipoVariacaoPosicao = TipoVariacaoPosicao.PERMANENCIA;
@@ -149,11 +147,30 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		return variacaoPosicaoMatcher;
 	}
 
-	private Estatisticas parseEstatisticas(String line) {
-		// [5ª Semana] [PP:1 (3x)]
-		Pattern.compile("");
+	private Estatisticas parseEstatisticas(String line, double pontuacao) {
+		Matcher matcher = matcherPermanenciaAndPeak(line);
+
+		if (matcher.matches()) {
+			return new Estatisticas(pontuacao, Integer.valueOf(matcher.group(1)), new PermanenciaPosicao(PosicaoChart.valueOf(matcher.group(2)),
+					Integer.valueOf(StringUtils.defaultIfBlank(matcher.group(4), String.valueOf(1)))));
+		} else {
+			throw new IllegalArgumentException("Não foi possível identificar estatísticas: " + line);
+		}
+	}
+
+	private Matcher matcherPermanenciaAndPeak(String line) {
+		String qualquerCoisa = ".+";
 		
-		return new Estatisticas(0.0, 1, new PermanenciaPosicao(PosicaoChart.valueOf(1), 1));
+		// [5ª Semana] [PP:1 (3x)]
+		String peak = "PP:" + "(\\d+)";
+		String permanenciaPeak = "\\(" + "(\\d+)" + 'x' + "\\)";
+		
+		return Pattern.compile(
+				qualquerCoisa
+				+ "\\[" + "(\\d+)ª Semana" + "\\]"
+				+ StringUtils.SPACE
+				+ "\\[" + peak + '(' + StringUtils.SPACE + permanenciaPeak + ')' + '?' + "\\]"
+				).matcher(line);
 	}
 
 	/**
@@ -174,6 +191,15 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	 */
 	public void setPosicaoPattern(Pattern pattern) {
 		this.posicaoPattern = Objects.requireNonNull(pattern, "pattern");
-		;
+	}
+	
+	/**
+	 * 
+	 * @param calculadoraPontos
+	 * @throws NullPointerException
+	 *             caso seja informado {@code null}
+	 */
+	public void setCalculadoraPontos(CalculadoraPontos calculadoraPontos) {
+		this.calculadoraPontos = Objects.requireNonNull(calculadoraPontos, "calculadoraPontos");
 	}
 }
