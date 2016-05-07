@@ -74,6 +74,6 @@ public class PermanenciaPosicao implements Comparable<PermanenciaPosicao>, Seria
 
 	@Override
 	public String toString() {
-		return posicao.toString() + StringUtils.SPACE + '(' + quantidade + 'x' + ')';
+		return posicao.toString() + (quantidade > 1 ? (StringUtils.SPACE + '(' + quantidade + 'x' + ')') : StringUtils.EMPTY);
 	}
 }

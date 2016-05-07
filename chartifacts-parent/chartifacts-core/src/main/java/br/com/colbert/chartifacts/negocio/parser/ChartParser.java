@@ -159,9 +159,8 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	}
 
 	private Matcher matcherPermanenciaAndPeak(String line) {
-		String qualquerCoisa = ".+";
+		String qualquerCoisa = ".*";
 		
-		// [5ª Semana] [PP:1 (3x)]
 		String peak = "PP:" + "(\\d+)";
 		String permanenciaPeak = "\\(" + "(\\d+)" + 'x' + "\\)";
 		
@@ -170,6 +169,7 @@ public class ChartParser implements Parser<List<String>, Chart> {
 				+ "\\[" + "(\\d+)ª Semana" + "\\]"
 				+ StringUtils.SPACE
 				+ "\\[" + peak + '(' + StringUtils.SPACE + permanenciaPeak + ')' + '?' + "\\]"
+				+ qualquerCoisa
 				).matcher(line);
 	}
 
