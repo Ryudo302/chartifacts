@@ -5,14 +5,13 @@ import java.util.regex.*;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
-import br.com.colbert.chartifacts.dominio.historico.*;
+import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
 import br.com.colbert.chartifacts.infraestrutura.io.*;
-import br.com.colbert.chartifacts.negocio.chartrun.*;
+import br.com.colbert.chartifacts.negocio.chartrun.VariacaoPosicao;
 
 /**
  * 
@@ -29,20 +28,22 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	private transient ChartBuilder chartBuilder;
 
 	@Inject
-	private IntervaloDeDatasStringParser intervaloDeDatasStringParser;
+	private transient PosicaoChartStringParser posicaoChartStringParser;
 	@Inject
-	private CancaoStringParser cancaoStringParser;
+	private transient IntervaloDeDatasStringParser intervaloDeDatasStringParser;
 	@Inject
-	private VariacaoPosicaoStringParser variacaoPosicaoStringParser;
+	private transient CancaoStringParser cancaoStringParser;
+	@Inject
+	private transient VariacaoPosicaoStringParser variacaoPosicaoStringParser;
+	@Inject
+	private transient EstatisticasStringParser estatisticasStringParser;
 
 	private Pattern numeroParadaPattern;
-	private Pattern posicaoPattern;
 	private CalculadoraPontos calculadoraPontos;
 
 	@Override
 	public Chart parse(List<String> lines, int quantidadePosicoesParada) throws ParserException {
-		logger.debug("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(),
-				quantidadePosicoesParada);
+		logger.debug("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(), quantidadePosicoesParada);
 
 		int numeroParada;
 
@@ -66,8 +67,7 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		if (matcher.find()) {
 			numero = Integer.valueOf(matcher.group(1));
 		} else {
-			throw new ParserException(
-					"Não foi possível identificar o número da parada.\nLinha: " + primeiraLinha + "\nPattern: " + numeroParadaPattern);
+			throw new ParserException("Não foi possível identificar o número da parada.\nLinha: " + primeiraLinha + "\nPattern: " + numeroParadaPattern);
 		}
 
 		return numero;
@@ -77,19 +77,16 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		List<CancaoChart> cancoes = new ArrayList<>();
 
 		lines.subList(0, lines.indexOf(identificarLinhaFinalParada(lines))).stream().map(line -> Jsoup.parse(line).text()).forEach(line -> {
-			Matcher matcher = posicaoPattern.matcher(line);
-			if (matcher.matches()) {
-				PosicaoChart posicao = PosicaoChart.valueOf(Integer.valueOf(matcher.group(1)));
-				VariacaoPosicao variacaoPosicao = variacaoPosicaoStringParser.parseVariacaoPosicao(line, posicao);
-				
-				cancoes.add(CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line))
-						.comVariacao(variacaoPosicao.getTipoVariacao(), variacaoPosicao.getValorVariacao())
-						.comEstatisticas(parseEstatisticas(line, calculadoraPontos.calcularPontos(posicao))).build());
-			}
+			PosicaoChart posicao = posicaoChartStringParser.parse(line);
+			VariacaoPosicao variacaoPosicao = variacaoPosicaoStringParser.parseVariacaoPosicao(line, posicao);
+
+			cancoes.add(CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line))
+					.comVariacao(variacaoPosicao.getTipoVariacao(), variacaoPosicao.getValorVariacao()).comEstatisticas(estatisticasStringParser.parse(line))
+					.atualizarPontuacaoUtilizando(calculadoraPontos).build());
 		});
 
 		if (cancoes.isEmpty()) {
-			throw new ParserException("Não foi possível identificar canções.\nLinhas: " + lines + "\nPattern: " + posicaoPattern);
+			throw new ParserException("Não foi possível identificar canções.\nLinhas: " + lines);
 		}
 
 		return cancoes;
@@ -97,27 +94,6 @@ public class ChartParser implements Parser<List<String>, Chart> {
 
 	private String identificarLinhaFinalParada(List<String> lines) {
 		return lines.stream().filter(line -> line.contains("Na Fila") || line.contains("[/blue]") || line.contains("NA FILA")).findFirst().get();
-	}
-
-	private Estatisticas parseEstatisticas(String line, double pontuacao) {
-		Matcher matcher = matcherPermanenciaAndPeak(line);
-
-		if (matcher.matches()) {
-			return new Estatisticas(pontuacao, Integer.valueOf(matcher.group(1)), new PermanenciaPosicao(PosicaoChart.valueOf(matcher.group(2)),
-					Integer.valueOf(StringUtils.defaultIfBlank(matcher.group(4), String.valueOf(1)))));
-		} else {
-			throw new IllegalArgumentException("Não foi possível identificar estatísticas: " + line);
-		}
-	}
-
-	private Matcher matcherPermanenciaAndPeak(String line) {
-		String qualquerCoisa = ".*";
-
-		String peak = "PP:" + "(\\d+)";
-		String permanenciaPeak = "\\(" + "(\\d+)" + "\\w" + "\\)";
-
-		return Pattern.compile(qualquerCoisa + "\\[" + "(\\d+). \\w+" + "\\]" + StringUtils.SPACE + "\\[" + peak + '(' + StringUtils.SPACE
-				+ permanenciaPeak + ')' + '?' + "\\]" + qualquerCoisa).matcher(line);
 	}
 
 	/**
@@ -128,16 +104,6 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	 */
 	public void setNumeroParadaPattern(Pattern pattern) {
 		this.numeroParadaPattern = Objects.requireNonNull(pattern, "pattern");
-	}
-
-	/**
-	 * 
-	 * @param pattern
-	 * @throws NullPointerException
-	 *             caso seja informado {@code null}
-	 */
-	public void setPosicaoPattern(Pattern pattern) {
-		this.posicaoPattern = Objects.requireNonNull(pattern, "pattern");
 	}
 
 	/**

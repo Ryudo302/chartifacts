@@ -70,6 +70,26 @@ public class CancaoChartBuilder implements Builder<CancaoChart>, Serializable {
 	}
 
 	/**
+	 * Atualiza a pontuação das estatísticas da canção utilizando a calculadora de pontos informada.
+	 * 
+	 * @param calculadoraPontos
+	 * @return <code>this</code>, para chamadas encadeadas de método
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 */
+	public CancaoChartBuilder atualizarPontuacaoUtilizando(CalculadoraPontos calculadoraPontos) {
+		Objects.requireNonNull(calculadoraPontos, "calculadoraPontos");
+		Estatisticas estatisticasAnterior = cancaoChart.getEstatisticas();
+		if (estatisticasAnterior != null) {
+			cancaoChart.setEstatisticas(new Estatisticas(calculadoraPontos.calcularPontos(cancaoChart.getPosicao()), estatisticasAnterior.getPermanenciaTotal(),
+					estatisticasAnterior.getMelhorPosicao()));
+			return this;
+		} else {
+			return atualizarEstatisticasUtilizando(calculadoraPontos);
+		}
+	}
+
+	/**
 	 * Define as estatísticas da canção.
 	 * 
 	 * @param estatisticas

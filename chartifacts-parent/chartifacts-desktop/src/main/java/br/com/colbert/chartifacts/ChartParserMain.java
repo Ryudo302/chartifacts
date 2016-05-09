@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.regex.*;
 import java.util.stream.Stream;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.any23.encoding.*;
@@ -45,7 +44,6 @@ public class ChartParserMain {
 
 	public void start(/*@Observes*/ ContainerInitialized event) throws URISyntaxException, IOException, ParserException {
 		chartParser.setNumeroParadaPattern(Pattern.compile("[\\w\\s]+ #(\\d+) .*"));
-		chartParser.setPosicaoPattern(Pattern.compile("(\\d{1,2}).? .+"));
 		chartParser.setCalculadoraPontos(new CalculadoraPontos(20));
 
 		Map<Integer, Stream<Chart>> chartsPorAno = new TreeMap<>();

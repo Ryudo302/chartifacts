@@ -38,6 +38,7 @@ public class VariacaoPosicaoStringParser implements Serializable {
 	private transient Pattern variacaoPosicaoPattern;
 
 	/**
+	 * Cria uma nova {@link VariacaoPosicao} a partir da {@link String} informada.
 	 * 
 	 * @param texto
 	 * @param posicao
@@ -45,7 +46,7 @@ public class VariacaoPosicaoStringParser implements Serializable {
 	 * @throws NullPointerException
 	 *             caso seja informado <code>null</code>
 	 * @throws IllegalArgumentException
-	 *             caso seja informada uma String vazia
+	 *             caso seja informada uma String vazia, o tipo de variação de posição deseja desconhecido ou não seja identificada uma variação de posição
 	 */
 	public VariacaoPosicao parseVariacaoPosicao(String texto, PosicaoChart posicao) {
 		Validate.notBlank(texto, "texto");

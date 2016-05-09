@@ -217,7 +217,8 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		padraoDatasField.setValue(formatoDatas);
 	}
 
-	/*private void viewToModel() {
+	/* TODO Não implementado
+	private void viewToModel() {
 		parsersConfig.setNomeArtistaPattern((Pattern) nomeArtistaField.getValue());
 		parsersConfig.setSeparadoresArtistasPattern((Pattern) separadoresArtistasField.getValue());
 		parsersConfig.setSeparadorArtistaCancaoPattern((Pattern) separadorArtistaCancaoField.getValue());
