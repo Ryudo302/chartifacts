@@ -49,6 +49,13 @@ public interface StringParsersConfig {
 	Pattern titulosAlternativosCancaoSeparadorPattern();
 
 	/**
+	 * {@link Pattern} utilizado para identificar informações referentes à variação de posição de uma canção em uma parada.
+	 * 
+	 * @return o padrão de variação de posição
+	 */
+	Pattern variacaoPosicaoPattern();
+
+	/**
 	 * {@link Pattern} utilizado para identificar intervalo de datas de um período.
 	 * 
 	 * @return o padrão de intervalo de datas

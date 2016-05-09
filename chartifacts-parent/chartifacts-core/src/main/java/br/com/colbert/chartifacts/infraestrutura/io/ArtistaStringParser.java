@@ -64,7 +64,8 @@ public class ArtistaStringParser implements Serializable {
 			throw new IllegalArgumentException("Padrão para artistas ('" + parserConfig.nomeArtistaPattern() + "') não encontrado: " + linha);
 		}
 
-		return Stream.of(parserConfig.separadoresArtistasPattern().split(StringUtils.defaultString(matcher.group(1), matcher.group(2))));
+		return Stream.of(parserConfig.separadoresArtistasPattern()
+				.split(matcher.groupCount() > 1 ? StringUtils.defaultString(matcher.group(1), matcher.group(2)) : matcher.group(1)));
 	}
 
 	private String removerCaracteresEstranhosNomeArtista(String nomeArtista) {

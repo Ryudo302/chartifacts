@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.Builder;
 import org.jboss.weld.exceptions.IllegalStateException;
 
-import br.com.colbert.chartifacts.dominio.chart.*;
+import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
 
 /**
  * Classe que facilida a construção de instâncias de {@link VariacaoPosicao}.
@@ -64,6 +64,15 @@ public class VariacaoPosicaoBuilder implements Serializable {
 	 */
 	public static VariacaoPosicaoComumBuilder queda() {
 		return new VariacaoPosicaoQuedaBuilder();
+	}
+
+	/**
+	 * Inicia a criação de uma nova variação de posição referente à permanência em uma posição.
+	 * 
+	 * @return objeto que precisa ter a posição definida
+	 */
+	public static VariacaoPosicaoPermanenciaBuilder permanencia() {
+		return new VariacaoPosicaoPermanenciaBuilder();
 	}
 
 	/**
@@ -135,7 +144,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		}
 	}
 
-	static abstract class VariacaoSegundaPosicaoUnicaBuilder extends VariacaoPosicaoBuilder implements Builder<VariacaoPosicao>, Serializable {
+	public static abstract class VariacaoSegundaPosicaoUnicaBuilder extends VariacaoPosicaoBuilder implements Builder<VariacaoPosicao>, Serializable {
 
 		private static final long serialVersionUID = 8866348771889240163L;
 
@@ -176,7 +185,7 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		}
 	}
 
-	static abstract class VariacaoPosicaoComumBuilder extends VariacaoPosicaoBuilder implements Builder<VariacaoPosicao>, Serializable {
+	public static abstract class VariacaoPosicaoComumBuilder extends VariacaoPosicaoBuilder implements Builder<VariacaoPosicao>, Serializable {
 
 		private static final long serialVersionUID = 8866348771889240163L;
 
@@ -221,7 +230,8 @@ public class VariacaoPosicaoBuilder implements Serializable {
 		protected PosicaoChart validar(PosicaoChart posicao) {
 			if (posicaoA != null && posicaoA.isPresenca() && posicaoB != null && posicaoB.isPresenca()
 					&& !(Math.signum(posicaoA.compareTo(posicaoB)) == tipoVariacao.delta())) {
-				throw new IllegalArgumentException("Definição inválida para este tipo de variação (" + tipoVariacao + "): [" + posicaoA + '-' + posicaoB + "]");
+				throw new IllegalArgumentException(
+						"Definição inválida para este tipo de variação (" + tipoVariacao + "): [" + posicaoA + '-' + posicaoB + "]");
 			} else {
 				return posicao;
 			}
@@ -234,6 +244,38 @@ public class VariacaoPosicaoBuilder implements Serializable {
 			}
 
 			return nova(posicaoA, posicaoB, tipoVariacao);
+		}
+	}
+
+	/**
+	 * Classe que facilida a construção de instâncias de {@link VariacaoPosicao} referentes à permanência na posição em uma parada.
+	 * 
+	 * @author Thiago Colbert
+	 * @since 8 de mai de 2016
+	 */
+	public static class VariacaoPosicaoPermanenciaBuilder extends VariacaoPosicaoBuilder implements Builder<VariacaoPosicao> {
+
+		private static final long serialVersionUID = 7611376186645878603L;
+
+		private PosicaoChart posicao;
+
+		/**
+		 * Define a posição.
+		 *
+		 * @param posicaoA
+		 *            a posição
+		 * @return <code>this</code>, para chamadas encadeadas
+		 * @throws IllegalArgumentException
+		 *             caso a posição informada seja inválida
+		 */
+		public VariacaoPosicaoPermanenciaBuilder em(PosicaoChart posicaoA) {
+			this.posicao = validar(posicaoA);
+			return this;
+		}
+
+		@Override
+		public VariacaoPosicao build() {
+			return nova(posicao, posicao, TipoVariacaoPosicao.PERMANENCIA);
 		}
 	}
 

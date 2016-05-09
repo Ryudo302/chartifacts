@@ -106,6 +106,22 @@ public class PosicaoChart extends AbstractEntidade implements Comparable<Posicao
 		return !isAusencia();
 	}
 
+	/**
+	 * Retorna a posição cujo número corresponda ao resultado da soma do número desta posição com o valor informado. Para subtrações, informar um
+	 * valor negativo.
+	 * 
+	 * @param value
+	 *            valor a ser subtraído do número desta posição
+	 * @return instância cujo número corresponde ao resultado da operação
+	 * @throws IllegalArgumentException
+	 *             caso o resultado de {@link #getNumeroPosicao()} + {@code value} seja < 0
+	 */
+	public PosicaoChart sum(int value) {
+		int resultado = numeroPosicao + value;
+		Validate.isTrue(resultado >= 0, "O resultado da operação é um valor negativo!");
+		return valueOf(resultado);
+	}
+
 	@Override
 	public int compareTo(PosicaoChart other) {
 		return other != null ? numeroPosicao - other.numeroPosicao : -1;

@@ -6,6 +6,7 @@ import java.util.regex.*;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
@@ -20,6 +21,8 @@ import br.com.colbert.chartifacts.negocio.chartrun.*;
  */
 public class ChartParser implements Parser<List<String>, Chart> {
 
+	private static int contadorParadas = 0;
+
 	@Inject
 	private transient Logger logger;
 	@Inject
@@ -29,6 +32,8 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	private IntervaloDeDatasStringParser intervaloDeDatasStringParser;
 	@Inject
 	private CancaoStringParser cancaoStringParser;
+	@Inject
+	private VariacaoPosicaoStringParser variacaoPosicaoStringParser;
 
 	private Pattern numeroParadaPattern;
 	private Pattern posicaoPattern;
@@ -36,16 +41,29 @@ public class ChartParser implements Parser<List<String>, Chart> {
 
 	@Override
 	public Chart parse(List<String> lines, int quantidadePosicoesParada) throws ParserException {
-		logger.info("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(), quantidadePosicoesParada);
-		return chartBuilder.numero(parseNumeroParada(lines.get(0))).comPeriodo(intervaloDeDatasStringParser.parse(lines.get(0))).anterior(null)
-				.proximo(null).comCancoes(parseCancoes(lines)).build();
+		logger.debug("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(),
+				quantidadePosicoesParada);
+
+		int numeroParada;
+
+		try {
+			logger.debug("Identificando número da parada pelo conteúdo do arquivo");
+			numeroParada = parseNumeroParada(lines.get(0));
+		} catch (ParserException exception) {
+			logger.debug("Número da parada não identificado no arquivo", exception);
+			logger.debug("Identificando número da parada pelo gerenciador");
+			numeroParada = ++contadorParadas;
+		}
+
+		return chartBuilder.numero(numeroParada).comPeriodo(intervaloDeDatasStringParser.parse(lines)).anterior(null).proximo(null)
+				.comCancoes(parseCancoes(lines)).build();
 	}
 
 	private int parseNumeroParada(String primeiraLinha) throws ParserException {
 		int numero;
 
 		Matcher matcher = numeroParadaPattern.matcher(primeiraLinha);
-		if (matcher.matches()) {
+		if (matcher.find()) {
 			numero = Integer.valueOf(matcher.group(1));
 		} else {
 			throw new ParserException(
@@ -58,11 +76,14 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	private List<CancaoChart> parseCancoes(List<String> lines) throws ParserException {
 		List<CancaoChart> cancoes = new ArrayList<>();
 
-		lines.subList(0, lines.indexOf(identificarLinhaFinalParada(lines))).forEach(line -> {
+		lines.subList(0, lines.indexOf(identificarLinhaFinalParada(lines))).stream().map(line -> Jsoup.parse(line).text()).forEach(line -> {
 			Matcher matcher = posicaoPattern.matcher(line);
 			if (matcher.matches()) {
 				PosicaoChart posicao = PosicaoChart.valueOf(Integer.valueOf(matcher.group(1)));
-				cancoes.add(parseVariacaoPosicao(line, CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line)))
+				VariacaoPosicao variacaoPosicao = variacaoPosicaoStringParser.parseVariacaoPosicao(line, posicao);
+				
+				cancoes.add(CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line))
+						.comVariacao(variacaoPosicao.getTipoVariacao(), variacaoPosicao.getValorVariacao())
 						.comEstatisticas(parseEstatisticas(line, calculadoraPontos.calcularPontos(posicao))).build());
 			}
 		});
@@ -75,76 +96,7 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	}
 
 	private String identificarLinhaFinalParada(List<String> lines) {
-		return lines.stream().filter(line -> line.contains("Na Fila")).findFirst().get();
-	}
-
-	private CancaoChartBuilder parseVariacaoPosicao(String line, CancaoChartBuilder builder) {
-		TipoVariacaoPosicao tipoVariacaoPosicao;
-		int valorVariacaoPosicao = 0;
-		
-		Matcher variacaoPosicaoMatcher = matcherVariacaoPosicao(line);
-		if (variacaoPosicaoMatcher.matches()) {
-			String group = variacaoPosicaoMatcher.group(1);
-			String tipoVariacaoPosicaoString = group.replaceAll("\\d", StringUtils.EMPTY);
-
-			switch (tipoVariacaoPosicaoString) {
-			case "+":
-				tipoVariacaoPosicao = TipoVariacaoPosicao.SUBIDA;
-				valorVariacaoPosicao = Integer.parseInt(String.valueOf(group.charAt(1)));
-				break;
-			case "-":
-				tipoVariacaoPosicao = TipoVariacaoPosicao.QUEDA;
-				valorVariacaoPosicao = Integer.parseInt(String.valueOf(group.charAt(1)));
-				break;
-			case "=":
-				tipoVariacaoPosicao = TipoVariacaoPosicao.PERMANENCIA;
-				break;
-			case " NEW ":
-				tipoVariacaoPosicao = TipoVariacaoPosicao.ESTREIA;
-				break;
-			case " RET ":
-				tipoVariacaoPosicao = TipoVariacaoPosicao.RETORNO;
-				break;
-			default:
-				throw new IllegalArgumentException("Tipo de variação de posição desconhecido: " + tipoVariacaoPosicaoString);
-			}
-		} else {
-			throw new IllegalArgumentException("Não foi possível identificar variação de posição: " + line);
-		}
-
-		return builder.comVariacao(tipoVariacaoPosicao, valorVariacaoPosicao);
-	}
-
-	private Matcher matcherVariacaoPosicao(String line) {
-		String ou = "|";
-		String valorVariacaoPosicao = "\\d{1,2}";
-		String qualquerCoisa = ".+";
-		
-		Matcher variacaoPosicaoMatcher = Pattern.compile(
-				qualquerCoisa
-				+ '\"'
-				+ StringUtils.SPACE
-				+ "\\["
-				+ '('
-					+ '('
-						+ '('
-							+ '\\' + "+"
-							+ ou
-							+ '\\' + "-"
-						+ ')'
-						+ valorVariacaoPosicao
-					+ ')'
-					+ ou
-					+ "="
-					+ ou
-					+ " NEW "
-					+ ou
-					+ " RET "
-				+ ')'
-				+ "\\]"
-				+ StringUtils.SPACE
-				+ qualquerCoisa).matcher(line);
-		return variacaoPosicaoMatcher;
+		return lines.stream().filter(line -> line.contains("Na Fila") || line.contains("[/blue]") || line.contains("NA FILA")).findFirst().get();
 	}
 
 	private Estatisticas parseEstatisticas(String line, double pontuacao) {
@@ -160,17 +112,12 @@ public class ChartParser implements Parser<List<String>, Chart> {
 
 	private Matcher matcherPermanenciaAndPeak(String line) {
 		String qualquerCoisa = ".*";
-		
+
 		String peak = "PP:" + "(\\d+)";
-		String permanenciaPeak = "\\(" + "(\\d+)" + 'x' + "\\)";
-		
-		return Pattern.compile(
-				qualquerCoisa
-				+ "\\[" + "(\\d+)ª Semana" + "\\]"
-				+ StringUtils.SPACE
-				+ "\\[" + peak + '(' + StringUtils.SPACE + permanenciaPeak + ')' + '?' + "\\]"
-				+ qualquerCoisa
-				).matcher(line);
+		String permanenciaPeak = "\\(" + "(\\d+)" + "\\w" + "\\)";
+
+		return Pattern.compile(qualquerCoisa + "\\[" + "(\\d+). \\w+" + "\\]" + StringUtils.SPACE + "\\[" + peak + '(' + StringUtils.SPACE
+				+ permanenciaPeak + ')' + '?' + "\\]" + qualquerCoisa).matcher(line);
 	}
 
 	/**
@@ -192,7 +139,7 @@ public class ChartParser implements Parser<List<String>, Chart> {
 	public void setPosicaoPattern(Pattern pattern) {
 		this.posicaoPattern = Objects.requireNonNull(pattern, "pattern");
 	}
-	
+
 	/**
 	 * 
 	 * @param calculadoraPontos

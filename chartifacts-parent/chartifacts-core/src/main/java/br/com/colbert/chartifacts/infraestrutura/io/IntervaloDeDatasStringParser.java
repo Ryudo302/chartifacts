@@ -3,6 +3,7 @@ package br.com.colbert.chartifacts.infraestrutura.io;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.regex.Matcher;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas;
 import br.com.colbert.chartifacts.infraestrutura.tempo.IntervaloDeDatas.SemDataFinal;
+import br.com.colbert.chartifacts.infraestrutura.util.Holder;
 
 /**
  * Permite a obtenção de instâncias de {@link IntervaloDeDatas} a partir dos dados presentes em uma {@link String}.
@@ -39,22 +41,19 @@ public class IntervaloDeDatasStringParser implements Serializable {
 	}
 
 	/**
-	 * Cria uma nova {@link IntervaloDeDatas} a partir da {@link String} informada.
+	 * Cria uma nova {@link IntervaloDeDatas} buscando um padrão de datas nas {@link String}s informadas.
 	 *
-	 * @param texto
-	 *            a ser analizado
+	 * @param lines
+	 *            a serem analisadas
 	 * @return a instância de intervalo criada
 	 * @throws NullPointerException
 	 *             caso seja informado <code>null</code>
-	 * @throws IllegalArgumentException
-	 *             caso seja informada uma String vazia
 	 */
-	public IntervaloDeDatas parse(String texto) {
-		Validate.notBlank(texto);
-		logger.trace("Analisando: {}", texto);
+	public IntervaloDeDatas parse(List<String> lines) {
+		logger.trace("Analisando: {}", lines);
 		logger.trace("Utilizando configurações: {}", parserConfig);
 
-		LocalDate[] datas = parseDatas(texto);
+		LocalDate[] datas = parseDatas(Objects.requireNonNull(lines, "lines"));
 		logger.trace("Datas identificadas: {}", (Object) datas);
 
 		SemDataFinal intervalo = IntervaloDeDatas.novo().de(datas[0]);
@@ -65,20 +64,39 @@ public class IntervaloDeDatasStringParser implements Serializable {
 		}
 	}
 
-	private LocalDate[] parseDatas(String linha) {
-		Matcher matcher = parserConfig.periodoIntervaloPattern().matcher(linha);
-		if (!matcher.find()) {
-			throw new IllegalArgumentException(
-					"Padrão para intervalo de datas ('" + parserConfig.periodoIntervaloPattern() + "') não encontrado: " + linha);
-		}
+	/**
+	 * Cria uma nova {@link IntervaloDeDatas} buscando um padrão de datas nas {@link String}s informadas.
+	 *
+	 * @param lines
+	 *            a serem analisadas
+	 * @return a instância de intervalo criada
+	 * @throws NullPointerException
+	 *             caso seja informado <code>null</code>
+	 * @see #parse(List)
+	 */
+	public IntervaloDeDatas parse(String... lines) {
+		return parse(Arrays.asList(Objects.requireNonNull(lines, "lines")));
+	}
 
+	private LocalDate[] parseDatas(List<String> lines) {
+		Holder<LocalDate[]> datasHolder = new Holder<>();
+
+		Matcher matcher = lines.stream().map(line -> parserConfig.periodoIntervaloPattern().matcher(line)).filter(Matcher::find).findFirst().get();
 		int gruposIdentificados = matcher.groupCount();
 
 		LocalDate dataInicial = LocalDate.parse(matcher.group(1), dateFormatter);
 		LocalDate dataFinal = gruposIdentificados > 1
 				? StringUtils.isNotBlank(matcher.group(2)) ? LocalDate.parse(matcher.group(2), dateFormatter) : null : null;
 
-		return ArrayUtils.toArray(dataInicial, dataFinal);
+		datasHolder.setValue(ArrayUtils.toArray(dataInicial, dataFinal));
+
+		LocalDate[] datas = datasHolder.getValue();
+		if (datas == null) {
+			throw new IllegalArgumentException(
+					"Padrão para intervalo de datas ('" + parserConfig.periodoIntervaloPattern() + "') não encontrado: " + lines);
+		} else {
+			return datas;
+		}
 	}
 
 	public StringParsersConfig getParserConfig() {
