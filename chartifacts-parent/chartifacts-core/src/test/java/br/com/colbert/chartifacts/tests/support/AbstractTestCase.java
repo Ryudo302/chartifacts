@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
  * @since 08/12/2014
  */
 @RunWith(CdiRunner.class)
-@AdditionalClasses({ LoggerProducer.class, StringParsersRAMConfig.class })
+@AdditionalClasses({ LoggerProducer.class })
 public abstract class AbstractTestCase {
 
 	@Rule

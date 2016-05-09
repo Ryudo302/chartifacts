@@ -3,6 +3,7 @@ package br.com.colbert.chartifacts.infraestrutura.io;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.historico.*;
+import br.com.colbert.chartifacts.infraestrutura.properties.Property;
 import br.com.colbert.chartifacts.negocio.parser.*;
 
 /**
@@ -34,6 +36,10 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	private transient ChartRunStringParser chartRunStringParser;
 	@Inject
 	private transient IntervaloDeDatasStringParser intervaloDeDatasStringParser;
+
+	@Inject
+	@Property(ParserProperties.SEPARADOR_ARTISTAS_E_CANCAO_KEY)
+	private transient Pattern separadorArtistaCancaoPattern;
 
 	/**
 	 * @throws NullPointerException
@@ -87,7 +93,7 @@ public class HistoricoParadaFileParser implements Serializable, HistoricoParadaP
 	}
 
 	private boolean isLinhaArtistaCancaoPeriodo(String linha) {
-		return cancaoStringParser.getParserConfig().separadorArtistaCancaoPattern().matcher(linha).find();
+		return separadorArtistaCancaoPattern.matcher(linha).find();
 	}
 
 	private boolean isLinhaChartRun(String linha) {

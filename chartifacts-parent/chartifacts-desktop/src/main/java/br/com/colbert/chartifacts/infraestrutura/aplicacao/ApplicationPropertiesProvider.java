@@ -1,11 +1,12 @@
 package br.com.colbert.chartifacts.infraestrutura.aplicacao;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
+import javax.inject.*;
+
+import br.com.colbert.chartifacts.infraestrutura.properties.Property;
 
 /**
  * Provê acesso às propriedades da aplicação.
@@ -18,7 +19,18 @@ public class ApplicationPropertiesProvider implements Serializable {
 
 	private static final long serialVersionUID = -812464708205462076L;
 
-	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("application");
+	@Inject
+	@Property("app.name")
+	private transient String appName;
+	@Inject
+	@Property("app.version")
+	private transient String appVersion;
+	@Inject
+	@Property("app.build")
+	private transient String appBuild;
+	@Inject
+	@Property("app.author")
+	private transient String appAuthor;
 
 	/**
 	 * Obtém informações sobre a aplicação.
@@ -28,22 +40,6 @@ public class ApplicationPropertiesProvider implements Serializable {
 	@Produces
 	@Singleton
 	public InformacoesAplicacao informacoesAplicacao() {
-		return new InformacoesAplicacao(getNome(), getNumeroVersao(), getNumeroBuild(), getNomeAutor());
-	}
-
-	private String getNome() {
-		return BUNDLE.getString("app.name");
-	}
-
-	private String getNumeroVersao() {
-		return BUNDLE.getString("app.version");
-	}
-
-	private String getNumeroBuild() {
-		return BUNDLE.getString("app.build");
-	}
-
-	private String getNomeAutor() {
-		return BUNDLE.getString("app.author");
+		return new InformacoesAplicacao(appName, appVersion, appBuild, appAuthor);
 	}
 }

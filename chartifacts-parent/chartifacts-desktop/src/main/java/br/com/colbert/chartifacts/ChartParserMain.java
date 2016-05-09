@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.Chart;
 import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
+import br.com.colbert.chartifacts.infraestrutura.properties.PropertiesFilesResolver;
 import br.com.colbert.chartifacts.negocio.parser.*;
 
 /**
@@ -33,16 +34,16 @@ import br.com.colbert.chartifacts.negocio.parser.*;
 public class ChartParserMain {
 
 	@Inject
-	private Logger logger;
-
+	private transient Logger logger;
 	@Inject
-	private ChartParser chartParser;
+	private transient ChartParser chartParser;
 
 	public static void main(String[] args) {
+		System.setProperty(PropertiesFilesResolver.SYSTEM_PROPERTY_ARQUIVOS, "parser.properties");
 		StartMain.main(args);
 	}
 
-	public void start(@Observes ContainerInitialized event) throws URISyntaxException, IOException, ParserException {
+	public void start(/*@Observes*/ ContainerInitialized event) throws URISyntaxException, IOException, ParserException {
 		chartParser.setNumeroParadaPattern(Pattern.compile("[\\w\\s]+ #(\\d+) .*"));
 		chartParser.setPosicaoPattern(Pattern.compile("(\\d{1,2}).? .+"));
 		chartParser.setCalculadoraPontos(new CalculadoraPontos(20));

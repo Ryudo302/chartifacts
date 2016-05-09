@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.aplicacao.MainPresenter;
 import br.com.colbert.chartifacts.console.ConsoleRunner;
+import br.com.colbert.chartifacts.infraestrutura.properties.PropertiesFilesResolver;
 import br.com.colbert.chartifacts.negocio.parser.ParserException;
 
 /**
@@ -43,6 +44,8 @@ public class Main {
 	 *            parâmetros para a aplicação
 	 */
 	public static void main(String[] args) {
+		System.setProperty(PropertiesFilesResolver.SYSTEM_PROPERTY_ARQUIVOS, "parser.properties,relatorios.properties,application.properties");
+
 		try {
 			Main.arguments = new Args(args);
 			StartMain.main(args);
@@ -64,7 +67,7 @@ public class Main {
 	 * @throws ParserException
 	 * @throws IOException
 	 */
-	protected void contextoInicializado(/*@Observes */ContainerInitialized event) throws ParserException, IOException {
+	protected void contextoInicializado(@Observes ContainerInitialized event) throws ParserException, IOException {
 		if (arguments.isConsoleMode()) {
 			logger.info("Executando em modo console");
 			Thread.setDefaultUncaughtExceptionHandler((thread, error) -> logarErro(thread, error));

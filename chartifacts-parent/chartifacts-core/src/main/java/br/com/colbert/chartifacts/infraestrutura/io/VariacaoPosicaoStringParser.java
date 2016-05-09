@@ -1,7 +1,7 @@
 package br.com.colbert.chartifacts.infraestrutura.io;
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
+import java.util.regex.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,6 +10,7 @@ import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.PosicaoChart;
+import br.com.colbert.chartifacts.infraestrutura.properties.Property;
 import br.com.colbert.chartifacts.negocio.chartrun.*;
 
 /**
@@ -31,8 +32,10 @@ public class VariacaoPosicaoStringParser implements Serializable {
 
 	@Inject
 	private transient Logger logger;
+
 	@Inject
-	private transient StringParsersConfig parserConfig;
+	@Property(ParserProperties.VARIACAO_POSICAO_KEY)
+	private transient Pattern variacaoPosicaoPattern;
 
 	/**
 	 * 
@@ -48,9 +51,7 @@ public class VariacaoPosicaoStringParser implements Serializable {
 		Validate.notBlank(texto, "texto");
 
 		logger.trace("Analisando: {}", texto);
-		logger.trace("Utilizando configurações: {}", parserConfig);
-
-		Matcher variacaoPosicaoMatcher = parserConfig.variacaoPosicaoPattern().matcher(texto.replaceAll("\\[/?[a-z]+\\]", StringUtils.EMPTY));
+		Matcher variacaoPosicaoMatcher = variacaoPosicaoPattern.matcher(texto.replaceAll("\\[/?[a-z]+\\]", StringUtils.EMPTY));
 		if (variacaoPosicaoMatcher.matches()) {
 			String group = variacaoPosicaoMatcher.group(1);
 			String tipoVariacaoPosicaoString = group.replaceAll("\\d", StringUtils.EMPTY);
@@ -71,8 +72,7 @@ public class VariacaoPosicaoStringParser implements Serializable {
 				throw new IllegalArgumentException("Tipo de variação de posição desconhecido: " + tipoVariacaoPosicaoString);
 			}
 		} else {
-			throw new IllegalArgumentException(
-					"Padrão para variação de posição ('" + parserConfig.variacaoPosicaoPattern() + "') não encontrado: " + texto);
+			throw new IllegalArgumentException("Padrão para variação de posição ('" + variacaoPosicaoPattern + "') não encontrado: " + texto);
 		}
 	}
 }

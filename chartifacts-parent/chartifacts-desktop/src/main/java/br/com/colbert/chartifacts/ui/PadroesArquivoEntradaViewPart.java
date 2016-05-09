@@ -16,9 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.jgoodies.forms.layout.*;
 
-import br.com.colbert.chartifacts.infraestrutura.io.StringParsersConfig;
+import br.com.colbert.chartifacts.infraestrutura.io.ParserProperties;
 import br.com.colbert.chartifacts.infraestrutura.mvp.AbstractViewFlexivel;
-import br.com.colbert.chartifacts.infraestrutura.properties.StringParsersPropertiesConfig;
+import br.com.colbert.chartifacts.infraestrutura.properties.Property;
 import br.com.colbert.chartifacts.infraestrutura.swing.*;
 
 /**
@@ -65,9 +65,32 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 	private final JFormattedTextField padraoDatasField;
 
 	@Inject
-	private transient StringParsersPropertiesConfig parsersConfig;
-	@Inject
 	private transient PatternFormatter patternFormatter;
+
+	@Inject
+	@Property(ParserProperties.NOME_ARTISTA_KEY)
+	private transient Pattern nomeArtistaPattern;
+	@Inject
+	@Property(ParserProperties.SEPARADORES_ARTISTAS_KEY)
+	private transient Pattern separadoresArtistasPattern;
+	@Inject
+	@Property(ParserProperties.SEPARADOR_ARTISTAS_E_CANCAO_KEY)
+	private transient Pattern separadorArtistaCancaoPattern;
+	@Inject
+	@Property(ParserProperties.TITULO_CANCAO_KEY)
+	private transient Pattern tituloCancaoPattern;
+	@Inject
+	@Property(ParserProperties.SEPARADOR_TITULOS_ALTERNATIVOS_CANCAO_KEY)
+	private transient Pattern titulosAlternativosCancaoSeparadorPattern;
+	@Inject
+	@Property(ParserProperties.SEPARADOR_POSICOES_CHARTRUN_KEY)
+	private transient String separadorPosicoesChartRun;
+	@Inject
+	@Property(ParserProperties.PERIODO_INTERVALO_KEY)
+	private transient Pattern periodoIntervaloPattern;
+	@Inject
+	@Property(ParserProperties.FORMATO_DATAS_KEY)
+	private transient String formatoDatas;
 
 	/**
 	 * Create the conteudoPanel.
@@ -184,17 +207,17 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 	}
 
 	private void modelToView() {
-		nomeArtistaField.setValue(parsersConfig.nomeArtistaPattern().pattern());
-		separadoresArtistasField.setValue(parsersConfig.separadoresArtistasPattern().pattern());
-		separadorArtistaCancaoField.setValue(parsersConfig.separadorArtistaCancaoPattern().pattern());
-		tituloCancaoField.setValue(parsersConfig.tituloCancaoPattern().pattern());
-		separadorTitulosAlternativosField.setValue(parsersConfig.titulosAlternativosCancaoSeparadorPattern().pattern());
-		separadorPosicoesChartRunField.setText(parsersConfig.separadorPosicoesChartRun());
-		intervaloDatasField.setValue(parsersConfig.periodoIntervaloPattern());
-		padraoDatasField.setValue(parsersConfig.formatoDatas());
+		nomeArtistaField.setValue(nomeArtistaPattern);
+		separadoresArtistasField.setValue(separadoresArtistasPattern);
+		separadorArtistaCancaoField.setValue(separadorArtistaCancaoPattern);
+		tituloCancaoField.setValue(tituloCancaoPattern);
+		separadorTitulosAlternativosField.setValue(titulosAlternativosCancaoSeparadorPattern);
+		separadorPosicoesChartRunField.setText(separadorPosicoesChartRun);
+		intervaloDatasField.setValue(periodoIntervaloPattern);
+		padraoDatasField.setValue(formatoDatas);
 	}
 
-	private void viewToModel() {
+	/*private void viewToModel() {
 		parsersConfig.setNomeArtistaPattern((Pattern) nomeArtistaField.getValue());
 		parsersConfig.setSeparadoresArtistasPattern((Pattern) separadoresArtistasField.getValue());
 		parsersConfig.setSeparadorArtistaCancaoPattern((Pattern) separadorArtistaCancaoField.getValue());
@@ -203,19 +226,10 @@ public class PadroesArquivoEntradaViewPart extends AbstractViewFlexivel {
 		parsersConfig.setSeparadorPosicoesChartRun(separadorPosicoesChartRunField.getText());
 		parsersConfig.setPeriodoIntervaloPattern((Pattern) intervaloDatasField.getValue());
 		parsersConfig.setFormatoDatas((String) padraoDatasField.getValue());
-	}
+	}*/
 
 	@Override
 	public Container getAwtContainer() {
 		return conteudoPanel;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public StringParsersPropertiesConfig getParsersConfig() {
-		viewToModel();
-		return parsersConfig;
 	}
 }

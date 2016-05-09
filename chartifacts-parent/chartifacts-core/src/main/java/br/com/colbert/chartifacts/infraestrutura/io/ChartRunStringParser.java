@@ -10,6 +10,7 @@ import org.apache.commons.lang3.*;
 import org.slf4j.Logger;
 
 import br.com.colbert.chartifacts.dominio.chart.*;
+import br.com.colbert.chartifacts.infraestrutura.properties.Property;
 
 /**
  * Permite a obtenção de instâncias de {@link ChartRun} a partir dos dados presentes em uma {@link String}.
@@ -23,9 +24,11 @@ public class ChartRunStringParser implements Serializable {
 	private static final long serialVersionUID = 3856917756887213009L;
 
 	@Inject
-	private Logger logger;
+	private transient Logger logger;
+
 	@Inject
-	private StringParsersConfig parserConfig;
+	@Property(ParserProperties.SEPARADOR_POSICOES_CHARTRUN_KEY)
+	private transient String separadorPosicoesChartRun;
 
 	/**
 	 * Cria um novo {@link ChartRun} a partir da {@link String} informada.
@@ -47,11 +50,9 @@ public class ChartRunStringParser implements Serializable {
 		Validate.isTrue(limiteValorPosicao > 0, "O limite de valor das posições deve ser superior a zero");
 
 		logger.trace("Analisando: {}", texto);
-		logger.trace("Utilizando configurações: {}", parserConfig);
 
 		List<PosicaoChart> elementos = new ArrayList<>();
-
-		String[] chartRunString = texto.split(parserConfig.separadorPosicoesChartRun());
+		String[] chartRunString = texto.split(separadorPosicoesChartRun);
 		for (String elementoString : chartRunString) {
 			if (StringUtils.isNumeric(elementoString)) {
 				int posicao = Integer.parseInt(elementoString);
