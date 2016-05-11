@@ -48,7 +48,6 @@ public class ChartParserTest extends AbstractTestCase {
 		inputStream.close();
 
 		chartParser.setNumeroParadaPattern(Pattern.compile("[\\w\\s]+ #(\\d+) .*"));
-		chartParser.setPosicaoPattern(Pattern.compile("(\\d{1,2}) .+"));
 		chartParser.setCalculadoraPontos(new CalculadoraPontos(QUANTIDADE_POSICOES));
 	}
 
