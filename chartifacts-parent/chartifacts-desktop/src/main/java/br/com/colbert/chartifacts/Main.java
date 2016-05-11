@@ -67,7 +67,7 @@ public class Main {
 	 * @throws ParserException
 	 * @throws IOException
 	 */
-	protected void contextoInicializado(@Observes ContainerInitialized event) throws ParserException, IOException {
+	protected void contextoInicializado(/*@Observes*/ ContainerInitialized event) throws ParserException, IOException {
 		if (arguments.isConsoleMode()) {
 			logger.info("Executando em modo console");
 			Thread.setDefaultUncaughtExceptionHandler((thread, error) -> logarErro(thread, error));

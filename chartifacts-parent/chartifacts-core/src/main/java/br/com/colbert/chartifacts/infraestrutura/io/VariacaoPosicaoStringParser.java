@@ -46,7 +46,8 @@ public class VariacaoPosicaoStringParser implements Serializable {
 	 * @throws NullPointerException
 	 *             caso seja informado <code>null</code>
 	 * @throws IllegalArgumentException
-	 *             caso seja informada uma String vazia, o tipo de variação de posição deseja desconhecido ou não seja identificada uma variação de posição
+	 *             caso seja informada uma String vazia, o tipo de variação de posição deseja desconhecido ou não seja identificada uma variação de
+	 *             posição
 	 */
 	public VariacaoPosicao parseVariacaoPosicao(String texto, PosicaoChart posicao) {
 		Validate.notBlank(texto, "texto");
@@ -60,11 +61,11 @@ public class VariacaoPosicaoStringParser implements Serializable {
 			logger.trace("Tipo de variação identificado: {}", tipoVariacaoPosicaoString);
 			switch (tipoVariacaoPosicaoString) {
 			case SIMBOLO_SUBIDA:
-				return VariacaoPosicaoBuilder.subida().de(posicao.sum(-Integer.parseInt(String.valueOf(group.charAt(1))))).para(posicao).build();
+				return VariacaoPosicaoBuilder.subida().de(posicao.sum(Integer.parseInt(String.valueOf(group.charAt(1))))).para(posicao).build();
 			case SIMBOLO_QUEDA:
-				return VariacaoPosicaoBuilder.queda().de(posicao.sum(Integer.parseInt(String.valueOf(group.charAt(1))))).para(posicao).build();
+				return VariacaoPosicaoBuilder.queda().de(posicao.sum(-Integer.parseInt(String.valueOf(group.charAt(1))))).para(posicao).build();
 			case SIMBOLO_PERMANENCIA:
-				return VariacaoPosicaoBuilder.permanencia().em(posicao.sum(Integer.parseInt(String.valueOf(group.charAt(1))))).build();
+				return VariacaoPosicaoBuilder.permanencia().em(posicao).build();
 			case SIMBOLO_ESTREIA:
 				return VariacaoPosicaoBuilder.estreia().em(posicao).build();
 			case SIMBOLO_RETORNO:

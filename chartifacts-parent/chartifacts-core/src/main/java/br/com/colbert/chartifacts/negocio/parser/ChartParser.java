@@ -43,7 +43,8 @@ public class ChartParser implements Parser<List<String>, Chart> {
 
 	@Override
 	public Chart parse(List<String> lines, int quantidadePosicoesParada) throws ParserException {
-		logger.debug("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(), quantidadePosicoesParada);
+		logger.debug("Analisando {} linhas. Total de posições da parada: {}", Objects.requireNonNull(lines, "lines").size(),
+				quantidadePosicoesParada);
 
 		int numeroParada;
 
@@ -67,7 +68,8 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		if (matcher.find()) {
 			numero = Integer.valueOf(matcher.group(1));
 		} else {
-			throw new ParserException("Não foi possível identificar o número da parada.\nLinha: " + primeiraLinha + "\nPattern: " + numeroParadaPattern);
+			throw new ParserException(
+					"Não foi possível identificar o número da parada.\nLinha: " + primeiraLinha + "\nPattern: " + numeroParadaPattern);
 		}
 
 		return numero;
@@ -77,12 +79,16 @@ public class ChartParser implements Parser<List<String>, Chart> {
 		List<CancaoChart> cancoes = new ArrayList<>();
 
 		lines.subList(0, lines.indexOf(identificarLinhaFinalParada(lines))).stream().map(line -> Jsoup.parse(line).text()).forEach(line -> {
-			PosicaoChart posicao = posicaoChartStringParser.parse(line);
-			VariacaoPosicao variacaoPosicao = variacaoPosicaoStringParser.parseVariacaoPosicao(line, posicao);
-
-			cancoes.add(CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line))
-					.comVariacao(variacaoPosicao.getTipoVariacao(), variacaoPosicao.getValorVariacao()).comEstatisticas(estatisticasStringParser.parse(line))
-					.atualizarPontuacaoUtilizando(calculadoraPontos).build());
+			try {
+				PosicaoChart posicao = posicaoChartStringParser.parse(line);
+				VariacaoPosicao variacaoPosicao = variacaoPosicaoStringParser.parseVariacaoPosicao(line, posicao);
+				
+				cancoes.add(CancaoChartBuilder.novo(posicao, cancaoStringParser.parse(line))
+						.comVariacao(variacaoPosicao.getTipoVariacao(), variacaoPosicao.getValorVariacao())
+						.comEstatisticas(estatisticasStringParser.parse(line)).atualizarPontuacaoUtilizando(calculadoraPontos).build());
+			} catch (IllegalArgumentException exception) {
+				logger.debug("Pulando linha: {}", line, exception);
+			}
 		});
 
 		if (cancoes.isEmpty()) {

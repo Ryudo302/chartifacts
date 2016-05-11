@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.regex.*;
 import java.util.stream.Stream;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.any23.encoding.*;
@@ -19,8 +20,11 @@ import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
 import org.slf4j.Logger;
 
-import br.com.colbert.chartifacts.dominio.chart.Chart;
+import br.com.colbert.chartifacts.dominio.chart.*;
 import br.com.colbert.chartifacts.dominio.historico.CalculadoraPontos;
+import br.com.colbert.chartifacts.dominio.musica.Cancao;
+import br.com.colbert.chartifacts.infraestrutura.collections.MapUtils;
+import br.com.colbert.chartifacts.infraestrutura.formatter.ArtistaStringBuilder;
 import br.com.colbert.chartifacts.infraestrutura.properties.PropertiesFilesResolver;
 import br.com.colbert.chartifacts.negocio.parser.*;
 
@@ -42,7 +46,7 @@ public class ChartParserMain {
 		StartMain.main(args);
 	}
 
-	public void start(/*@Observes*/ ContainerInitialized event) throws URISyntaxException, IOException, ParserException {
+	public void start(@Observes ContainerInitialized event) throws URISyntaxException, IOException, ParserException {
 		chartParser.setNumeroParadaPattern(Pattern.compile("[\\w\\s]+ #(\\d+) .*"));
 		chartParser.setCalculadoraPontos(new CalculadoraPontos(20));
 
@@ -54,10 +58,36 @@ public class ChartParserMain {
 				});
 
 		logger.info("Paradas processadas: {}", chartsPorAno);
+
+		Map<Cancao, Double> yearEndChart = new HashMap<>();
+
+		Stream<Chart> chart2015 = chartsPorAno.get(2015);
+		chart2015.forEach(chart -> {
+			List<CancaoChart> posicoesCancoes = chart.getCancoes();
+			posicoesCancoes.forEach(posicaoCancao -> {
+				Cancao cancao = posicaoCancao.getCancao();
+				double pontuacaoTotal;
+				double pontuacaoPosicao = posicaoCancao.getEstatisticas().getPontuacao();
+
+				if (yearEndChart.containsKey(cancao)) {
+					pontuacaoTotal = yearEndChart.get(cancao);
+					pontuacaoTotal += pontuacaoPosicao;
+				} else {
+					pontuacaoTotal = pontuacaoPosicao;
+				}
+
+				yearEndChart.put(cancao, pontuacaoTotal);
+			});
+		});
+
+		logger.info("Year-End Chart 2015");
+		MapUtils.sortByValue(yearEndChart, (p1, p2) -> p2.compareTo(p1)).forEach((cancao, pontuacao) -> System.out
+				.println(new ArtistaStringBuilder().appendAll(cancao.getArtistas()) + " - " + cancao.getTitulo() + " | " + pontuacao + "pts"));
 	}
 
 	private Predicate<? super Path> diretorioDeAno() {
-		return diretorioPath -> NumberUtils.isDigits(diretorioPath.getFileName().toString());
+		// TODO
+		return diretorioPath -> /*NumberUtils.isDigits(diretorioPath.getFileName().toString())*/ diretorioPath.getFileName().toString().equals("2015");
 	}
 
 	private Stream<Chart> lerArquivosDoDiretorio(Path diretorioPath, EncodingDetector encodingDetector) {
